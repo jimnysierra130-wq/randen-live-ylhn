@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="author" content="横田 尚也">
+<title>定期券払戻計算</title>
+<style>
+:root{--grn:#1b6e5a;--grnD:#0f5249;--red:#d32f2f;--blu:#1565c0;--ink:#263238;--bg:#f4f6f8;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+body{margin:0;font-family:"Hiragino Sans","メイリオ",Meiryo,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;}
+.wrap{max-width:720px;margin:0 auto;padding:10px 10px 40px;}
+h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px;margin-bottom:12px;}
+.lbl{font-size:12px;font-weight:700;color:#546e7a;margin:2px 0 6px;}
+.segs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.seg{flex:1;min-width:70px;padding:9px 4px;border:1.5px solid #b0bec5;border-radius:9px;background:#fff;font-size:14px;font-weight:700;text-align:center;cursor:pointer;color:#455a64;}
+.seg.on{background:var(--grn);border-color:var(--grn);color:#fff;}
+.dates{display:flex;gap:8px;}
+.dbox{flex:1;border:1.5px solid #b0bec5;border-radius:9px;padding:8px;cursor:pointer;background:#fffde7;}
+.dbox .t{font-size:11px;font-weight:700;color:#546e7a;}
+.dbox .v{font-size:16px;font-weight:700;margin-top:2px;min-height:22px;}
+.dbox.sel{border-color:var(--grn);box-shadow:0 0 0 2px rgba(27,110,90,.25);}
+.dbox .v.empty{color:#90a4ae;font-size:13px;}
+.res{border-left:6px solid var(--grn);}
+.rrow{display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px dashed #e0e0e0;font-size:14px;}
+.rrow b{font-size:14px;}
+.hantei{font-weight:800;color:#c62828;font-size:15px;padding:4px 2px;}
+.big{display:flex;justify-content:space-between;align-items:center;padding:10px 2px 2px;}
+.big .k{font-size:16px;font-weight:800;}
+.big .v{font-size:30px;font-weight:800;color:var(--blu);}
+.msg{color:var(--red);font-weight:700;font-size:13px;padding:2px;}
+.setsumei{background:#eef7f4;border-radius:9px;padding:10px;margin-top:10px;}
+.setsumei .s1{font-weight:800;font-size:15px;}
+.setsumei .s2{font-weight:800;font-size:16px;color:var(--blu);margin-top:4px;word-break:break-all;}
+.notes{font-size:11.5px;color:#546e7a;line-height:1.8;}
+.notes b{color:#37474f;}
+/* カレンダー */
+#calov{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:50;}
+#calov.on{display:block;}
+#cal{position:fixed;left:0;right:0;bottom:0;top:6%;background:#fff;border-radius:16px 16px 0 0;z-index:51;display:none;flex-direction:column;max-width:920px;margin:0 auto;}
+#cal.on{display:flex;}
+#calhd{background:var(--grn);color:#fff;border-radius:16px 16px 0 0;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+#calhd .ttl{font-weight:800;font-size:15px;flex:1;}
+#calhd button{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.5);color:#fff;font-size:17px;font-weight:800;border-radius:8px;padding:6px 14px;cursor:pointer;}
+#calbody{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px;align-content:start;}
+@media(max-width:700px){#calbody{grid-template-columns:repeat(2,1fr);}}
+.mon{min-width:0;}
+.mon h3{text-align:center;font-size:14px;margin:2px 0 6px;}
+.mg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.wd{text-align:center;font-size:11px;font-weight:700;color:#607d8b;padding:2px 0;}
+.wd.sun{color:var(--red);} .wd.sat{color:var(--blu);}
+.dy{background:#eceff1;border-radius:7px;text-align:center;padding:6px 0;font-size:13px;font-weight:700;cursor:pointer;border:2px solid transparent;}
+.dy.sun{color:var(--red);} .dy.sat{color:var(--blu);}
+.dy.today{border-color:var(--red);background:#fff;}
+.dy.pick{background:var(--grn);color:#fff!important;}
+.dy:active{background:#cfd8dc;}
+.legend{font-size:11px;color:#607d8b;padding:6px 14px 12px;}
+.legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--red);border-radius:4px;vertical-align:-2px;margin-right:3px;}
+.legend s{display:inline-block;width:12px;height:12px;background:var(--grn);border-radius:4px;vertical-align:-2px;margin:0 3px 0 10px;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>定期券払戻計算</h1>
+
+<div class="card">
+  <div class="lbl">券　種</div>
+  <div class="segs" id="sKind">
+    <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
+  </div>
+  <div class="lbl">大人・小児</div>
+  <div class="segs" id="sAge">
+    <div class="seg on" data-v="adult">大人</div><div class="seg" data-v="child">小児</div>
+  </div>
+  <div class="lbl">通用期間</div>
+  <div class="segs" id="sPer">
+    <div class="seg" data-v="1">1か月</div><div class="seg" data-v="3">3か月</div><div class="seg on" data-v="6">6か月</div>
+  </div>
+  <div class="lbl">取扱区分</div>
+  <div class="segs" id="sHow">
+    <div class="seg on" data-v="cust">お客様都合</div><div class="seg" data-v="corp">自社都合（発券ミス等）</div>
+  </div>
+  <div class="lbl">日付（タップでカレンダー）</div>
+  <div class="dates">
+    <div class="dbox" id="dSt"><div class="t">使用開始日</div><div class="v empty">タップして選択</div></div>
+    <div class="dbox" id="dPb"><div class="t">払戻日</div><div class="v empty">タップして選択</div></div>
+  </div>
+</div>
+
+<div class="card res" id="result" style="display:none;">
+  <div class="hantei" id="rHantei"></div>
+  <div class="rrow"><span>発売額（定期運賃）</span><b id="rPrice"></b></div>
+  <div class="rrow"><span>通用期間</span><b id="rPeriod"></b></div>
+  <div class="rrow"><span>経過日数／使用月数</span><b id="rElapsed"></b></div>
+  <div class="rrow"><span>差引額（運賃相当）</span><b id="rDed"></b></div>
+  <div class="rrow"><span>払戻手数料</span><b id="rFee"></b></div>
+  <div class="big"><span class="k">払　戻　額</span><span class="v" id="rRefund"></span></div>
+  <div class="msg" id="rMsg"></div>
+  <div class="setsumei"><div class="lbl">お客様への説明（計算式）</div>
+    <div class="s1" id="rF1"></div><div class="s2" id="rF2"></div>
+  </div>
+</div>
+
+<div class="card notes">
+<b>（注意）</b>払戻は通用期間内に限る。手数料は500円（自社都合のみ手数料なし）。<br>
+・開始後7日以内＝発売額－（経過乗車日数×往復普通運賃）－手数料500円（開始日を1日目と数える）。<br>
+・8日目以降＝発売額－（使用月数に応じた定期運賃）－手数料500円。1か月を1日でも超えれば翌月扱い（月単位の販売契約のため）。<br>
+　使用1か月=1か月運賃／2か月=1か月×2／3か月=3か月運賃／4か月=3か月+1か月／5か月=3か月+1か月×2　※1か月定期は8日目以降払戻なし。<br>
+・自社都合（発券ミス等）＝手数料500円のみ免除（払戻額の計算は通常どおり・全額払戻ではない）。精算書・実績一覧表を出力し、詳細を記入して報告すること。<br>
+・使用開始前＝未使用のため手数料500円のみ差引き。<br>
+・嵐電・阪急連絡定期券（磁気）は阪急電鉄のみの発行＝当社窓口の払戻対象外。<br>
+・重複購入・死亡による払戻は旬数計算（マニュアル1-3③）＝本ツール対象外（運輸課扱い）。応当日がない月末開始（1/31開始等）は月末満了として計算（券面表示の満了日が正）。<br>
+<b>運賃（現行・2023年4月1日改定）</b>：通勤 大人 8,500／24,230／45,900円・小児 4,250／12,120／22,950円、通学 大人 4,000／11,400／21,600円・小児 2,000／5,700／10,800円（1・3・6か月）。普通運賃 往復 大人500円・小児240円。
+</div>
+</div>
+
+<div id="calov"></div>
+<div id="cal">
+  <div id="calhd">
+    <button id="cPrev">◀</button>
+    <div class="ttl" id="cTtl"></div>
+    <button id="cNext">▶</button>
+    <button id="cClose">✕</button>
+  </div>
+  <div id="calbody"></div>
+  <div class="legend"><i></i>＝今日<s></s>＝選択中　※◀▶で前後の月へ送れます（4か月×3段＝前後1年分）</div>
+</div>
+
+<script>
+'use strict';
+var FARES={tsukin:{adult:[8500,24230,45900],child:[4250,12120,22950]},
+           tsugaku:{adult:[4000,11400,21600],child:[2000,5700,10800]}};
+var RT={adult:500,child:240};
+var YEN=function(n){return n.toLocaleString('ja-JP')+'円';};
+var WD=['日','月','火','水','木','金','土'];
+
+function addMonths(d,m){var x=new Date(d.getFullYear(),d.getMonth()+m,d.getDate());
+  if(x.getDate()!==d.getDate())x=new Date(x.getFullYear(),x.getMonth(),0);return x;}
+function datedifM(a,b){var k=(b.getFullYear()-a.getFullYear())*12+(b.getMonth()-a.getMonth());
+  if(b.getDate()<a.getDate())k--;return Math.max(0,k);}
+function fmt(d){return d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+('0'+d.getDate()).slice(-2)+'('+WD[d.getDay()]+')';}
+function sameD(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+
+// ─ 計算本体（xlsx v5と同一ロジック） ─
+function calcRefund(p){ // {kind,age,per,st,pb,how}
+  var idx={1:0,3:1,6:2}[p.per], f=FARES[p.kind][p.age];
+  var price=f[idx], p1=f[0], p3=f[1];
+  var e0=addMonths(p.st,p.per);
+  var end=(e0.getDate()!==p.st.getDate())?e0:new Date(e0.getTime()-86400000);
+  var FEE=(p.how==='corp')?0:500;                                  /* 自社都合＝手数料のみ免除（計算は通常どおり・全額払戻ではない） */
+  var FT1=(p.how==='corp')?'':'＋手数料500円';
+  var FT2=(p.how==='corp')?'':'＋500円';
+  var SUF=(p.how==='corp')?'（自社都合＝手数料なし）':'';
+  var r={price:price,end:end,days:0,months:0,ded:0,fee:FEE,refund:0,hantei:'',f1:'',f2:'',msg:''};
+  if(p.pb>end){r.refund=0;r.hantei='通用期間外＝払戻不可'+SUF;r.f1='―';r.msg='通用期間外のため払戻できません';return r;}
+  if(p.pb<p.st){r.refund=Math.max(0,price-FEE);r.hantei='使用開始前（未使用）'+SUF;
+    if(p.how==='corp'){r.f1='定期運賃（未使用・自社都合＝手数料なし）＝全額';r.f2='＝ '+YEN(price)+'（全額）';}
+    else{r.f1='定期運賃 －（手数料500円）';r.f2='＝ '+YEN(price)+' －（500円）＝ '+YEN(r.refund);}
+    return r;}
+  r.days=Math.round((p.pb-p.st)/86400000)+1;
+  r.months=datedifM(p.st,p.pb)+1;
+  if(r.days<=7){
+    var rt=RT[p.age];r.ded=r.days*rt;
+    r.hantei='開始後7日以内＝日数計算'+SUF;
+    r.refund=Math.max(0,price-r.ded-FEE);
+    r.f1='定期運賃 －（往復運賃×経過日数'+FT1+'）';
+    r.f2='＝ '+YEN(price)+' －（'+YEN(rt)+'×'+r.days+'日'+FT2+'）＝ '+YEN(r.refund);
+  }else{
+    var n=r.months;
+    r.ded=(n<=2)?n*p1:p3+(n-3)*p1;
+    r.hantei='8日目以降＝月数計算'+SUF;
+    r.refund=Math.max(0,price-r.ded-FEE);
+    if(n===1){r.f1='定期運賃 －（１か月運賃'+FT1+'）';r.f2='＝ '+YEN(price)+' －（'+YEN(p1)+FT2+'）＝ '+YEN(r.refund);}
+    else if(n===2){r.f1='定期運賃 －（１か月運賃×２'+FT1+'）';r.f2='＝ '+YEN(price)+' －（'+YEN(p1)+'×２'+FT2+'）＝ '+YEN(r.refund);}
+    else if(n===3){r.f1='定期運賃 －（３か月運賃'+FT1+'）';r.f2='＝ '+YEN(price)+' －（'+YEN(p3)+FT2+'）＝ '+YEN(r.refund);}
+    else if(n===4){r.f1='定期運賃 －（３か月運賃＋１か月運賃'+FT1+'）';r.f2='＝ '+YEN(price)+' －（'+YEN(p3)+'＋'+YEN(p1)+FT2+'）＝ '+YEN(r.refund);}
+    else{r.f1='定期運賃 －（３か月運賃＋１か月運賃×'+(n-3)+FT1+'）';r.f2='＝ '+YEN(price)+' －（'+YEN(p3)+'＋'+YEN(p1)+'×'+(n-3)+FT2+'）＝ '+YEN(r.refund);}
+  }
+  if(r.refund===0)r.msg='払戻額なし（差引額が発売額以上）';
+  return r;
+}
+if(typeof window!=='undefined')window.calcRefund=calcRefund;
+if(typeof module!=='undefined')module.exports={calcRefund:calcRefund,addMonths:addMonths,datedifM:datedifM};
+
+// ─ UI ─
+if(typeof document!=='undefined'){(function(){
+var state={kind:'tsukin',age:'adult',per:6,how:'cust',st:null,pb:new Date()};
+state.pb.setHours(0,0,0,0);
+function seg(id,key,parse){var el=document.getElementById(id);
+  el.addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
+    el.querySelectorAll('.seg').forEach(function(x){x.classList.remove('on');});
+    t.classList.add('on');state[key]=parse?parse(t.dataset.v):t.dataset.v;render();});}
+seg('sKind','kind');seg('sAge','age');seg('sPer','per',function(v){return +v;});seg('sHow','how');
+
+var calTarget=null,calBase=null;
+var today=new Date();today.setHours(0,0,0,0);
+function openCal(target){calTarget=target;
+  var cur=state[target]||today;
+  calBase=new Date(cur.getFullYear(),cur.getMonth(),1);
+  drawCal();
+  document.getElementById('calov').classList.add('on');
+  document.getElementById('cal').classList.add('on');}
+function closeCal(){document.getElementById('calov').classList.remove('on');
+  document.getElementById('cal').classList.remove('on');}
+function drawCal(){
+  var bd=document.getElementById('calbody');bd.innerHTML='';
+  var first=new Date(calBase.getFullYear(),calBase.getMonth()-6,1);
+  var last=new Date(calBase.getFullYear(),calBase.getMonth()+5,1);
+  document.getElementById('cTtl').textContent=
+    first.getFullYear()+'年'+('0'+(first.getMonth()+1)).slice(-2)+'月〜'+
+    last.getFullYear()+'年'+('0'+(last.getMonth()+1)).slice(-2)+'月　'+
+    (calTarget==='st'?'【使用開始日】':'【払戻日】');
+  for(var m=-6;m<=5;m++){
+    var mo=new Date(calBase.getFullYear(),calBase.getMonth()+m,1);
+    var div=document.createElement('div');div.className='mon';
+    var h=document.createElement('h3');h.textContent=mo.getFullYear()+'年'+(mo.getMonth()+1)+'月';div.appendChild(h);
+    var g=document.createElement('div');g.className='mg';
+    WD.forEach(function(w,i){var d=document.createElement('div');
+      d.className='wd'+(i===0?' sun':i===6?' sat':'');d.textContent=w;g.appendChild(d);});
+    for(var i=0;i<mo.getDay();i++){g.appendChild(document.createElement('div'));}
+    var days=new Date(mo.getFullYear(),mo.getMonth()+1,0).getDate();
+    for(var dd=1;dd<=days;dd++){
+      var dt=new Date(mo.getFullYear(),mo.getMonth(),dd);
+      var c=document.createElement('div');
+      c.className='dy'+(dt.getDay()===0?' sun':dt.getDay()===6?' sat':'');
+      if(sameD(dt,today))c.className+=' today';
+      if(sameD(dt,state[calTarget]))c.className+=' pick';
+      c.textContent=dd;
+      c.dataset.ymd=dt.getTime();
+      g.appendChild(c);
+    }
+    div.appendChild(g);bd.appendChild(div);
+  }
+}
+document.getElementById('calbody').addEventListener('click',function(e){
+  var t=e.target.closest('.dy');if(!t||!t.dataset.ymd)return;
+  state[calTarget]=new Date(+t.dataset.ymd);closeCal();render();});
+document.getElementById('cPrev').onclick=function(){calBase=new Date(calBase.getFullYear(),calBase.getMonth()-1,1);drawCal();};
+document.getElementById('cNext').onclick=function(){calBase=new Date(calBase.getFullYear(),calBase.getMonth()+1,1);drawCal();};
+document.getElementById('cClose').onclick=closeCal;
+document.getElementById('calov').onclick=closeCal;
+document.getElementById('dSt').onclick=function(){openCal('st');};
+document.getElementById('dPb').onclick=function(){openCal('pb');};
+
+function render(){
+  var vs=document.querySelector('#dSt .v'),vp=document.querySelector('#dPb .v');
+  vs.textContent=state.st?fmt(state.st):'タップして選択';vs.className='v'+(state.st?'':' empty');
+  vp.textContent=state.pb?fmt(state.pb):'タップして選択';vp.className='v'+(state.pb?'':' empty');
+  document.getElementById('dSt').classList.toggle('sel',!!state.st);
+  document.getElementById('dPb').classList.toggle('sel',!!state.pb);
+  var box=document.getElementById('result');
+  if(!state.st||!state.pb){box.style.display='none';return;}
+  var r=calcRefund({kind:state.kind,age:state.age,per:state.per,how:state.how,st:state.st,pb:state.pb});
+  box.style.display='block';
+  document.getElementById('rHantei').textContent='判定：'+r.hantei;
+  document.getElementById('rPrice').textContent=YEN(r.price);
+  document.getElementById('rPeriod').textContent=fmt(state.st)+' 〜 '+fmt(r.end);
+  document.getElementById('rElapsed').textContent=r.days+'日／'+r.months+'か月';
+  document.getElementById('rDed').textContent=YEN(r.ded);
+  document.getElementById('rFee').textContent=YEN(r.fee);
+  document.getElementById('rRefund').textContent=YEN(r.refund);
+  document.getElementById('rMsg').textContent=r.msg;
+  document.getElementById('rF1').textContent=r.f1;
+  document.getElementById('rF2').textContent=r.f2;
+}
+render();
+})();}
+</script>
+</body>
+</html>

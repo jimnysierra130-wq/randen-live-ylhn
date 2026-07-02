@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="author" content="横田 尚也">
+<title>団体・貸切計算</title>
+<style>
+:root{--grn:#1b6e5a;--grnD:#0f5249;--red:#d32f2f;--blu:#1565c0;--org:#C55A11;--ink:#263238;--bg:#f4f6f8;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+body{margin:0;font-family:"Hiragino Sans","メイリオ",Meiryo,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;}
+.wrap{max-width:720px;margin:0 auto;padding:10px 10px 40px;}
+h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
+.tabs{display:flex;gap:8px;margin-bottom:12px;}
+.tab{flex:1;padding:12px 4px;border-radius:10px;text-align:center;font-size:16px;font-weight:800;cursor:pointer;border:2px solid #b0bec5;background:#fff;color:#455a64;}
+.tab.g.on{background:var(--grn);border-color:var(--grn);color:#fff;}
+.tab.k.on{background:var(--org);border-color:var(--org);color:#fff;}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.08);padding:12px;margin-bottom:12px;}
+.lbl{font-size:12px;font-weight:700;color:#546e7a;margin:6px 0 6px;}
+.segs{display:flex;gap:6px;flex-wrap:wrap;}
+.seg{flex:1;min-width:64px;padding:9px 4px;border:1.5px solid #b0bec5;border-radius:9px;background:#fff;font-size:14px;font-weight:700;text-align:center;cursor:pointer;color:#455a64;}
+#pgG .seg.on{background:var(--grn);border-color:var(--grn);color:#fff;}
+#pgK .seg.on{background:var(--org);border-color:var(--org);color:#fff;}
+.numrow{display:flex;align-items:center;gap:8px;}
+.numrow .nm{flex:1;font-size:14px;font-weight:700;}
+.numrow button{width:44px;height:40px;border-radius:9px;border:1.5px solid #b0bec5;background:#fff;font-size:20px;font-weight:800;color:#37474f;cursor:pointer;}
+.numrow input{width:84px;height:40px;border:1.5px solid #b0bec5;border-radius:9px;background:#fffde7;font-size:18px;font-weight:800;text-align:center;color:#0000d0;}
+.res{border-left:6px solid var(--grn);}
+#pgK .res{border-left-color:var(--org);}
+.rrow{display:flex;justify-content:space-between;padding:5px 2px;border-bottom:1px dashed #e0e0e0;font-size:14px;}
+.big{display:flex;justify-content:space-between;align-items:center;padding:10px 2px 2px;}
+.big .k{font-size:16px;font-weight:800;}
+.big .v{font-size:30px;font-weight:800;color:var(--blu);}
+.msg{color:var(--red);font-weight:700;font-size:13px;padding:2px;}
+.setsumei{background:#eef7f4;border-radius:9px;padding:10px;margin-top:10px;}
+#pgK .setsumei{background:#fdf2ea;}
+.setsumei .s1{font-weight:700;font-size:13px;color:#546e7a;}
+.setsumei .s2{font-weight:800;font-size:16px;color:var(--blu);margin-top:4px;word-break:break-all;}
+.notes{font-size:11.5px;color:#546e7a;line-height:1.8;}
+.notes b{color:#37474f;}
+.cols{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;}
+.colL{flex:1 1 380px;min-width:0;}
+.colR{flex:1 1 420px;min-width:0;}
+.wrap{max-width:1150px;}
+.disc{border-radius:9px;padding:8px 10px;font-size:14px;font-weight:800;text-align:center;margin-bottom:6px;}
+.disc.on{background:#e3f4ec;color:#0f5249;border:1.5px solid var(--grn);}
+.disc.off{background:#eceff1;color:#78909c;border:1.5px solid #cfd8dc;}
+.sublbl{font-size:11px;color:#90a4ae;font-weight:700;margin:12px 0 4px;border-top:1px dashed #cfd8dc;padding-top:10px;}
+.numrow.sub .nm{font-size:11.5px;color:#90a4ae;font-weight:600;}
+.numrow.sub button{width:32px;height:28px;font-size:14px;color:#90a4ae;border-color:#cfd8dc;}
+.numrow.sub input{width:58px;height:28px;font-size:13px;background:#eceff1;color:#607d8b;border-color:#cfd8dc;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>団体・貸切計算</h1>
+<div class="tabs">
+  <div class="tab g on" id="tabG">団体乗車券</div>
+  <div class="tab k" id="tabK">貸切電車</div>
+</div>
+
+<!-- ══ 団体 ══ -->
+<div id="pgG">
+<div class="cols">
+<div class="colL">
+<div class="card">
+  <div class="lbl">種　別</div>
+  <div class="segs" id="gKind"><div class="seg on" data-v="ippan">一般団体</div><div class="seg" data-v="gakusei">学生団体</div></div>
+  <div class="lbl">人数＝<b>全員の総数</b>（障がい者・介護者も含む）／乳児(1歳未満)は含めない</div>
+  <div class="numrow"><span class="nm">大人（総数・介護者含む）</span>
+    <button data-t="gAd" data-d="-1">−</button><input id="gAd" type="number" min="0" value="0"><button data-t="gAd" data-d="1">＋</button></div>
+  <div style="height:6px"></div>
+  <div class="numrow"><span class="nm">小児（幼児1〜6歳未満もここに含める）</span>
+    <button data-t="gCh" data-d="-1">−</button><input id="gCh" type="number" min="0" value="0"><button data-t="gCh" data-d="1">＋</button></div>
+  <div class="lbl">片道・往復</div>
+  <div class="segs" id="gOw"><div class="seg on" data-v="1">片道</div><div class="seg" data-v="2">往復</div></div>
+  <div class="sublbl">そのうち 障がい者のお客様（内訳を記入）※割引は<b>介護者同伴が条件</b>＝同伴ペア分のみ5割引で別計算・単独の方は割引なし（団体側で通常運賃として自動計算）</div>
+  <div class="numrow sub"><span class="nm">そのうち 大人の障がい者</span>
+    <button data-t="gHa" data-d="-1">−</button><input id="gHa" type="number" min="0" value="0"><button data-t="gHa" data-d="1">＋</button></div>
+  <div style="height:4px"></div>
+  <div class="numrow sub"><span class="nm">そのうち 小児の障がい者（6〜12歳未満）</span>
+    <button data-t="gHc" data-d="-1">−</button><input id="gHc" type="number" min="0" value="0"><button data-t="gHc" data-d="1">＋</button></div>
+  <div style="height:4px"></div>
+  <div class="numrow sub"><span class="nm">そのうち 6歳未満の障がい者（本人無賃・介護者は割引あり）</span>
+    <button data-t="gHb" data-d="-1">−</button><input id="gHb" type="number" min="0" value="0"><button data-t="gHb" data-d="1">＋</button></div>
+  <div style="height:4px"></div>
+  <div class="numrow sub"><span class="nm">そのうち 介護者（大人・原則ご本人1人につき1人）</span>
+    <button data-t="gKg" data-d="-1">−</button><input id="gKg" type="number" min="0" value="0"><button data-t="gKg" data-d="1">＋</button></div>
+</div>
+</div>
+<div class="colR">
+<div class="card res" id="gRes" style="display:none;">
+  <div class="resL">
+  <div class="disc" id="gDisc"></div>
+  <div class="rrow"><span>合計人数</span><b id="gTot"></b></div>
+  <div class="rrow"><span>無賃人員</span><b id="gMuchin"></b></div>
+  <div class="rrow"><span>割引率</span><b id="gRate"></b></div>
+  <div class="rrow"><span>大人（適用人数×割引運賃）</span><b id="gAdA"></b></div>
+  <div class="rrow"><span>小児（人数×割引運賃）</span><b id="gChA"></b></div>
+  <div class="big"><span class="k" id="gSumL">運賃 合計</span><span class="v" id="gSum"></span></div>
+  <div class="rrow" id="gSpRow" style="display:none;"><span>＋ 障がい者のお客様の運賃（各5割引・別精算）</span><b id="gSp"></b></div>
+  <div class="big" id="gTtRow" style="display:none;"><span class="k">お支払い総額（障がい者分含む）</span><span class="v" id="gTt" style="color:#c00000;"></span></div>
+  <div class="msg" id="gMsg"></div>
+  </div>
+  <div class="setsumei"><div class="s1">お客様への説明（計算式）</div><div class="s2" id="gF"></div><div class="s2" id="gF2" style="display:none;"></div></div>
+  <div class="setsumei"><div class="s1">領収書の金額</div>
+    <div class="s2" style="font-size:14px;" id="gR1"></div>
+    <div class="s2" style="font-size:14px;" id="gR2"></div>
+    <div class="s2" style="font-size:14px;" id="gR3"></div>
+    <div class="s2" style="font-size:14px;" id="gR4"></div>
+    <div class="s2" style="font-size:13px;" id="gR5"></div>
+    <div style="font-size:11px;color:#78909c;margin-top:4px;">※分け方は3方式いずれも可＝どれにするかは<b>お客様（学校）の指定</b>による（マニュアル1-4「分け方は各学校におまかせ」「記入方法は担当者に尋ねる」）。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)もお客様の指定による。</div>
+  </div>
+</div>
+</div>
+</div>
+<div class="card notes">
+<b>【お客様説明・年齢区分】</b>乳児（1歳未満）＝無賃（人数に含めない）。幼児（1歳以上6歳未満）＝団体では随伴でも「小児」として人数に含め、こども運賃を収受（社内マニュアル1-4）。小児（6歳以上12歳未満・12歳の小学生含む）＝小児運賃。<br>
+<b>【お客様説明・障がい者】</b>大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算。第1種（身体・療育）のご本人と介護者（原則1人）＝普通券 各5割引・10円未満切上げ（大人 片道130円/往復260円・小児 片道60円/往復120円）。ご本人が6歳未満＝無賃（介護者は割引あり）。割引は必ず介護者同伴が条件（嵐電線内は単独割引なし＝規程第4・5条）・第2種は嵐電線内の普通券割引なし。精神障がい者保健福祉手帳も対象（精神障害者旅客運賃割引規程による・旅客営業規則第44条）。ミライロIDでの手帳呈示可（身体障害者旅客運賃割引規程 2025-04-01改定 第8条）。<br>
+<b>割引率</b>＝一般：25〜99名 1割／100〜299名 2割／300名以上 3割。学生：25〜99名 2割／100〜299名 3割／300名以上 4割（24名以下は適用なし）。<br>
+<b>無賃人員</b>＝25〜49名:1名／50〜99名:2名／100名以上:50名毎に+1名（大人から充当）。<br>
+・運賃は全線均一（大人 片道250円/往復500円・小児 片道120円/往復240円）。合計は10円未満切上げ。1,500名以上は手計算。
+</div>
+</div>
+
+<!-- ══ 貸切 ══ -->
+<div id="pgK" style="display:none;">
+<div class="cols">
+<div class="colL">
+<div class="card">
+  <div class="lbl">両　数</div>
+  <div class="segs" id="kRy"><div class="seg on" data-v="1">1両</div><div class="seg" data-v="2">2両</div></div>
+  <div class="lbl">乗車人数（大人・小児・幼児(1歳以上)合わせて／乳児(1歳未満)は含めない）</div>
+  <div class="numrow"><span class="nm">人数</span>
+    <button data-t="kNn" data-d="-1">−</button><input id="kNn" type="number" min="0" value="0"><button data-t="kNn" data-d="1">＋</button></div>
+  <div class="lbl">行　程（四条大宮〜嵐山）</div>
+  <div class="segs" id="kKt"><div class="seg on" data-v="1">片道</div><div class="seg" data-v="2">往復</div><div class="seg" data-v="3">1.5往復</div><div class="seg" data-v="4">2往復</div></div>
+  <div class="lbl">留置時間（嵐山）</div>
+  <div class="segs" id="kRc"><div class="seg on" data-v="0">なし/30分まで</div><div class="seg" data-v="2">31〜60分</div><div class="seg" data-v="3">61〜90分</div></div>
+  <div class="lbl">オプション（タップで切替）</div>
+  <div class="segs" id="kOp">
+    <div class="seg" data-v="gd">ガイド電車</div><div class="seg" data-v="on">音響</div>
+    <div class="seg" data-v="hm">ヘッドマーク</div><div class="seg" data-v="pm">プレミアム</div>
+  </div>
+  <div class="lbl">テーブル貸出（最大4台）</div>
+  <div class="numrow"><span class="nm">台数</span>
+    <button data-t="kTb" data-d="-1">−</button><input id="kTb" type="number" min="0" max="4" value="0"><button data-t="kTb" data-d="1">＋</button></div>
+</div>
+</div>
+<div class="colR">
+<div class="card res" id="kRes" style="display:none;">
+  <div class="resL">
+  <div class="rrow"><span>貸切基本料金</span><b id="kBase"></b></div>
+  <div class="rrow"><span>乗車運賃</span><b id="kFare"></b></div>
+  <div class="rrow"><span>留置料金</span><b id="kRyu"></b></div>
+  <div class="rrow"><span>オプション（ガイド/テーブル/音響/HM/車両指定）</span><b id="kOpt"></b></div>
+  <div class="big"><span class="k">貸切料金 合計</span><span class="v" id="kSum"></span></div>
+  <div class="msg" id="kMsg"></div>
+  </div>
+  <div class="setsumei"><div class="s1">お客様への説明（内訳）</div><div class="s2" id="kF"></div></div>
+</div>
+</div>
+</div>
+<div class="card notes">
+<b>料金</b>＝基本25,000円/両（1.5往復・2往復は×2）＋運賃 片道130/往復260/1.5往復390/2往復520円×人数。留置＝30分まで無料/31〜60分6,000円/61〜90分12,000円（最大90分）。ガイド電車6,000円・テーブル/音響 各3,000円（音響はガイド電車なら不要）・ヘッドマーク25,000円・プレミアムトレイン35,000円。<br>
+・貸切は1日2件まで。受付不可時間帯＝平日 四条大宮14:50〜15:50頃／土日休日 12:50〜13:50頃。<br>
+・「1.5往復」「2往復」はお客様の要望時のみ。KYOTRAM・301号は貸切/プレミアム対象外。申込＝運輸課（075-801-2511/2512）。<br>
+<b>【お客様説明・年齢区分】</b>幼児（1歳以上6歳未満）も乗車人員1名として計算（マニュアル1-4の幼児取扱い）。乳児（1歳未満）は人数に含めない。<br>
+<b>【お客様説明・障がい者】</b>貸切料金（基本料金＋一律運賃）には障がい者割引の適用規定なし（マニュアル1-6は普通券・回数券・定期券が対象）。判断が必要な場合は運輸課へ。
+</div>
+</div>
+</div>
+
+<script>
+'use strict';
+var YEN=function(n){return n.toLocaleString('ja-JP')+'円';};
+// ─ 団体計算（原本「嵐電 団体運賃計算表」と同一ロジック） ─
+function calcGroup(p){ // {kind:'ippan'|'gakusei', ad, ch, ow:1|2}
+  var tot=p.ad+p.ch;
+  var muchin=(tot<25)?0:(tot<50)?1:(tot<100)?2:3+Math.floor((tot-100)/50);
+  var rate=(p.kind==='ippan')?(tot>299?3:tot>99?2:tot>24?1:0):(tot>299?4:tot>99?3:tot>24?2:0);
+  var adA=(p.ad-muchin>=0)?p.ad-muchin:0;
+  var chA=(p.ad-muchin>=0)?p.ch:p.ch+(p.ad-muchin);
+  var pa=(p.ow===1?250:500)*(1-rate/10);
+  var pc=(p.ow===1?120:240)*(1-rate/10);
+  var sum=Math.ceil((adA*pa+chA*pc)/10)*10;
+  var normal=Math.ceil((p.ad*(p.ow===1?250:500)+p.ch*(p.ow===1?120:240))/10)*10;
+  var save=normal-sum;
+  return {tot:tot,muchin:muchin,rate:rate,adA:adA,chA:chA,pa:pa,pc:pc,adAmt:adA*pa,chAmt:chA*pc,sum:sum,normal:normal,save:save,
+    f:'＝ 大人（'+(p.ow===1?'片道250円':'往復500円')+(rate===0?'':'→'+rate+'割引 '+YEN(pa))+'）×'+adA+'名 ＋ 小児（'+(p.ow===1?'片道120円':'往復240円')+(rate===0?'':'→'+rate+'割引 '+YEN(pc))+'）×'+chA+'名 ＝ '+YEN(sum)+'（'+(p.kind==='ippan'?'一般':'学生')+'団体・'+(rate===0?'割引なし':rate+'割引')+'・無賃'+muchin+'名）'};
+}
+// ─ 貸切計算（原本「嵐電 貸切電車計算表」と同一ロジック） ─
+function calcKashi(p){ // {ry, nn, kt:1-4, rc:0|2|3, gd, tb, on, hm, pm}
+  var base=p.ry*25000*(p.kt>=3?2:1);
+  var unit=[0,130,260,390,520][p.kt];
+  var fare=p.nn*unit;
+  var ryu=(p.rc<=1)?0:(p.rc===2?6000:12000);
+  var gd=p.gd?6000:0, tb=p.tb*3000, on=(p.on&&!p.gd)?3000:0, hm=p.hm?25000:0, pm=p.pm?35000:0;
+  var sum=base+fare+ryu+gd+tb+on+hm+pm;
+  var KTL=['','片道','往復','1.5往復','2往復'];
+  var parts=['基本料金 '+YEN(base),'運賃（'+KTL[p.kt]+' '+YEN(unit)+'）×'+p.nn+'名'];
+  if(ryu)parts.push('留置 '+YEN(ryu));
+  if(gd)parts.push('ガイド '+YEN(gd));
+  if(tb)parts.push('テーブル '+YEN(tb));
+  if(on)parts.push('音響 '+YEN(on));
+  if(hm)parts.push('ヘッドマーク '+YEN(hm));
+  if(pm)parts.push('車両指定 '+YEN(pm));
+  return {base:base,fare:fare,ryu:ryu,opt:gd+tb+on+hm+pm,sum:sum,unit:unit,
+    f:parts.join(' ＋ ')+' ＝ '+YEN(sum)};
+}
+// ─ 特別割引（第1種＝本人・介護者 各5割引・10円未満切上げ／規程2025-04-01） ─
+function calcSpecial(p){ // {ha,hc,hb,kg,ow} hb=6歳未満本人(無賃)
+  var hb=p.hb||0;
+  var t=(p.ow===1?1:2);
+  var ua=Math.ceil(250*0.5/10)*10*t, uc=Math.ceil(120*0.5/10)*10*t;
+  var hontai=p.ha+p.hc+hb;
+  var pair=Math.min(hontai,p.kg);
+  var adD=Math.min(p.ha,pair), chD=Math.min(p.hc,pair-adD), hbD=pair-adD-chD;
+  var sub=(adD+pair)*ua+chD*uc;
+  var warn=(hontai>p.kg)?'介護者が不足：割引は同伴ペア分のみ＝介護者のいないご本人は割引なし（団体側で通常運賃として自動計算済み）':(p.kg>hontai?'介護者は原則ご本人1人につき1人＝超過分の介護者は団体側で通常運賃として自動計算済み':'');
+  var f=(pair===0)?'':'障がい者運賃（別精算）＝ 大人・介護者（'+(p.ow===1?'片道250円':'往復500円')+'→5割引 '+YEN(ua)+'）×'+(adD+pair)+'名'+(chD>0?' ＋ 小児（'+(p.ow===1?'片道120円':'往復240円')+'→5割引 '+YEN(uc)+'）×'+chD+'名':'')+(hbD>0?' ＋ 6歳未満'+hbD+'名（無賃）':'')+' ＝ '+YEN(sub)+'（10円未満切上げ）';
+  return {pair:pair,adD:adD,chD:chD,hbD:hbD,ua:ua,uc:uc,sub:sub,warn:warn,f:f};
+}
+if(typeof module!=='undefined')module.exports={calcGroup:calcGroup,calcKashi:calcKashi,calcSpecial:calcSpecial};
+
+if(typeof document!=='undefined'){(function(){
+var st={mode:'g',gKind:'ippan',gOw:1,kRy:1,kKt:1,kRc:0,kOp:{gd:0,on:0,hm:0,pm:0}};
+function num(id){var v=parseInt(document.getElementById(id).value,10);return isNaN(v)||v<0?0:v;}
+function seg(id,fn){var el=document.getElementById(id);
+  el.addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
+    el.querySelectorAll('.seg').forEach(function(x){x.classList.remove('on');});
+    t.classList.add('on');fn(t.dataset.v);render();});}
+seg('gKind',function(v){st.gKind=v;});
+seg('gOw',function(v){st.gOw=+v;});
+seg('kRy',function(v){st.kRy=+v;});
+seg('kKt',function(v){st.kKt=+v;});
+seg('kRc',function(v){st.kRc=+v;});
+document.getElementById('kOp').addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
+  t.classList.toggle('on');st.kOp[t.dataset.v]=t.classList.contains('on')?1:0;render();});
+document.querySelectorAll('.numrow button').forEach(function(b){
+  b.addEventListener('click',function(){var el=document.getElementById(b.dataset.t);
+    var v=num(b.dataset.t)+(+b.dataset.d);if(v<0)v=0;
+    if(b.dataset.t==='kTb'&&v>4)v=4;
+    el.value=v;render();});});
+document.querySelectorAll('.numrow input').forEach(function(i){i.addEventListener('input',render);});
+document.getElementById('tabG').onclick=function(){st.mode='g';sw();};
+document.getElementById('tabK').onclick=function(){st.mode='k';sw();};
+function sw(){
+  document.getElementById('tabG').classList.toggle('on',st.mode==='g');
+  document.getElementById('tabK').classList.toggle('on',st.mode==='k');
+  document.getElementById('pgG').style.display=(st.mode==='g')?'':'none';
+  document.getElementById('pgK').style.display=(st.mode==='k')?'':'none';render();}
+function render(){
+  if(st.mode==='g'){
+    var ad=num('gAd'),ch=num('gCh');
+    var ha=num('gHa'),hc=num('gHc'),hb=num('gHb'),kg=num('gKg');
+    var box=document.getElementById('gRes');
+    if(ad+ch<=0){box.style.display='none';return;}
+    var ivErr=(ha+kg>ad)||(hc>ch);
+    var sp=calcSpecial({ha:ha,hc:hc,hb:hb,kg:kg,ow:st.gOw});
+    var has=(ha+hc+hb+kg)>0;
+    var effAd=Math.max(0,ad-sp.adD-sp.pair),effCh=Math.max(0,ch-sp.chD);
+    var r=calcGroup({kind:st.gKind,ad:effAd,ch:effCh,ow:st.gOw});
+    box.style.display='block';
+    var db=document.getElementById('gDisc');
+    if(r.rate>0){db.className='disc on';db.textContent='✓ 団体割引 適用（'+(st.gKind==='ippan'?'一般':'学生')+'・'+r.rate+'割引・無賃'+r.muchin+'名）＝通常運賃より ▲'+YEN(r.save);}
+    else{db.className='disc off';db.textContent='割引なし（25名未満＝通常運賃で計算）';}
+    var utiwake=r.tot+'名（大人'+effAd+'・小児'+effCh+'）';
+    document.getElementById('gTot').textContent=has?('総数'+(ad+ch)+'名 − 同伴ペア'+(sp.adD+sp.chD+sp.pair)+'名 ＝ '+utiwake):utiwake;
+    document.getElementById('gMuchin').textContent=r.muchin+'名（大人から充当）';
+    document.getElementById('gSumL').textContent=has?'小計（大人・小児）':'運賃 合計';
+    document.getElementById('gRate').textContent=(r.rate===0?'適用なし':r.rate+'割引');
+    document.getElementById('gAdA').textContent=r.adA+'名×'+YEN(r.pa)+'＝'+YEN(r.adAmt);
+    document.getElementById('gChA').textContent=r.chA+'名×'+YEN(r.pc)+'＝'+YEN(r.chAmt);
+    document.getElementById('gSum').textContent=YEN(r.sum);
+    document.getElementById('gSpRow').style.display=has?'':'none';
+    document.getElementById('gTtRow').style.display=has?'':'none';
+    document.getElementById('gSp').textContent=(sp.pair>0?('大人・介護者'+(sp.adD+sp.pair)+'名×'+YEN(sp.ua)+(sp.chD>0?' ＋ 小児'+sp.chD+'名×'+YEN(sp.uc):'')+'＝'):'')+YEN(sp.sub);
+    document.getElementById('gTt').textContent=YEN(r.sum+sp.sub);
+    var m1=(r.tot>1499)?'1,500名以上＝手計算で行うこと':'';
+    var m0=ivErr?'内訳エラー：障がい者・介護者の人数が大人/小児の総数を超えています　':'';
+    var m2=has?'※同伴ペア分だけを総数から除いて5割引で別計算し合算しています（割引は介護者同伴が条件・単独は割引なし）':'';
+    document.getElementById('gMsg').innerHTML=[m0,m1,has?sp.warn:''].filter(Boolean).join('　')+(m2?'<div style="color:#1565c0;font-weight:600;font-size:12px;margin-top:2px;">'+m2+'</div>':'');
+    var base=(st.gOw===1);
+    var terms=[];
+    if(r.adA>0)terms.push('大人（'+(base?'片道250円':'往復500円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pa))+'）×'+r.adA+'名＝'+YEN(r.adAmt));
+    if(r.chA>0)terms.push('小児（'+(base?'片道120円':'往復240円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pc))+'）×'+r.chA+'名＝'+YEN(r.chAmt));
+    if(sp.pair>0){terms.push('障がい者・介護者（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+(sp.adD+sp.pair)+'名＝'+YEN((sp.adD+sp.pair)*sp.ua));
+      if(sp.chD>0)terms.push('障がい者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
+      if(sp.hbD>0)terms.push('6歳未満'+sp.hbD+'名（無賃）');}
+    var uni=terms.join(' ＋ ');
+    var uniTotal='＝ '+YEN(r.sum+sp.sub)+'（'+(r.rate===0?'25名未満＝通常運賃':(st.gKind==='ippan'?'一般':'学生')+'団体・'+r.rate+'割引・無賃'+r.muchin+'名')+(sp.pair>0?'・障がい者5割引':'')+'）';
+    document.getElementById('gF').textContent=uni;
+    var f2=document.getElementById('gF2');f2.style.display='';f2.textContent=uniTotal;
+    var rawA=r.adAmt, rawC=r.chAmt, T=r.sum, adj=T-rawA-rawC;
+    var cUp=Math.ceil(rawC/10)*10, cDn=Math.floor(rawC/10)*10;
+    var g1=document.getElementById('gR1'),g2=document.getElementById('gR2'),g3=document.getElementById('gR3'),g4=document.getElementById('gR4');
+    g1.textContent='一括（1枚）＝ お支払い総額 '+YEN(T+sp.sub)+(sp.sub>0?'（障がい者分含む）':'');
+    g2.style.cssText=g3.style.cssText=g4.style.cssText='font-size:14px;';
+    var spR=sp.sub>0?' と 障がい者分 '+YEN(sp.sub):'';
+    var spT=sp.sub>0?' ＝ 総額 '+YEN(T+sp.sub):' ＝ '+YEN(T);
+    if(r.adA===0||r.chA===0){
+      g2.style.cssText='font-size:12px;color:#b0bec5;font-weight:600;';
+      g2.textContent='大人・小児で分ける場合＝ '+(r.chA===0?'小児':'大人')+'のお客様がいないため該当なし';
+      g3.textContent='';g4.textContent='';
+    }else if(adj===0&&rawC===cDn){
+      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' と 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
+      g3.textContent='';g4.textContent='';
+    }else{
+      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（そのまま＋調整額'+adj+'円） と 小児 '+YEN(rawC)+'（そのまま）'+spR+spT;
+      g3.textContent='方式② 大人 '+YEN(T-cUp)+'（切捨て側） と 小児 '+YEN(cUp)+'（切上げ）'+spR+spT;
+      g4.textContent='方式③ 大人 '+YEN(T-cDn)+'（切上げ側） と 小児 '+YEN(cDn)+'（切捨て）'+spR+spT;
+    }
+    var g5=document.getElementById('gR5');
+    if(sp.sub>0&&r.adA>0&&r.chA>0){
+      var subA=(sp.adD+sp.pair)*sp.ua, subC=sp.chD*sp.uc;
+      g5.innerHTML='障がい者分 '+YEN(sp.sub)+' の分け方（上のどの方式とも組合せ可・お客様の指定）：'
+        +'<br>・(a) 別領収書 ＝ 障がい者分 '+YEN(sp.sub)+' を別に1枚'
+        +'<br>・(b) 大人の領収書へ合算 ＝ 大人側に ＋'+YEN(sp.sub)
+        +'<br>・(c) 小児の領収書へ合算 ＝ 小児側に ＋'+YEN(sp.sub)
+        +(subC>0?'<br>・(d) 内訳どおり振り分け ＝ 大人の障がい者・介護者分 ＋'+YEN(subA)+' は大人へ ／ 小児の障がい者分 ＋'+YEN(subC)+' は小児へ':'');
+    }else{g5.innerHTML='';}
+  }else{
+    var nn=num('kNn'),tb=num('kTb');
+    var box2=document.getElementById('kRes');
+    if(nn<=0){box2.style.display='none';return;}
+    var r2=calcKashi({ry:st.kRy,nn:nn,kt:st.kKt,rc:st.kRc,gd:st.kOp.gd,tb:tb,on:st.kOp.on,hm:st.kOp.hm,pm:st.kOp.pm});
+    box2.style.display='block';
+    document.getElementById('kBase').textContent=YEN(r2.base);
+    document.getElementById('kFare').textContent=YEN(r2.unit)+'×'+nn+'名＝'+YEN(r2.fare);
+    document.getElementById('kRyu').textContent=YEN(r2.ryu);
+    document.getElementById('kOpt').textContent=YEN(r2.opt);
+    document.getElementById('kSum').textContent=YEN(r2.sum);
+    document.getElementById('kMsg').textContent=(st.kOp.on&&st.kOp.gd)?'※音響はガイド電車に含まれるため加算していません':'';
+    document.getElementById('kF').textContent=r2.f;
+  }
+}
+render();
+})();}
+</script>
+</body>
+</html>

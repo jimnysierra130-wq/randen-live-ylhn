@@ -292,14 +292,21 @@ function render(){
     var m2=has?'※同伴ペア分だけを総数から除いて5割引で別計算し合算しています（割引は介護者同伴が条件・単独は割引なし）':'';
     document.getElementById('gMsg').innerHTML=[m0,m1,has?sp.warn:''].filter(Boolean).join('　')+(m2?'<div style="color:#1565c0;font-weight:600;font-size:12px;margin-top:2px;">'+m2+'</div>':'');
     var base=(st.gOw===1);
-    var terms=[];
-    if(r.adA>0)terms.push('大人（'+(base?'片道250円':'往復500円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pa))+'）×'+r.adA+'名＝'+YEN(r.adAmt));
-    if(r.chA>0)terms.push('小児（'+(base?'片道120円':'往復240円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pc))+'）×'+r.chA+'名＝'+YEN(r.chAmt));
-    if(adj>0)terms.push('調整額（10円未満切上げ）＝ ＋'+YEN(adj));
-    if(sp.pair>0){terms.push('障がい者・介護者（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+(sp.adD+sp.pair)+'名＝'+YEN((sp.adD+sp.pair)*sp.ua));
-      if(sp.chD>0)terms.push('障がい者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
-      if(sp.hbD>0)terms.push('6歳未満'+sp.hbD+'名（無賃）');}
-    var uni=terms.join(' ＋ ');
+    var gt=[];
+    if(r.adA>0)gt.push('大人（'+(base?'片道250円':'往復500円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pa))+'）×'+r.adA+'名＝'+YEN(r.adAmt));
+    if(r.chA>0)gt.push('小児（'+(base?'片道120円':'往復240円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pc))+'）×'+r.chA+'名＝'+YEN(r.chAmt));
+    var groupLine=gt.join(' ＋ ');
+    if(adj>0){
+      if(gt.length>1)groupLine+=' ＝ 小計 '+YEN(rawA+rawC);
+      groupLine+=' ＋ 調整額（10円未満切上げ）'+YEN(adj)+' ＝ 運賃合計 '+YEN(r.sum);
+    }else{
+      groupLine+=' ＝ 運賃合計 '+YEN(r.sum)+'（端数なし）';
+    }
+    var spterms=[];
+    if(sp.pair>0){spterms.push('障がい者・介護者（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+(sp.adD+sp.pair)+'名＝'+YEN((sp.adD+sp.pair)*sp.ua));
+      if(sp.chD>0)spterms.push('障がい者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
+      if(sp.hbD>0)spterms.push('6歳未満'+sp.hbD+'名（無賃）');}
+    var uni=groupLine+(spterms.length?' ＋ '+spterms.join(' ＋ '):'');
     var uniTotal='＝ '+YEN(r.sum+sp.sub)+'（'+(r.rate===0?'25名未満＝通常運賃':(st.gKind==='ippan'?'一般':'学生')+'団体・'+r.rate+'割引・無賃'+r.muchin+'名')+(sp.pair>0?'・障がい者5割引':'')+'）';
     document.getElementById('gF').textContent=uni;
     var f2=document.getElementById('gF2');f2.style.display='';f2.textContent=uniTotal;

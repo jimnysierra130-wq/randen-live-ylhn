@@ -314,12 +314,12 @@ function render(){
       g2.textContent='大人・小児で分ける場合＝ '+(r.chA===0?'小児':'大人')+'のお客様がいないため該当なし';
       g3.textContent='';g4.textContent='';
     }else if(adj===0&&rawC===cDn){
-      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' と 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
+      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' ／ 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
       g3.textContent='';g4.textContent='';
     }else{
-      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（そのまま＋調整額'+adj+'円） と 小児 '+YEN(rawC)+'（そのまま）'+spR+spT;
-      g3.textContent='方式② 大人 '+YEN(T-cUp)+'（切捨て側） と 小児 '+YEN(cUp)+'（切上げ）'+spR+spT;
-      g4.textContent='方式③ 大人 '+YEN(T-cDn)+'（切上げ側） と 小児 '+YEN(cDn)+'（切捨て）'+spR+spT;
+      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（＋調整額'+adj+'円） ／ 小児 '+YEN(rawC)+spR+spT;
+      g3.textContent='方式② 大人 '+YEN(T-cUp)+'（切捨側） ／ 小児 '+YEN(cUp)+'（切上）'+spR+spT;
+      g4.textContent='方式③ 大人 '+YEN(T-cDn)+'（切上側） ／ 小児 '+YEN(cDn)+'（切捨）'+spR+spT;
     }
     var g5=document.getElementById('gR5');
     if(sp.sub>0&&r.adA>0&&r.chA>0){

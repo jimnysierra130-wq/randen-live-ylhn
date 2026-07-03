@@ -317,7 +317,7 @@ function render(){
       g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' ／ 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
       g3.textContent='';g4.textContent='';
     }else{
-      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（＋調整額'+adj+'円） ／ 小児 '+YEN(rawC)+spR+spT;
+      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円含む） ／ 小児 '+YEN(rawC)+'（調整額なし）'+spR+spT;
       g3.textContent='方式② 大人 '+YEN(T-cUp)+'（切捨側） ／ 小児 '+YEN(cUp)+'（切上）'+spR+spT;
       g4.textContent='方式③ 大人 '+YEN(T-cDn)+'（切上側） ／ 小児 '+YEN(cDn)+'（切捨）'+spR+spT;
     }

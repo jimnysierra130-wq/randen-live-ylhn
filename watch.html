@@ -43,6 +43,10 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .mlad.h .mdot{background:var(--hon);}.mlad.k .mdot{background:var(--kita);}
 .mlbl{font-size:17px;color:#c8ced4;font-weight:600;}
 .mtr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border-radius:10px;padding:8px 9px;margin:4px 0 4px 18px;}
+.mtr .mdir{font-size:21px;font-weight:900;line-height:1;min-width:0.85em;text-align:center;}
+.mtr .mdir.h{color:var(--hon);}.mtr .mdir.k{color:var(--kita);}
+.mtr .mdir.st{font-size:15px;font-weight:900;color:#ffd60a;}
+.mtr .mkbh{font-size:13px;font-weight:800;background:#3a2f1a;color:#ffcf70;border-radius:6px;padding:2px 7px;}
 .mtr .msys{font-size:19px;font-weight:900;border-radius:7px;padding:3px 9px;}
 .mtr .msys.h{background:rgba(10,132,255,.18);color:var(--hon);}
 .mtr .msys.k{background:rgba(255,159,10,.18);color:var(--kita);}
@@ -108,8 +112,8 @@ function sysPos(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs||!rt.l
   for(var k=0;k<legs.length;k++){var o=tmMin(legs[k].ot),e=tmMin(legs[k].dt);if(o!=null&&e!=null&&nm>=o&&nm<=e)return {st:'run',line:(legs[k].line==='北野線'?'北野':'本線'),text:legs[k].o+'→'+legs[k].d};}
   for(var k2=0;k2<legs.length;k2++){var o2=tmMin(legs[k2].ot);if(o2!=null&&nm<o2){var loc=(k2>=1)?legs[k2-1].d:legs[0].o,ln=(legs[k2].line==='北野線'?'北野':'本線');
     var rest=null;for(var ri=0;ri<rests.length;ri++){if(rests[ri].after===(k2-1)){rest=rests[ri];break;}}
-    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':'')};}
-    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o};}}
+    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:'')};}
+    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:'')};}}
   return {st:'off',line:line,text:'運行終了'};
 }
 function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
@@ -177,19 +181,23 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
   return null;}
 function renderMap(){
   var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();
+  var honN=ord.hon.map(function(k){return NAME[k];}),kitN=ord.kit.map(function(k){return NAME[k];});
   var honB={},kitB={},any=false;
   for(var s in du){if(!du.hasOwnProperty(s)||!isReal(du[s]))continue;
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,sub;
-    if(seg){hn=(seg.line==='北野');anchor=seg.at||seg.from;sub=seg.at?(seg.at+' 停車中'):(seg.from+'→'+seg.to+' 走行中');}
-    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;sub=(p.st==='rest')?(anchor+' 休憩中'):(anchor+' 停車中'+(p.next?'／次 '+p.next+' '+p.nfrom+'発':''));}
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,sub='',kb='';
+    if(seg){hn=(seg.line==='北野');kb=seg.kb||'';if(seg.type&&seg.type!=='営業')sub=seg.type;var nms=hn?kitN:honN;
+      if(seg.at){anchor=seg.at;ind='停';}
+      else{anchor=seg.from;var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';}}
+    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';}
     else continue;
     any=true;
-    var chip={sys:s,car:c,name:du[s],hn:hn,sub:sub};
+    var chip={sys:s,car:c,name:du[s],hn:hn,ind:ind,sub:sub,kb:kb};
     var bk=hn?kitB:honB;(bk[anchor]=bk[anchor]||[]).push(chip);}
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
-  function chipHtml(t){return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span>'
-    +'<span class="mnm">'+t.name+'</span>'+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<div class="msub">'+t.sub+'</div></div>';}
+  function chipHtml(t){var ic=(t.ind==='▲'||t.ind==='▼')?(t.hn?'k':'h'):'st';
+    return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="mdir '+ic+'">'+t.ind+'</span><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span>'
+    +'<span class="mnm">'+t.name+'</span>'+(t.kb?'<span class="mkbh">後部'+t.kb+'</span>':'')+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+(t.sub?'<div class="msub">'+t.sub+'</div>':'')+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>';
       var b=bk[nmS];if(b)for(var j=0;j<b.length;j++)h+=chipHtml(b[j]);}

@@ -51,8 +51,10 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .mtr .msys.h{background:rgba(10,132,255,.18);color:var(--hon);}
 .mtr .msys.k{background:rgba(255,159,10,.18);color:var(--kita);}
 .mtr .mnm{font-size:18px;font-weight:800;color:#fff;}
-.mtr .mcar{font-size:16px;font-weight:800;background:#1f2937;color:#dbeafe;border-radius:6px;padding:2px 8px;font-variant-numeric:tabular-nums;}
-.mtr .mcar.split{background:#0f2a1e;color:#bff5da;}
+.mtr .mcar{font-size:16px;font-weight:800;background:#7c3aed;color:#fff;border-radius:8px;padding:2px 8px;font-variant-numeric:tabular-nums;}
+.mtr .mcar.split{background:#6d28d9;color:#fff;}
+.mtr .mtag{font-size:13px;color:#9aa4ac;font-weight:700;}
+.mtr .mbin{flex-basis:100%;font-size:13px;color:#c8ced4;font-weight:700;}
 .mtr .msub{flex-basis:100%;font-size:14px;color:#aab2ba;}
 .ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:8px 8px 24px;}
 html.ovopen,body.ovopen{overflow:hidden;}
@@ -182,22 +184,26 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
 function renderMap(){
   var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();
   var honN=ord.hon.map(function(k){return NAME[k];}),kitN=ord.kit.map(function(k){return NAME[k];});
-  var honB={},kitB={},any=false;
+  var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s)||!isReal(du[s]))continue;
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,sub='',kb='';
-    if(seg){hn=(seg.line==='北野');kb=seg.kb||'';if(seg.type&&seg.type!=='営業')sub=seg.type;var nms=hn?kitN:honN;
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='';
+    if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';}
       else{anchor=seg.from;var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';}}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';}
     else continue;
-    any=true;
-    var chip={sys:s,car:c,name:du[s],hn:hn,ind:ind,sub:sub,kb:kb};
-    var bk=hn?kitB:honB;(bk[anchor]=bk[anchor]||[]).push(chip);}
+    var r={sys:s,car:c,name:du[s],hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null};
+    recs.push(r);bySys[s]=r;}
+  var merged={},_i;
+  for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
+  for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
+  for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var ic=(t.ind==='▲'||t.ind==='▼')?(t.hn?'k':'h'):'st';
-    return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="mdir '+ic+'">'+t.ind+'</span><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span>'
-    +'<span class="mnm">'+t.name+'</span>'+(t.kb?'<span class="mkbh">後部'+t.kb+'</span>':'')+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+(t.sub?'<div class="msub">'+t.sub+'</div>':'')+'</div>';}
+    var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag">('+t.typ+')</span>':'';
+    var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
+    return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="mdir '+ic+'">'+t.ind+'</span>'+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>';
       var b=bk[nmS];if(b)for(var j=0;j<b.length;j++)h+=chipHtml(b[j]);}

@@ -175,6 +175,7 @@ function closeOv(id){document.getElementById(id).style.display='none';}
 
 function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){var hon='',kita='';
   for(var i=0;i<ORDER.length;i++){var k=ORDER[i][0],ln=ORDER[i][1];var btn='<button onclick="pickSta(\''+k+'\')">'+NAME[k]+'</button>';if(ln===0)hon+=btn;else kita+=btn;}
+  if(NAME['katabira'])kita+='<button onclick="pickSta(\'katabira\')">'+NAME['katabira']+'</button>';
   b.innerHTML='<div class="pcols"><div class="pcol hon"><h3>本線</h3>'+hon+'</div><div class="pcol kita"><h3>北野線</h3>'+kita+'</div></div>';}
   document.getElementById('pick').style.display='block';}
 function pickSta(k){curSta=k;saveSta(k);needScroll=true;try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';render();}

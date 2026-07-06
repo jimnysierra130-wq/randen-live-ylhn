@@ -23,6 +23,8 @@ body{padding:4px 6px 18px;font-size:15px;line-height:1.25;}
 .rmid{flex:1 1 auto;min-width:0;}
 .rd{font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rs{font-size:13px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drow .rd{font-size:13px;font-weight:600;}
+.drow .rs{font-size:17px;font-weight:700;color:var(--fg);margin-top:2px;}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 .bH{background:var(--hon);}.bK{background:var(--kita);}
 .car{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;background:#1f2937;color:#dbeafe;border-radius:7px;padding:3px 7px;white-space:nowrap;}
@@ -106,7 +108,7 @@ function renderDep(){
   if(!past.length&&!up.length)return '<div class="empty">本日の発車データがありません</div>';
   var h='',rows=past.concat(up);
   for(var i=0;i<rows.length;i++){var r=rows[i],hn=(r.line==='北野線'),pst=(i<past.length),nd=(i===past.length&&up.length>0);
-    h+='<div class="row'+(pst?' past':'')+'"'+(nd?' id="nd"':'')+' onclick="popSys(\''+r.sys+'\')"><div class="rt" style="color:'+(hn?'#ff9f0a':'#0a84ff')+';">'+hm(r.t)+'</div>'
+    h+='<div class="row drow'+(pst?' past':'')+'"'+(nd?' id="nd"':'')+' onclick="popSys(\''+r.sys+'\')"><div class="rt" style="color:'+(hn?'#ff9f0a':'#0a84ff')+';">'+hm(r.t)+'</div>'
       +'<div class="rmid"><div class="rd"><span class="dot '+(hn?'bK':'bH')+'"></span>'+r.dest+' ゆき</div>'
       +'<div class="rs">'+r.sys+'系統 '+r.name+'・'+r.dir+'</div></div>'+carHtml(r.tr)+'</div>';}
   if(!up.length)h+='<div class="empty">以降の発車はありません</div>';

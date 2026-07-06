@@ -113,7 +113,7 @@ function renderSys(){
   arr.sort(function(a,b){return parseInt(a,10)-parseInt(b,10);});
   if(!arr.length)return '<div class="empty">本日の運用データがありません</div>';
   var h='';
-  for(var i=0;i<arr.length;i++){var s=arr[i],nmv=du[s],p=sysPos(s,d,nm),tr=sysTr(s,d,nm);
+  for(var i=0;i<arr.length;i++){var s=arr[i],nmv=du[s],p=sysPos(s,d,nm),tr=(p&&(p.st==='run'||p.st==='stop'))?sysTr(s,d,nm):null;
     var hn=(p&&p.line==='北野');
     var loc=p?(p.text+(p.st==='stop'?' で停車中':'')):'';
     var run=(p&&p.st==='run');
@@ -123,7 +123,7 @@ function renderSys(){
   return h;
 }
 function popSys(sys){
-  var d=dia(),du=duty(),nm=_opMin(),nmv=du[sys]||'',p=sysPos(sys,d,nm),tr=sysTr(sys,d,nm),rt=ROUTE[d]&&ROUTE[d][sys];
+  var d=dia(),du=duty(),nm=_opMin(),nmv=du[sys]||'',p=sysPos(sys,d,nm),tr=(p&&(p.st==='run'||p.st==='stop'))?sysTr(sys,d,nm):null,rt=ROUTE[d]&&ROUTE[d][sys];
   var hn=(p&&p.line==='北野');
   var loc=p?(p.text+(p.st==='run'?' 走行中':p.st==='stop'?' 停車中':p.st==='before'?' 出勤前':' 運行終了')):'';
   var h='<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">'

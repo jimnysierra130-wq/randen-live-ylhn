@@ -50,7 +50,8 @@ body{padding:4px 6px 18px;font-size:15px;line-height:1.25;}
 .mtr .mcar{font-size:13px;font-weight:800;background:#1f2937;color:#dbeafe;border-radius:6px;padding:2px 6px;font-variant-numeric:tabular-nums;}
 .mtr .mcar.split{background:#0f2a1e;color:#bff5da;}
 .mtr .msub{flex-basis:100%;font-size:11px;color:var(--sub);}
-.ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;padding:8px 8px 24px;}
+.ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:8px 8px 24px;}
+html.ovopen,body.ovopen{overflow:hidden;}
 .ovtop{position:sticky;top:0;background:rgba(0,0,0,.97);padding:2px 0 8px;}
 .ovx{font-size:14px;font-weight:800;padding:9px 12px;border:0;border-radius:9px;background:#222;color:#fff;width:100%;}
 #pick h3{font-size:13px;margin:2px 2px 6px;font-weight:800;text-align:center;}
@@ -166,7 +167,7 @@ function popSys(sys){
         +'<div class="dx">'+lg.o+' → '+lg.d+tag+'</div>'+carHtml(lg.tr)+'</div>';}
   } else { h+='<div class="empty">行路データなし</div>'; }
   document.getElementById('detailbody').innerHTML=h;
-  document.getElementById('detail').style.display='block';
+  document.documentElement.classList.add('ovopen');var dv=document.getElementById('detail');dv.style.display='block';dv.scrollTop=0;
 }
 function _lineOrder(){var hon=[],kit=[];for(var i=0;i<ORDER.length;i++){if(ORDER[i][1]===0)hon.push(ORDER[i][0]);else kit.push(ORDER[i][0]);}kit.reverse();kit.unshift('katabira');return {hon:hon,kit:kit};}
 function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
@@ -196,7 +197,9 @@ function renderMap(){
     return h+'</div>';}
   return ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
 }
+function ovOpen(){return document.getElementById('pick').style.display==='block'||document.getElementById('detail').style.display==='block';}
 function render(){
+  if(ovOpen())return;
   document.getElementById('sta').textContent=NAME[curSta]||curSta;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes());
   var ds=today(),dw=(DOW_BY[ds]||''),dd=parseInt(ds.slice(5,7),10)+'/'+parseInt(ds.slice(8,10),10);
@@ -215,14 +218,14 @@ function render(){
   needScroll=false;
 }
 function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
-function closeOv(id){document.getElementById(id).style.display='none';}
+function closeOv(id){document.getElementById(id).style.display='none';document.documentElement.classList.remove('ovopen');render();}
 
 function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){var hon='',kita='';
   for(var i=0;i<ORDER.length;i++){var k=ORDER[i][0],ln=ORDER[i][1];var btn='<button onclick="pickSta(\''+k+'\')">'+NAME[k]+'</button>';if(ln===0)hon+=btn;else kita+=btn;}
   if(NAME['katabira'])kita+='<button onclick="pickSta(\'katabira\')">'+NAME['katabira']+'</button>';
   b.innerHTML='<div class="pcols"><div class="pcol hon"><h3>本線</h3>'+hon+'</div><div class="pcol kita"><h3>北野線</h3>'+kita+'</div></div>';}
-  document.getElementById('pick').style.display='block';}
-function pickSta(k){curSta=k;saveSta(k);needScroll=true;try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';render();}
+  document.documentElement.classList.add('ovopen');var pk=document.getElementById('pick');pk.style.display='block';pk.scrollTop=0;}
+function pickSta(k){curSta=k;saveSta(k);needScroll=true;try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';document.documentElement.classList.remove('ovopen');render();}
 
 function nearest(la,lo){var best=null,bd=1e18;for(var k in GEO){if(!GEO.hasOwnProperty(k))continue;var g=GEO[k];
   var dx=(la-g[0])*111132,dy=(lo-g[1])*111320*Math.cos(la*Math.PI/180),d=Math.sqrt(dx*dx+dy*dy);

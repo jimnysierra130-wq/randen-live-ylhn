@@ -205,8 +205,9 @@ function renderMap(){
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
     return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="mdir '+ic+'">'+t.ind+'</span>'+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
-    for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>';
-      var b=bk[nmS];if(b)for(var j=0;j<b.length;j++)h+=chipHtml(b[j]);}
+    for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],ab='',bl='';
+      for(var j=0;j<b.length;j++){var _sp=(b[j].ind==='停'||b[j].ind==='休');if(i===0&&_sp)ab+=chipHtml(b[j]);else bl+=chipHtml(b[j]);}
+      h+=ab+'<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>'+bl;}
     return h+'</div>';}
   return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
 }

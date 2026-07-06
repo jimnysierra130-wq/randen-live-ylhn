@@ -160,12 +160,12 @@ function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){v
   for(var i=0;i<ORDER.length;i++){var k=ORDER[i][0],ln=ORDER[i][1];var btn='<button onclick="pickSta(\''+k+'\')">'+NAME[k]+'</button>';if(ln===0)hon+=btn;else kita+=btn;}
   b.innerHTML='<h3>■ 本線</h3><div class="pg">'+hon+'</div><h3>■ 北野線</h3><div class="pg">'+kita+'</div>';}
   document.getElementById('pick').style.display='block';}
-function pickSta(k){curSta=k;saveSta(k);try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';render();}
+function pickSta(k){curSta=k;saveSta(k);needScroll=true;try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';render();}
 
 function nearest(la,lo){var best=null,bd=1e18;for(var k in GEO){if(!GEO.hasOwnProperty(k))continue;var g=GEO[k];
   var dx=(la-g[0])*111132,dy=(lo-g[1])*111320*Math.cos(la*Math.PI/180),d=Math.sqrt(dx*dx+dy*dy);
   var cap=(k==='satsueijo')?70:1e18;if(d>cap)continue;if(d<bd){bd=d;best=k;}}return {k:best,d:bd};}
-function doGeo(hide){
+function doGeo(hide){needScroll=true;
   if(!navigator.geolocation||location.protocol==='file:'){if(hide)document.getElementById('pick').style.display='none';render();return;}
   navigator.geolocation.getCurrentPosition(function(p){var r=nearest(p.coords.latitude,p.coords.longitude);
     if(r.k&&r.d<=900){curSta=r.k;saveSta(r.k);}if(hide)document.getElementById('pick').style.display='none';render();},

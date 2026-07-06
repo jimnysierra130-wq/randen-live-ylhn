@@ -180,9 +180,11 @@ function renderMap(){
   var honB={},kitB={},any=false;
   for(var s in du){if(!du.hasOwnProperty(s)||!isReal(du[s]))continue;
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec);if(!seg)continue;any=true;
-    var tr=sysTr(s,d,nm),c=car(tr),hn=(seg.line==='北野');
-    var anchor=seg.at||seg.from,sub=seg.at?(seg.at+' 停車中'):(seg.from+'→'+seg.to+' 走行中');
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,sub;
+    if(seg){hn=(seg.line==='北野');anchor=seg.at||seg.from;sub=seg.at?(seg.at+' 停車中'):(seg.from+'→'+seg.to+' 走行中');}
+    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;sub=(p.st==='rest')?(anchor+' 休憩中'):(anchor+' 停車中'+(p.next?'／次 '+p.next+' '+p.nfrom+'発':''));}
+    else continue;
+    any=true;
     var chip={sys:s,car:c,name:du[s],hn:hn,sub:sub};
     var bk=hn?kitB:honB;(bk[anchor]=bk[anchor]||[]).push(chip);}
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';

@@ -166,14 +166,14 @@ function popSys(sys){
   document.getElementById('detailbody').innerHTML=h;
   document.documentElement.classList.add('ovopen');var dv=document.getElementById('detail');dv.style.display='block';dv.scrollTop=0;
 }
-function _lineOrder(){var hon=[],kit=[];for(var i=0;i<ORDER.length;i++){if(ORDER[i][1]===0)hon.push(ORDER[i][0]);else kit.push(ORDER[i][0]);}kit.reverse();kit.unshift('katabira');return {hon:hon,kit:kit};}
+function _lineOrder(){var hon=[],kit=[];for(var i=0;i<ORDER.length;i++){if(ORDER[i][1]===0)hon.push(ORDER[i][0]);else kit.push(ORDER[i][0]);}kit.push('katabira');return {hon:hon,kit:kit};}
 function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
   for(var k=0;k<legs.length;k++){var lg=legs[k];if(!lg.sp||lg.sp.length<1)continue;if(lg.os==null||sec<lg.os||sec>lg.es)continue;
     var sp=lg.sp,ln=(lg.line==='北野線'?'北野':'本線');
     for(var j=0;j<sp.length;j++){var a=sp[j][1],dp=sp[j][2];
-      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {line:ln,at:sp[j][0],dir:lg.dir};
-      if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir};}}
-    return {line:ln,from:lg.o,to:lg.d,dir:lg.dir};}
+      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:'')};
+      if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:'')};}}
+    return {line:ln,from:lg.o,to:lg.d,dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:'')};}
   return null;}
 function renderMap(){
   var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();

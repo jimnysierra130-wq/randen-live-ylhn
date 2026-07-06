@@ -194,7 +194,7 @@ function renderMap(){
     return h+'</div>';}
   return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
 }
-function ovOpen(){return document.getElementById('pick').style.display==='block'||document.getElementById('detail').style.display==='block';}
+function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='block');}
 function render(){
   if(ovOpen())return;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes());

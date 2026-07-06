@@ -34,6 +34,22 @@ body{padding:4px 6px 18px;font-size:15px;line-height:1.25;}
 .pos{font-size:13px;color:var(--sub);margin-top:2px;}
 .run{color:#30d158;font-weight:700;}
 .empty{color:var(--sub);text-align:center;padding:22px 8px;font-size:14px;}
+.mtitle{font-size:13px;font-weight:800;margin:8px 2px 4px;}
+.mtitle.h{color:var(--hon);}.mtitle.k{color:var(--kita);}
+.mlad{border-left:3px solid #333;margin:0 0 10px 10px;}
+.mlad.h{border-left-color:var(--hon);}.mlad.k{border-left-color:var(--kita);}
+.mstn{display:flex;align-items:center;gap:6px;margin-left:-8px;padding:2px 0;}
+.mdot{width:9px;height:9px;border-radius:50%;background:#555;flex:0 0 auto;}
+.mlad.h .mdot{background:var(--hon);}.mlad.k .mdot{background:var(--kita);}
+.mlbl{font-size:12px;color:var(--sub);}
+.mtr{display:flex;flex-wrap:wrap;align-items:center;gap:5px;background:var(--card);border-radius:9px;padding:6px 8px;margin:3px 0 3px 16px;}
+.mtr .msys{font-size:15px;font-weight:900;border-radius:6px;padding:2px 7px;}
+.mtr .msys.h{background:rgba(10,132,255,.18);color:var(--hon);}
+.mtr .msys.k{background:rgba(255,159,10,.18);color:var(--kita);}
+.mtr .mnm{font-size:14px;font-weight:800;color:#fff;}
+.mtr .mcar{font-size:13px;font-weight:800;background:#1f2937;color:#dbeafe;border-radius:6px;padding:2px 6px;font-variant-numeric:tabular-nums;}
+.mtr .mcar.split{background:#0f2a1e;color:#bff5da;}
+.mtr .msub{flex-basis:100%;font-size:11px;color:var(--sub);}
 .ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;padding:8px 8px 24px;}
 .ovtop{position:sticky;top:0;background:rgba(0,0,0,.97);padding:2px 0 8px;}
 .ovx{font-size:14px;font-weight:800;padding:9px 12px;border:0;border-radius:9px;background:#222;color:#fff;width:100%;}
@@ -53,7 +69,7 @@ body{padding:4px 6px 18px;font-size:15px;line-height:1.25;}
 <div id="clk"></div>
 <button id="stabtn" onclick="openPick()"><span class="ic">🚉</span><span id="sta">—</span><span class="chg">駅を変更 ▾</span></button>
 <div id="dch"></div>
-<div id="tabs"><button id="tD" class="on" onclick="setTab('dep')">発車</button><button id="tS" onclick="setTab('sys')">系統</button></div>
+<div id="tabs"><button id="tD" class="on" onclick="setTab('dep')">発車</button><button id="tS" onclick="setTab('sys')">系統</button><button id="tM" onclick="setTab('map')">地図</button></div>
 <div id="body"></div>
 <div id="ft"></div>
 <div id="pick" class="ov"><div class="ovtop"><button class="ovx" onclick="closeOv('pick')">✕ 閉じる</button></div><div id="pickbody"></div></div>
@@ -152,6 +168,34 @@ function popSys(sys){
   document.getElementById('detailbody').innerHTML=h;
   document.getElementById('detail').style.display='block';
 }
+function _lineOrder(){var hon=[],kit=[];for(var i=0;i<ORDER.length;i++){if(ORDER[i][1]===0)hon.push(ORDER[i][0]);else kit.push(ORDER[i][0]);}kit.reverse();kit.unshift('katabira');return {hon:hon,kit:kit};}
+function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
+  for(var k=0;k<legs.length;k++){var lg=legs[k];if(!lg.sp||lg.sp.length<1)continue;if(lg.os==null||sec<lg.os||sec>lg.es)continue;
+    var sp=lg.sp,ln=(lg.line==='北野線'?'北野':'本線');
+    for(var j=0;j<sp.length;j++){var a=sp[j][1],dp=sp[j][2];
+      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {line:ln,at:sp[j][0],dir:lg.dir};
+      if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir};}}
+    return {line:ln,from:lg.o,to:lg.d,dir:lg.dir};}
+  return null;}
+function renderMap(){
+  var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();
+  var honB={},kitB={},any=false;
+  for(var s in du){if(!du.hasOwnProperty(s)||!isReal(du[s]))continue;
+    var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
+    var seg=trainSeg(s,d,sec);if(!seg)continue;any=true;
+    var tr=sysTr(s,d,nm),c=car(tr),hn=(seg.line==='北野');
+    var anchor=seg.at||seg.from,sub=seg.at?(seg.at+' 停車中'):(seg.from+'→'+seg.to+' 走行中');
+    var chip={sys:s,car:c,name:du[s],hn:hn,sub:sub};
+    var bk=hn?kitB:honB;(bk[anchor]=bk[anchor]||[]).push(chip);}
+  if(!any)return '<div class="empty">現在運行中の電車はありません</div>';
+  function chipHtml(t){return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span>'
+    +'<span class="mnm">'+t.name+'</span>'+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<div class="msub">'+t.sub+'</div></div>';}
+  function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
+    for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>';
+      var b=bk[nmS];if(b)for(var j=0;j<b.length;j++)h+=chipHtml(b[j]);}
+    return h+'</div>';}
+  return ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
+}
 function render(){
   document.getElementById('sta').textContent=NAME[curSta]||curSta;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes());
@@ -165,12 +209,12 @@ function render(){
   if(scrolling&&!needScroll)return;
   lastSig=sig;
   var sc=document.scrollingElement||document.documentElement,sy=sc?sc.scrollTop:0;
-  document.getElementById('body').innerHTML=(curTab==='dep')?renderDep():renderSys();
+  document.getElementById('body').innerHTML=(curTab==='dep')?renderDep():(curTab==='sys')?renderSys():renderMap();
   if(needScroll){if(curTab==='dep'){var nd=document.getElementById('nd');if(nd){nd.scrollIntoView({block:'start'});}else if(sc){sc.scrollTop=0;}}else if(sc){sc.scrollTop=0;}}
   else if(sc){sc.scrollTop=sy;}
   needScroll=false;
 }
-function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';render();}
+function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
 function closeOv(id){document.getElementById(id).style.display='none';}
 
 function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){var hon='',kita='';

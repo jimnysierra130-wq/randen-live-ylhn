@@ -199,8 +199,7 @@ function render(){
   if(ovOpen())return;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes());
   var ds=today(),dw=(DOW_BY[ds]||''),dd=parseInt(ds.slice(5,7),10)+'/'+parseInt(ds.slice(8,10),10);
-  var du=duty(),cnt=0;for(var s in du){if(du.hasOwnProperty(s))cnt++;}
-  document.getElementById('dch').textContent=dd+'（'+dw+'）'+dia()+'ダイヤ・'+cnt+'系統';
+  document.getElementById('dch').textContent=dd+'（'+dw+'）'+dia()+'ダイヤ';
   var fdate=(MDATE&&MDATE===jstDateStr())?('車番 '+MDATE+' 反映'):'車番データ待ち';
   document.getElementById('ft').textContent=fdate+' / 生成 '+GEN_DATE;
   var sig=curTab+'|'+curSta+'|'+ds+'|'+Math.floor(_opSec()/60)+'|'+MDATE;

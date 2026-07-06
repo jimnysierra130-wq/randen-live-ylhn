@@ -188,14 +188,14 @@ function renderMap(){
     var anchor=seg.at||seg.from,sub=seg.at?(seg.at+' 停車中'):(seg.from+'→'+seg.to+' 走行中');
     var chip={sys:s,car:c,name:du[s],hn:hn,sub:sub};
     var bk=hn?kitB:honB;(bk[anchor]=bk[anchor]||[]).push(chip);}
-  if(!any)return '<div class="empty">現在運行中の電車はありません</div>';
+  var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){return '<div class="mtr" onclick="popSys(\''+t.sys+'\')"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span>'
     +'<span class="mnm">'+t.name+'</span>'+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<div class="msub">'+t.sub+'</div></div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span></div>';
       var b=bk[nmS];if(b)for(var j=0;j<b.length;j++)h+=chipHtml(b[j]);}
     return h+'</div>';}
-  return ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
+  return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
 }
 function ovOpen(){return document.getElementById('pick').style.display==='block'||document.getElementById('detail').style.display==='block';}
 function render(){

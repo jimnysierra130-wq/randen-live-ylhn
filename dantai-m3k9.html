@@ -113,7 +113,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
     <div class="s2" style="font-size:14px;" id="gR3"></div>
     <div class="s2" style="font-size:14px;" id="gR4"></div>
     <div class="s2" style="font-size:13px;" id="gR5"></div>
-    <div style="font-size:11px;color:#78909c;margin-top:4px;">※分け方は3方式いずれも可＝どれにするかは<b>お客様（学校）の指定</b>による（マニュアル1-4「分け方は各学校におまかせ」「記入方法は担当者に尋ねる」）。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)もお客様の指定による。</div>
+    <div style="font-size:11px;color:#78909c;margin-top:4px;">※領収書は「一括（1枚）＝総額」または「方式①（大人が調整額を負担・<b>小児はそのままの金額</b>）」で発行。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)はお客様の指定による。〔マニュアルは3方式可だが当運用は小児そのまま＝方式①に統一〕</div>
   </div>
 </div>
 </div>
@@ -324,9 +324,8 @@ function render(){
       g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' ／ 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
       g3.textContent='';g4.textContent='';
     }else{
-      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円含む） ／ 小児 '+YEN(rawC)+'（調整額なし）'+spR+spT;
-      g3.textContent='方式② 大人 '+YEN(T-cUp)+'（切捨側） ／ 小児 '+YEN(cUp)+'（切上）'+spR+spT;
-      g4.textContent='方式③ 大人 '+YEN(T-cDn)+'（切上側） ／ 小児 '+YEN(cDn)+'（切捨）'+spR+spT;
+      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円含む） ／ 小児 '+YEN(rawC)+'（そのまま金額）'+spR+spT;
+      g3.textContent='';g4.textContent='';
     }
     var g5=document.getElementById('gR5');
     if(sp.sub>0&&r.adA>0&&r.chA>0){

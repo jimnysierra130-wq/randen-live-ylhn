@@ -208,7 +208,7 @@ function popSys(sys){
         +'<div class="dx">'+lg.o+' → '+lg.d+tag+'</div>'+carHtml(lg.tr)+'</div>';}
   } else { h+='<div class="empty">行路データなし</div>'; }
   document.getElementById('detailbody').innerHTML=h+'<div class="ovbot"><button class="ovx" onclick="closeAll()">✕ 閉じる</button></div>';
-  _saveScroll();var dv=document.getElementById('detail');document.documentElement.classList.add('ovopen');dv.style.display='flex';dv.scrollTop=0;if(window.requestAnimationFrame)requestAnimationFrame(function(){dv.scrollTop=0;});else setTimeout(function(){dv.scrollTop=0;},0);
+  _showDetail();
 }
 function _lineOrder(){var hon=[],kit=[];for(var i=0;i<ORDER.length;i++){if(ORDER[i][1]===0)hon.push(ORDER[i][0]);else kit.push(ORDER[i][0]);}kit.push('katabira');return {hon:hon,kit:kit};}
 function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
@@ -259,7 +259,7 @@ function renderMap(){
   function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
   return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(restList,'休憩')+section(botList,'25〜27勤務');
 }
-function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='block');}
+function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='flex');}
 function render(){
   if(ovOpen())return;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes())+':'+pad(j.getSeconds());
@@ -279,7 +279,7 @@ function render(){
 }
 function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
 function closeOv(id){document.getElementById(id).style.display='none';document.documentElement.classList.remove('ovopen');render();}
-function closeAll(){var ovs=document.querySelectorAll('.ov');for(var i=0;i<ovs.length;i++){ovs[i].style.display='none';ovs[i].scrollTop=0;}document.documentElement.classList.remove('ovopen');if(document.body)document.body.classList.remove('ovopen');needScroll=false;_restoreScroll();render();}
+function closeAll(){var ovs=document.querySelectorAll('.ov');for(var i=0;i<ovs.length;i++){ovs[i].style.display='none';ovs[i].scrollTop=0;}_showEl('hdr');_showEl('body');_showEl('ft');document.documentElement.classList.remove('ovopen');if(document.body)document.body.classList.remove('ovopen');needScroll=false;render();var e=_pageEl();if(e)e.scrollTop=_pgY;}
 
 function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){var hon='',kita='';
   for(var i=0;i<ORDER.length;i++){var k=ORDER[i][0],ln=ORDER[i][1];var btn='<button onclick="pickSta(\''+k+'\')">'+NAME[k]+'</button>';if(ln===0)hon+=btn;else kita+=btn;}
@@ -302,7 +302,7 @@ function loadVeh(){fetch('vehicles.json',{cache:'no-store'}).then(function(r){re
 function _vpBr(s){return (''+s).replace(/\r\n|\r|\n/g,'<br>');}
 function _vpHist(hist){if(!hist||!hist.length)return '';var o='<div class="vphist"><div class="vphk">車歴</div>';for(var i=0;i<hist.length;i++){var e=hist[i]||{};var t=e.c||e.t||'';if(!t&&!e.ym)continue;o+='<div class="vphrow"><span class="vphym">'+(e.ym||'')+'</span><span class="vphc">'+_vpBr(t)+'</span></div>';}return o+'</div>';}
 function _vpDet(ci){var o='';if(ci.af)o+='<div class="vpline"><span class="vpk">所属</span>'+ci.af+'</div>';var mk=(ci.mk||'')+((ci.mk&&ci.yr)?' ':'')+(ci.yr||'');if(mk)o+='<div class="vpline"><span class="vpk">製造</span>'+mk+'</div>';if(ci.insp)o+='<div class="vpline"><span class="vpk">検査</span>'+_vpBr(ci.insp)+'</div>';if(ci.desc)o+='<div class="vpline"><span class="vpk">車両</span>'+_vpBr(ci.desc)+'</div>';o+=_vpHist(ci.hist);return o;}
-function openVeh(car){if(!VEH||!VEH.cars){return;}var parts=(''+car).split('+'),h='';for(var p=0;p<parts.length;p++){var cn=parts[p],ci=VEH.cars[cn];h+='<div class="vpcar"><div class="vpnum">'+cn+'号</div>'+(ci?('<div class="vpser">'+(ci.s||'')+'</div>'+(ci.c?'<div class="vpcap">'+ci.c+'</div>':'')+_vpDet(ci)):'<div class="vpser">車両情報なし</div>')+'</div>';}h+='<div class="vpcredit">車両データ: 鉄道運用Hub（制作: 回送1406）CC BY 4.0。趣味者が編集した推定データで、鉄道事業者は関与していません。</div>';if(document.body&&document.body.style.position!=='fixed')_saveScroll();document.getElementById('detailbody').innerHTML='<div class="vptitle">車両情報</div>'+h+'<div class="ovbot"><button class="ovx" onclick="closeAll()">✕ 閉じる</button></div>';var dv=document.getElementById('detail');document.documentElement.classList.add('ovopen');dv.style.display='flex';dv.scrollTop=0;if(window.requestAnimationFrame)requestAnimationFrame(function(){dv.scrollTop=0;});else setTimeout(function(){dv.scrollTop=0;},0);}
+function openVeh(car){if(!VEH||!VEH.cars){return;}var parts=(''+car).split('+'),h='';for(var p=0;p<parts.length;p++){var cn=parts[p],ci=VEH.cars[cn];h+='<div class="vpcar"><div class="vpnum">'+cn+'号</div>'+(ci?('<div class="vpser">'+(ci.s||'')+'</div>'+(ci.c?'<div class="vpcap">'+ci.c+'</div>':'')+_vpDet(ci)):'<div class="vpser">車両情報なし</div>')+'</div>';}h+='<div class="vpcredit">車両データ: 鉄道運用Hub（制作: 回送1406）CC BY 4.0。趣味者が編集した推定データで、鉄道事業者は関与していません。</div>';document.getElementById('detailbody').innerHTML='<div class="vptitle">車両情報</div>'+h+'<div class="ovbot"><button class="ovx" onclick="closeAll()">✕ 閉じる</button></div>';_showDetail();}
 function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){MAP=j.map||{};MDATE=(j.meta&&j.meta.date)||'';render();}).catch(function(){});}
 
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);

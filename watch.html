@@ -78,7 +78,7 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .vpd{font-size:13px;color:#9aa4ac;margin-top:5px;line-height:1.5;}
 .mtr .msub{flex-basis:100%;font-size:14px;color:#aab2ba;}
 .ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:8px 8px 24px;}
-.ov.vfit{inset:0 0 auto 0;max-height:100%;padding-bottom:10px;}
+.ov.vfit{inset:0 0 auto 0;max-height:100vh;max-height:100dvh;box-sizing:border-box;padding-bottom:12px;}
 html.ovopen,body.ovopen{overflow:hidden;}
 .ovtop{position:sticky;top:0;background:rgba(0,0,0,.97);padding:2px 0 8px;}
 .ovx{font-size:14px;font-weight:800;padding:9px 12px;border:0;border-radius:9px;background:#222;color:#fff;width:100%;}
@@ -229,8 +229,8 @@ function renderMap(){
   for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
   var restList=[],botList=[];
   for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var sn=parseInt(R3.sys,10);
-    if(sn>=25&&sn<=27){R3.showLoc=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
-  for(var _z=25;_z<=27;_z++){var _zs=''+_z;if(du[_zs]&&!bySys[_zs]){var _zn=(''+du[_zs]).replace('①','1').replace('②','2').replace('③','3');botList.push({sys:_zs,name:_zn,hn:false,ind:'',da:'',kb:'',typ:'営業',host:'',rear:'',riders:null,vac:!isReal(_zn),anchor:'',showLoc:0});}}
+    if(sn>=25&&sn<=27){R3.showLoc=1;R3.noTap=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
+  for(var _z=25;_z<=27;_z++){var _zs=''+_z;if(du[_zs]&&!bySys[_zs]){var _zn=(''+du[_zs]).replace('①','1').replace('②','2').replace('③','3');botList.push({sys:_zs,name:_zn,hn:false,ind:'',da:'',kb:'',typ:'営業',host:'',rear:'',riders:null,vac:!isReal(_zn),anchor:'',showLoc:0,noTap:1});}}
   botList.sort(function(a,b){return parseInt(a.sys,10)-parseInt(b.sys,10);});
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var isk=(t.typ==='回送'),run=(t.ind==='▲'||t.ind==='▼'),ic=run?(isk?'ks':(t.hn?'k':'h')):'st';
@@ -238,7 +238,7 @@ function renderMap(){
     var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+'" onclick="popSys(\''+t.sys+'\')">'+dind+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],sd='',bl='';
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');

@@ -129,7 +129,7 @@ function sysPos(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs||!rt.l
     var _pd=(k2>=1)?tmMin(legs[k2-1].dt):first,_dw=(_pd!=null)?(o2-_pd):0,_tm=(loc==='四条大宮'||loc==='嵐山'||loc==='西院'||loc==='帷子ノ辻'||loc==='北野白梅町');
     if(_dw>120||(_dw>35&&!_tm))return {st:'off',line:ln};
     var rest=null;for(var ri=0;ri<rests.length;ri++){if(rests[ri].after===(k2-1)){rest=rests[ri];break;}}
-    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir};}
+    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/),_rr=(''+rest.text).match(/(\d{1,2}:\d{2})[^0-9]+(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,rtime:(_rr?_rr[1]+'〜'+_rr[2]:'')};}
     return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir};}}
   return {st:'off',line:line,text:'運行終了'};
 }

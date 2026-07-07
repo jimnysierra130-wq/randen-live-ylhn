@@ -7,8 +7,9 @@
 :root{--bg:#000;--fg:#fff;--sub:#9aa4ac;--hon:#0a84ff;--kita:#ff9f0a;--card:#2a2e34;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
-body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px);font-size:15px;line-height:1.25;}
-#hdr{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:1px 2px 6px;}
+body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
+#hdr{position:sticky;top:0;z-index:40;background:var(--bg);border-bottom:1px solid #1c1f24;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:calc(env(safe-area-inset-top, 0px) + 34px) 2px 7px;margin:0 -6px 5px;}
+#hdr>span{padding:0 8px;}
 #clk{font-size:20px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap;}
 #stabtn{display:flex;align-items:center;gap:6px;width:100%;background:var(--card);border:1.5px solid #2b3947;border-radius:12px;padding:9px 11px;margin-bottom:5px;}
 #stabtn .ic{font-size:17px;}
@@ -28,7 +29,7 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .drow .rs{font-size:17px;font-weight:700;color:var(--fg);margin-top:2px;}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 .bH{background:var(--hon);}.bK{background:var(--kita);}
-.car{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;background:#1f2937;color:#dbeafe;border-radius:7px;padding:3px 7px;white-space:nowrap;}
+.car{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums;background:#7c3aed;color:#fff;border-radius:7px;padding:3px 7px;white-space:nowrap;cursor:pointer;}
 .car.split{background:#0f2a1e;color:#bff5da;}
 .sys{font-size:20px;font-weight:900;min-width:2.4em;text-align:center;border-radius:8px;padding:7px 0;}
 .sys.h{background:rgba(10,132,255,.18);color:var(--hon);}.sys.k{background:rgba(255,159,10,.18);color:var(--kita);}
@@ -76,6 +77,15 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .vpnum{font-size:20px;font-weight:900;color:#c4b5fd;}
 .vpser{font-size:16px;font-weight:700;color:#fff;margin-top:3px;}
 .vpd{font-size:13px;color:#9aa4ac;margin-top:5px;line-height:1.5;}
+.vpcap{font-size:13px;color:#c8ced4;margin-top:2px;}
+.vpline{font-size:13px;color:#c8ced4;margin-top:5px;line-height:1.5;}
+.vpk{display:inline-block;min-width:2.6em;margin-right:6px;padding:1px 6px;border-radius:6px;background:#3a2f5c;color:#c4b5fd;font-size:11px;font-weight:800;text-align:center;vertical-align:top;}
+.vphist{margin-top:8px;border-top:1px dashed #3a3550;padding-top:6px;}
+.vphk{font-size:12px;font-weight:800;color:#c4b5fd;margin-bottom:4px;}
+.vphrow{display:flex;gap:8px;font-size:12px;color:#c8ced4;line-height:1.45;margin-top:3px;}
+.vphym{flex:0 0 auto;min-width:5em;color:#8f97a0;font-weight:700;}
+.vphc{min-width:0;}
+.vpcredit{font-size:10px;color:#6b727b;line-height:1.5;margin-top:8px;}
 .mtr .msub{flex-basis:100%;font-size:14px;color:#aab2ba;}
 .ov{display:none;position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.97);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:10px 8px 14px;box-sizing:border-box;flex-direction:column;}
 #detailbody{margin:auto 0;width:100%;box-sizing:border-box;}
@@ -150,7 +160,7 @@ function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return 
   for(var k2=0;k2<legs.length;k2++){var o2=tmMin(legs[k2].ot);if(o2!=null&&nm<o2)return legs[k2].tr;}
   return legs[legs.length-1].tr;}
 function car(tr){return (tr&&MAP[tr]&&MDATE===jstDateStr())?MAP[tr]:'';}
-function carHtml(tr){var c=car(tr);if(!c)return '';return '<span class="car'+(c.indexOf('+')>=0?' split':'')+'">'+c+'</span>';}
+function carHtml(tr){var c=car(tr);if(!c)return '';return '<span class="car'+(c.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+c+'\')">'+c+'</span>';}
 
 function renderDep(){
   var now=_opSec(),list=deps(),past=[],up=[];

@@ -203,21 +203,21 @@ function renderMap(){
   var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=(''+du[s]).replace('①','1').replace('②','2').replace('③','3');if(!_nm)continue;var _vac=!isReal(_nm);
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='';
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='';
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}
       else{var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';anchor=(fi<ti)?seg.from:seg.to;}}
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
-    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';}
+    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';}
     else continue;
-    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da};
+    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
   for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
-  var restList=[],botList=[];
+  var kitRestList=[],botList=[];
   for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var sn=parseInt(R3.sys,10);
-    if(sn>=25&&sn<=27){R3.showLoc=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
+    if(sn>=25&&sn<=27){R3.showLoc=1;botList.push(R3);}else if(R3.ind==='休'&&R3.hn){R3.showLoc=1;kitRestList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
   for(var _z=25;_z<=27;_z++){var _zs=''+_z;if(du[_zs]&&!bySys[_zs]){var _zn=(''+du[_zs]).replace('①','1').replace('②','2').replace('③','3');botList.push({sys:_zs,name:_zn,hn:false,ind:'',da:'',kb:'',typ:'営業',host:'',rear:'',riders:null,vac:!isReal(_zn),anchor:'',showLoc:0});}}
   botList.sort(function(a,b){return parseInt(a.sys,10)-parseInt(b.sys,10);});
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
@@ -233,7 +233,7 @@ function renderMap(){
       h+=ab+'<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
     return h+'</div>';}
   function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
-  return note+section(restList,'休憩')+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(botList,'25〜27勤務');
+  return note+ladder(ord.hon,honB,'h','本線')+section(kitRestList,'休憩')+ladder(ord.kit,kitB,'k','北野線')+section(botList,'25〜27勤務');
 }
 function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='block');}
 function render(){

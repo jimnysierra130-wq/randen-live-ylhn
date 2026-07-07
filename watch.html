@@ -117,8 +117,8 @@ function _pageEl(){return document.scrollingElement||document.documentElement;}
 function _hideEl(id){var el=document.getElementById(id);if(el)el.style.display='none';}
 function _showEl(id){var el=document.getElementById(id);if(el)el.style.display='';}
 function _syncHdr(){var hd=document.getElementById('hdr');if(!hd)return;var e=_pageEl();var y=(e&&e.scrollTop)||0;hd.style.transform='translateY('+y+'px)';}
-var _lastHY=-1;
-function _hdrTick(){var e=_pageEl();var y=(e&&e.scrollTop)||0;if(y!==_lastHY){_lastHY=y;var hd=document.getElementById('hdr');if(hd)hd.style.transform='translateY('+y+'px)';}if(window.requestAnimationFrame)window.requestAnimationFrame(_hdrTick);}
+var _lastHY=-1,_hdrRAF=false;
+function _hdrTick(){var e=_pageEl();var y=(e&&e.scrollTop)||0;if(y!==_lastHY){_lastHY=y;var hd=document.getElementById('hdr');if(hd)hd.style.transform='translateY('+y+'px)';}if(scrolling&&window.requestAnimationFrame){window.requestAnimationFrame(_hdrTick);}else{_hdrRAF=false;}}
 function _showDetail(){var dv=document.getElementById('detail');if(dv.style.display!=='flex'){var e=_pageEl();_pgY=(e&&e.scrollTop)||0;}_hideEl('hdr');_hideEl('body');_hideEl('ft');document.documentElement.classList.add('ovopen');dv.style.display='flex';dv.scrollTop=0;var e2=_pageEl();if(e2)e2.scrollTop=0;if(window.requestAnimationFrame)requestAnimationFrame(function(){var e3=_pageEl();if(e3)e3.scrollTop=0;});}
 var curSta=(function(){try{var hk=decodeURIComponent((location.hash||'').replace('#',''));if(hk&&NAME[hk])return hk;}catch(e){}try{return localStorage.getItem('rdnSta')||'saiin';}catch(e){}return 'saiin';})();
 function saveSta(k){try{localStorage.setItem('rdnSta',k);}catch(e){}}
@@ -309,9 +309,9 @@ function openVeh(car){if(!VEH||!VEH.cars){return;}var parts=(''+car).split('+'),
 function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){MAP=j.map||{};MDATE=(j.meta&&j.meta.date)||'';render();}).catch(function(){});}
 
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);
-_syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);if(window.requestAnimationFrame)window.requestAnimationFrame(_hdrTick);
+_syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
 setInterval(function(){var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());},1000);
-window.addEventListener('scroll',function(){_syncHdr();scrolling=true;if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
+window.addEventListener('scroll',function(){_syncHdr();scrolling=true;if(!_hdrRAF&&window.requestAnimationFrame){_hdrRAF=true;window.requestAnimationFrame(_hdrTick);}if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
 setInterval(function(){render();},20000);
 setInterval(loadCar,90000);
 </script></body></html>

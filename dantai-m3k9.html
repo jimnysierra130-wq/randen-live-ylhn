@@ -37,6 +37,8 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 #pgK .setsumei{background:#fdf2ea;}
 .setsumei .s1{font-weight:700;font-size:13px;color:#546e7a;}
 .setsumei .s2{font-weight:800;font-size:16px;color:var(--blu);margin-top:4px;word-break:break-all;}
+.setsumei .s2 .fln{margin:4px 0;padding-left:2px;line-height:1.5;}
+.setsumei .s2 .fln.ftot{margin-top:8px;padding-top:6px;border-top:2px solid #b3d4c9;}
 .notes{font-size:11.5px;color:#546e7a;line-height:1.8;}
 .notes b{color:#37474f;}
 .cols{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;}
@@ -113,7 +115,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
     <div class="s2" style="font-size:14px;" id="gR3"></div>
     <div class="s2" style="font-size:14px;" id="gR4"></div>
     <div class="s2" style="font-size:13px;" id="gR5"></div>
-    <div style="font-size:11px;color:#78909c;margin-top:4px;">※領収書は「一括（1枚）＝総額」または「方式①（大人が調整額を負担・<b>小児はそのままの金額</b>）」で発行。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)はお客様の指定による。〔マニュアルは3方式可だが当運用は小児そのまま＝方式①に統一〕</div>
+    <div style="font-size:11px;color:#78909c;margin-top:4px;">※領収書は「一括（1枚）＝総額」または「大人・小児で分割（<b>調整額は大人に上乗せ・小児はそのままの金額</b>）」の2通りで発行。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)はお客様の指定による。〔当運用は小児をそのままの金額とし、端数の調整額は大人に上乗せする方式に統一〕</div>
   </div>
 </div>
 </div>
@@ -295,21 +297,23 @@ function render(){
     var gt=[];
     if(r.adA>0)gt.push('大人（'+(base?'片道250円':'往復500円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pa))+'）×'+r.adA+'名＝'+YEN(r.adAmt));
     if(r.chA>0)gt.push('小児（'+(base?'片道120円':'往復240円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pc))+'）×'+r.chA+'名＝'+YEN(r.chAmt));
-    var groupLine=gt.join(' ＋ ');
+    var lines=[];
+    gt.forEach(function(t,i){lines.push((i>0?'＋ ':'')+t);});
     if(adj>0){
-      if(gt.length>1)groupLine+=' ＝ 小計 '+YEN(rawA+rawC);
-      groupLine+=' ＋ 調整額（10円未満切上げ）'+YEN(adj)+' ＝ 運賃合計 '+YEN(r.sum);
+      if(gt.length>1)lines.push('＝ 小計 '+YEN(rawA+rawC));
+      lines.push('＋ 調整額（10円未満切上げ）'+YEN(adj));
+      lines.push('＝ 運賃合計 '+YEN(r.sum));
     }else{
-      groupLine+=' ＝ 運賃合計 '+YEN(r.sum)+'（端数なし）';
+      lines.push('＝ 運賃合計 '+YEN(r.sum)+'（端数なし）');
     }
     var spterms=[];
     if(sp.pair>0){spterms.push('障がい者・介護者（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+(sp.adD+sp.pair)+'名＝'+YEN((sp.adD+sp.pair)*sp.ua));
       if(sp.chD>0)spterms.push('障がい者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
       if(sp.hbD>0)spterms.push('6歳未満'+sp.hbD+'名（無賃）');}
-    var uni=groupLine+(spterms.length?' ＋ '+spterms.join(' ＋ '):'');
+    if(spterms.length){lines.push('〈障がい者のお客様分（別精算）〉');spterms.forEach(function(t){lines.push('＋ '+t);});}
     var uniTotal='＝ '+YEN(r.sum+sp.sub)+'（'+(r.rate===0?'25名未満＝通常運賃':(st.gKind==='ippan'?'一般':'学生')+'団体・'+r.rate+'割引・無賃'+r.muchin+'名')+(sp.pair>0?'・障がい者5割引':'')+'）';
-    document.getElementById('gF').textContent=uni;
-    var f2=document.getElementById('gF2');f2.style.display='';f2.textContent=uniTotal;
+    document.getElementById('gF').innerHTML=lines.map(function(x){return '<div class="fln">'+x+'</div>';}).join('');
+    var f2=document.getElementById('gF2');f2.style.display='';f2.innerHTML='<div class="fln ftot">'+uniTotal+'</div>';
     var cUp=Math.ceil(rawC/10)*10, cDn=Math.floor(rawC/10)*10;
     var g1=document.getElementById('gR1'),g2=document.getElementById('gR2'),g3=document.getElementById('gR3'),g4=document.getElementById('gR4');
     g1.textContent='一括（1枚）＝ お支払い総額 '+YEN(T+sp.sub)+(sp.sub>0?'（障がい者分含む）':'');
@@ -324,7 +328,7 @@ function render(){
       g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' ／ 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
       g3.textContent='';g4.textContent='';
     }else{
-      g2.textContent='方式① 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円含む） ／ 小児 '+YEN(rawC)+'（そのまま金額）'+spR+spT;
+      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円を上乗せ） ／ 小児 '+YEN(rawC)+'（そのままの金額）'+spR+spT;
       g3.textContent='';g4.textContent='';
     }
     var g5=document.getElementById('gR5');

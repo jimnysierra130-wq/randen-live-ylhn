@@ -122,8 +122,8 @@ function sysPos(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs||!rt.l
     var _pd=(k2>=1)?tmMin(legs[k2-1].dt):first,_dw=(_pd!=null)?(o2-_pd):0,_tm=(loc==='四条大宮'||loc==='嵐山'||loc==='西院'||loc==='帷子ノ辻'||loc==='北野白梅町');
     if(_dw>120||(_dw>35&&!_tm))return {st:'off',line:ln};
     var rest=null;for(var ri=0;ri<rests.length;ri++){if(rests[ri].after===(k2-1)){rest=rests[ri];break;}}
-    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:'')};}
-    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:'')};}}
+    if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir};}
+    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir};}}
   return {st:'off',line:line,text:'運行終了'};
 }
 function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
@@ -195,14 +195,14 @@ function renderMap(){
   var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=du[s];if(!_nm)continue;var _vac=!isReal(_nm);
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='';
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='';
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
-      if(seg.at){anchor=seg.at;ind='停';}
+      if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}
       else{var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';anchor=(fi<ti)?seg.from:seg.to;}}
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=(fz<tz)?p.o:p.d;}
-    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';}
+    else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';}
     else continue;
-    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac};
+    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}

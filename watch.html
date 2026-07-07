@@ -8,12 +8,13 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:-apple-system,'Hiragino Sans','Noto Sans JP',sans-serif;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
 body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px);font-size:15px;line-height:1.25;}
-#clk{font-size:12px;color:var(--sub);text-align:right;font-variant-numeric:tabular-nums;margin:1px 2px 2px;}
+#hdr{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:1px 2px 6px;}
+#clk{font-size:15px;color:var(--sub);font-variant-numeric:tabular-nums;white-space:nowrap;}
 #stabtn{display:flex;align-items:center;gap:6px;width:100%;background:var(--card);border:1.5px solid #2b3947;border-radius:12px;padding:9px 11px;margin-bottom:5px;}
 #stabtn .ic{font-size:17px;}
 #sta{font-size:21px;font-weight:800;color:#fff;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #stabtn .chg{font-size:12px;font-weight:800;color:#0a84ff;white-space:nowrap;}
-#dch{font-size:11px;color:var(--sub);padding:0 2px 5px;}
+#dch{font-size:15px;color:var(--sub);white-space:nowrap;}
 #tabs{display:flex;gap:5px;margin:0 0 6px;}
 #tabs button{flex:1 1 0;font-size:15px;font-weight:800;padding:9px 0;border:0;border-radius:10px;background:var(--card);color:var(--sub);}
 #tabs button.on{background:var(--fg);color:#000;}
@@ -57,7 +58,7 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .mtr .msys{font-size:19px;font-weight:900;border-radius:7px;padding:3px 9px;}
 .mtr .msys.h{background:rgba(10,132,255,.18);color:var(--hon);}
 .mtr .msys.k{background:rgba(255,159,10,.18);color:var(--kita);}
-.mtr .mnm{font-size:18px;font-weight:800;color:#fff;}
+.mtr .mnm{font-size:21px;font-weight:800;color:#fff;}
 .mtr .mnm.vac{color:#8a939b;}
 .mtr .msys.vac{background:#2b3138;color:#9aa5ad;}
 .mtr .mcar{font-size:16px;font-weight:800;background:#7c3aed;color:#fff;border-radius:8px;padding:2px 8px;font-variant-numeric:tabular-nums;}
@@ -93,8 +94,7 @@ html.ovopen,body.ovopen{overflow:hidden;}
 .dseg .dx{flex:1;font-size:12px;color:#fff;min-width:0;}
 #ft{font-size:10px;color:#555;text-align:center;margin-top:8px;}
 </style></head><body>
-<div id="clk"></div>
-<div id="dch"></div>
+<div id="hdr"><span id="dch"></span><span id="clk"></span></div>
 <div id="body"></div>
 <div id="ft"></div>
 <div id="detail" class="ov"><div class="ovtop"><button class="ovx" onclick="closeOv('detail')">✕ 閉じる</button></div><div id="detailbody"></div></div>

@@ -264,7 +264,7 @@ function render(){
 }
 function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
 function closeOv(id){document.getElementById(id).style.display='none';document.documentElement.classList.remove('ovopen');render();}
-function closeAll(){var ovs=document.querySelectorAll('.ov');for(var i=0;i<ovs.length;i++){ovs[i].style.display='none';ovs[i].scrollTop=0;}document.documentElement.classList.remove('ovopen');if(document.body)document.body.classList.remove('ovopen');needScroll=false;render();}
+function closeAll(){var ovs=document.querySelectorAll('.ov');for(var i=0;i<ovs.length;i++){ovs[i].style.display='none';ovs[i].scrollTop=0;}var _dt3=document.getElementById('dtop');if(_dt3)_dt3.style.display='';document.documentElement.classList.remove('ovopen');if(document.body)document.body.classList.remove('ovopen');needScroll=false;render();}
 
 function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){var hon='',kita='';
   for(var i=0;i<ORDER.length;i++){var k=ORDER[i][0],ln=ORDER[i][1];var btn='<button onclick="pickSta(\''+k+'\')">'+NAME[k]+'</button>';if(ln===0)hon+=btn;else kita+=btn;}

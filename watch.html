@@ -65,6 +65,7 @@ body{padding:6px 6px 18px;padding-top:calc(env(safe-area-inset-top, 0px) + 34px)
 .mtr .mtag{font-size:13px;color:#9aa4ac;font-weight:700;}
 .mtr .mbin{flex-basis:100%;font-size:13px;color:#c8ced4;font-weight:700;}
 .mtr .mloc{font-size:14px;color:#9aa4ac;font-weight:700;}
+.mtr .mrt{flex-basis:100%;font-size:13px;color:#ffd60a;font-weight:700;}
 .msec{background:#0e0f11;border:1px solid #23262b;border-radius:12px;padding:5px 8px 7px;margin:6px 0;}
 .msectitle{font-size:14px;font-weight:800;color:#c8ced4;margin:2px 2px 4px;}
 .msec .mtr{margin:4px 0;}
@@ -225,7 +226,7 @@ function renderMap(){
     var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+'" onclick="popSys(\''+t.sys+'\')">'+dind+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+'" onclick="popSys(\''+t.sys+'\')">'+dind+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+(t.rtime?'<span class="mrt">休憩 '+t.rtime+'</span>':'')+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],ab='',sd='',bl='',top=(i===0),bot=(i===arr.length-1);
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
@@ -238,7 +239,7 @@ function renderMap(){
 function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='block');}
 function render(){
   if(ovOpen())return;
-  var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes());
+  var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes())+':'+pad(j.getSeconds());
   var ds=today(),dw=(DOW_BY[ds]||''),dd=parseInt(ds.slice(5,7),10)+'/'+parseInt(ds.slice(8,10),10);
   document.getElementById('dch').textContent=dd+'（'+dw+'）'+dia()+'ダイヤ';
   var fdate=(MDATE&&MDATE===jstDateStr())?('車番 '+MDATE+' 反映'):'車番データ待ち';
@@ -276,6 +277,7 @@ function doGeo(hide){needScroll=true;
 function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){MAP=j.map||{};MDATE=(j.meta&&j.meta.date)||'';render();}).catch(function(){});}
 
 loadCar();render();
+setInterval(function(){var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());},1000);
 window.addEventListener('scroll',function(){scrolling=true;if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
 setInterval(function(){render();},20000);
 setInterval(loadCar,90000);

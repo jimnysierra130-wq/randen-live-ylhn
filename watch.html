@@ -195,7 +195,7 @@ function renderMap(){
   var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();
   var honN=ord.hon.map(function(k){return NAME[k];}),kitN=ord.kit.map(function(k){return NAME[k];});
   var honB={},kitB={},any=false,recs=[],bySys={};
-  for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=du[s];if(!_nm)continue;var _vac=!isReal(_nm);
+  for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=(''+du[s]).replace('①','1').replace('②','2').replace('③','3');if(!_nm)continue;var _vac=!isReal(_nm);
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
     var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='';
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
@@ -209,20 +209,23 @@ function renderMap(){
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
   for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
-  for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}
+  var restList=[],botList=[];
+  for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var sn=parseInt(R3.sys,10);
+    if(sn>=25&&sn<=27){R3.showLoc=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var isk=(t.typ==='回送'),run=(t.ind==='▲'||t.ind==='▼'),ic=run?(isk?'ks':(t.hn?'k':'h')):'st';
-    var dind=run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>');
+    var dind=run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>');
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+'" onclick="popSys(\''+t.sys+'\')">'+dind+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+'" onclick="popSys(\''+t.sys+'\')">'+dind+(t.car?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'">'+t.car+'</span>':'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],ab='',sd='',bl='',top=(i===0),bot=(i===arr.length-1);
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
         if(_sp&&top)ab+=chipHtml(c);else if(_sp&&bot)bl+=chipHtml(c);else if(_sp)sd+=chipHtml(c);else bl+=chipHtml(c);}
       h+=ab+'<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
     return h+'</div>';}
-  return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線');
+  function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
+  return note+section(restList,'休憩')+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(botList,'25〜27勤務');
 }
 function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='block');}
 function render(){

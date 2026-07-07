@@ -194,6 +194,7 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
     for(var j=0;j<sp.length;j++){var a=sp[j][1],dp=sp[j][2];
       if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
       if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}}
+    var _lz=sp[sp.length-1];if(_lz[1]!=null&&sec>=_lz[1])return {line:ln,at:_lz[0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
     return {line:ln,from:lg.o,to:lg.d,dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}
   return null;}
 function renderMap(){
@@ -206,7 +207,7 @@ function renderMap(){
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}
       else{var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';anchor=(fi<ti)?seg.from:seg.to;}}
-    else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=(fz<tz)?p.o:p.d;}
+    else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';}
     else continue;
     var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da};

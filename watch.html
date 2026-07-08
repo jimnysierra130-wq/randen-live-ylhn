@@ -55,7 +55,7 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 .mtr .mdir.st .mda{font-size:17px;margin-right:2px;vertical-align:-1px;}
 .mtr .mdir.st .mda.h{color:var(--hon);}.mtr .mdir.st .mda.k{color:var(--kita);}
 .mtr .mtag.ks{color:#e24b4a;}
-.mtr .mkbh{font-size:15px;font-weight:800;background:#3a2f1a;color:#ffcf70;border-radius:6px;padding:2px 8px;}.mdep{font-size:15px;font-weight:800;background:#ffca28;color:#3a2600;border-radius:6px;padding:2px 8px;}
+.mtr .mkbh{font-size:15px;font-weight:800;background:#3a2f1a;color:#ffcf70;border-radius:6px;padding:2px 8px;}.mdep{font-size:15px;font-weight:800;background:#ffca28;color:#3a2600;border-radius:6px;padding:2px 8px;}.mwt2{font-size:14px;color:#9aa4ac;font-weight:700;}
 .mtr .msys{font-size:19px;font-weight:900;border-radius:7px;padding:3px 9px;}
 .mtr .msys.h{background:rgba(10,132,255,.18);color:var(--hon);}
 .mtr .msys.k{background:rgba(255,159,10,.18);color:var(--kita);}
@@ -241,9 +241,9 @@ function renderMap(){
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
   for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
-  var restList=[],botList=[];
+  var restList=[],botList=[],waitList=[];
   for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var sn=parseInt(R3.sys,10);
-    if(sn>=25&&sn<=27){R3.showLoc=1;R3.noTap=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
+    if(sn>=25&&sn<=27){R3.showLoc=1;R3.noTap=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else if(R3.wait){R3.showLoc=1;waitList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
   for(var _z=25;_z<=27;_z++){var _zs=''+_z;if(du[_zs]&&!bySys[_zs]){var _zn=(''+du[_zs]).replace('①','1').replace('②','2').replace('③','3');botList.push({sys:_zs,name:_zn,hn:false,ind:'',da:'',kb:'',typ:'営業',host:'',rear:'',riders:null,vac:!isReal(_zn),anchor:'',showLoc:0,noTap:1});}}
   botList.sort(function(a,b){return parseInt(a.sys,10)-parseInt(b.sys,10);});
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
@@ -252,7 +252,7 @@ function renderMap(){
     var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],sd='',bl='';
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
@@ -260,7 +260,7 @@ function renderMap(){
       h+='<div class="mstn"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
     return h+'</div>';}
   function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
-  return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(restList,'休憩')+section(botList,'25〜27勤務');
+  return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(waitList,'次 帷子発')+section(restList,'休憩')+section(botList,'25〜27勤務');
 }
 function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='flex');}
 function render(){

@@ -229,14 +229,14 @@ function renderMap(){
   var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=(''+du[s]).replace('①','1').replace('②','2').replace('③','3');if(!_nm)continue;var _vac=!isReal(_nm);
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='';
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='',shk=0;
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}
       else{var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';anchor=(fi<ti)?seg.from:seg.to;}}
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(/ (?:休憩|出庫点検中)/)[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';shk=(p.st==='rest'&&p.shk)?1:0;}
     else continue;
-    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||'')};
+    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||'')};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -248,8 +248,8 @@ function renderMap(){
   botList.sort(function(a,b){return parseInt(a.sys,10)-parseInt(b.sys,10);});
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var isk=(t.typ==='回送'),run=(t.ind==='▲'||t.ind==='▼'),ic=run?(isk?'ks':(t.hn?'k':'h')):'st';
-    var _rt='';if(t.rtime){var _ee=(''+t.rtime).split('〜')[1];if(_ee){var _ep=_ee.split(':'),_em=(+_ep[0])*60+(+_ep[1]),_lf=_em-nm;_rt='<span class="mrt">休憩 '+t.rtime+'（あと'+(_lf<=0?0:_lf)+'分）</span>';}else{_rt='<span class="mrt">休憩 '+t.rtime+'</span>';}}
-    var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>'));
+    var _rt='',_rl=(t.shk?'出庫点検中':'休憩');if(t.rtime){var _ee=(''+t.rtime).split('〜')[1];if(_ee){var _ep=_ee.split(':'),_em=(+_ep[0])*60+(+_ep[1]),_lf=_em-nm;_rt='<span class="mrt">'+_rl+' '+t.rtime+'（あと'+(_lf<=0?0:_lf)+'分）</span>';}else{_rt='<span class="mrt">'+_rl+' '+t.rtime+'</span>';}}
+    var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
     return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}

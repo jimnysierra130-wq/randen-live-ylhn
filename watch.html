@@ -122,6 +122,8 @@ function _hdrTick(){var e=_pageEl();var y=(e&&e.scrollTop)||0;if(y!==_lastHY){_l
 function _showDetail(){var dv=document.getElementById('detail');if(dv.style.display!=='flex'){var e=_pageEl();_pgY=(e&&e.scrollTop)||0;}_hideEl('hdr');_hideEl('body');_hideEl('ft');document.documentElement.classList.add('ovopen');dv.style.display='flex';dv.scrollTop=0;var e2=_pageEl();if(e2)e2.scrollTop=0;if(window.requestAnimationFrame)requestAnimationFrame(function(){var e3=_pageEl();if(e3)e3.scrollTop=0;});}
 var curSta=(function(){try{var hk=decodeURIComponent((location.hash||'').replace('#',''));if(hk&&NAME[hk])return hk;}catch(e){}try{return localStorage.getItem('rdnSta')||'saiin';}catch(e){}return 'saiin';})();
 function saveSta(k){try{localStorage.setItem('rdnSta',k);}catch(e){}}
+/* 起動時にURLのハッシュを除去（駅は上でlocalStorage/hashから読込済）＝URLを常にwatch.htmlに固定し、簡易ブラウザが開くたびに別ウィンドウを溜めないようにする。history.replaceStateは履歴を増やさない。 */
+(function(){try{if(location.hash&&window.history&&history.replaceState){history.replaceState(null,'',location.pathname+location.search);}}catch(e){}})();
 
 function jstNow(){var n=new Date();var u=n.getTime()+n.getTimezoneOffset()*60000;return new Date(u+540*60000);}
 var OPDAY_CUT=25;
@@ -289,7 +291,7 @@ function openPick(){var b=document.getElementById('pickbody');if(!b.innerHTML){v
   if(NAME['katabira'])kita+='<button onclick="pickSta(\'katabira\')">'+NAME['katabira']+'</button>';
   b.innerHTML='<div class="pcols"><div class="pcol hon"><h3>本線</h3>'+hon+'</div><div class="pcol kita"><h3>北野線</h3>'+kita+'</div></div>';}
   document.documentElement.classList.add('ovopen');var pk=document.getElementById('pick');pk.style.display='block';pk.scrollTop=0;}
-function pickSta(k){curSta=k;saveSta(k);needScroll=true;try{location.hash=k;}catch(e){}document.getElementById('pick').style.display='none';document.documentElement.classList.remove('ovopen');render();}
+function pickSta(k){curSta=k;saveSta(k);needScroll=true;document.getElementById('pick').style.display='none';document.documentElement.classList.remove('ovopen');render();}
 
 function nearest(la,lo){var best=null,bd=1e18;for(var k in GEO){if(!GEO.hasOwnProperty(k))continue;var g=GEO[k];
   var dx=(la-g[0])*111132,dy=(lo-g[1])*111320*Math.cos(la*Math.PI/180),d=Math.sqrt(dx*dx+dy*dy);

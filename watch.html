@@ -156,7 +156,7 @@ function sysPos(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs||!rt.l
     if(_dw>120||(_dw>35&&!_tm))return {st:'off',line:ln};
     var rest=null;for(var ri=0;ri<rests.length;ri++){if(rests[ri].after===(k2-1)){rest=rests[ri];break;}}
     if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/),_rr=(''+rest.text).match(/(\d{1,2}:\d{2})[^0-9]+(\d{1,2}:\d{2})/);return {st:'rest',line:ln,text:loc+' 休憩'+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,rtime:(_rr?_rr[1]+'〜'+_rr[2]:'')};}
-    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir};}}
+    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,depban:((loc==='帷子ノ辻'&&legs[k2].line==='北野線'&&legs[k2].dir==='上り'&&k2>=1)?(legs[k2-1].dpl||''):'')};}}
   return {st:'off',line:line,text:'運行終了'};
 }
 function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;
@@ -236,7 +236,7 @@ function renderMap(){
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(' 休憩')[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';}
     else continue;
-    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime};
+    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,depban:(p.depban||'')};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -252,7 +252,7 @@ function renderMap(){
     var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+t.ind+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+dind+(t.car&&!t.noTap?'<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+t.car+'\')">'+t.car+'</span>':(t.car?'<span class="mcar">'+t.car+'</span>':''))+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],sd='',bl='';
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');

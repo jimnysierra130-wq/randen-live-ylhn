@@ -105,6 +105,8 @@ html.ovopen,body.ovopen{overflow:hidden;}
 .dseg .dt{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:3.4em;}
 .dseg .dx{flex:1;font-size:12px;color:#fff;min-width:0;}
 #ft{font-size:10px;color:#555;text-align:center;margin-top:8px;}
+.wbinj{background:#ffe0b2;color:#e65100;border-radius:4px;padding:0 4px;font-weight:800;}
+.wcd{font-variant-numeric:tabular-nums;}
 </style></head><body>
 <div id="hdr"><span id="dch"></span><span id="clk"></span></div>
 <div id="body"></div>
@@ -184,7 +186,7 @@ function renderDep(){
   if(!up.length)h+='<div class="empty">以降の発車はありません</div>';
   return h;
 }
-function posText(p){if(!p)return '';if(p.st==='run')return p.text;if(p.st==='rest')return p.text;if(p.st==='before')return '出勤前';if(p.st==='off')return '運行終了';return p.text+(p.next?'／次 '+p.next+' '+p.nfrom+'発':' 停車中');}
+function posText(p){if(!p)return '';if(p.st==='run')return p.text;if(p.st==='rest')return p.text;if(p.st==='before')return '出勤前';if(p.st==='chukyu')return p.text;if(p.st==='predep'){var _r=(p.dep||0)-_opSec();if(_r<0)_r=0;var _cd='<span class="wcd" data-dep="'+(p.dep||0)+'">あと'+Math.floor(_r/60)+'分'+('0'+(_r%60)).slice(-2)+'秒</span>';return (p.sub==='便乗前'?'<span class="wbinj">便乗前</span>':(p.sub||'乗務前'))+' '+_cd;}if(p.st==='off')return '運行終了';return p.text+(p.next?'／次 '+p.next+' '+p.nfrom+'発':' 停車中');}
 function renderSys(){
   var d=dia(),du=duty(),nm=_opMin(),arr=[];
   for(var s in du){if(!du.hasOwnProperty(s))continue;arr.push(s);}
@@ -315,7 +317,7 @@ function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){retu
 
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);
 _syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
-setInterval(function(){var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());},1000);
+setInterval(function(){var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+'分'+('0'+(_wr%60)).slice(-2)+'秒';}},1000);
 window.addEventListener('scroll',function(){_syncHdr();scrolling=true;if(!_hdrRAF&&window.requestAnimationFrame){_hdrRAF=true;window.requestAnimationFrame(_hdrTick);}if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
 setInterval(function(){render();},20000);
 setInterval(loadCar,90000);

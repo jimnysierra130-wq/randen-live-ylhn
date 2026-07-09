@@ -171,6 +171,17 @@ function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return 
   for(var k2=0;k2<legs.length;k2++){var o2=tmMin(legs[k2].ot);if(o2!=null&&nm<o2)return legs[k2].tr;}
   return legs[legs.length-1].tr;}
 function car(tr){return (tr&&MAP[tr]&&MDATE===jstDateStr())?MAP[tr]:'';}
+/* 回送は列番が"回xxxx"でcarmap未収録＝空。回送legのときだけ同一運用の隣接営業legから車番を借用（近い順に前→後）。営業legの空は従来どおり空を返す */
+function carSys(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return '';var legs=rt.legs;
+  var tr=sysTr(sys,d,nm),c=car(tr);if(c)return c;
+  var idx=-1;for(var k=0;k<legs.length;k++){var o=tmMin(legs[k].ot),e=tmMin(legs[k].dt);if(o!=null&&e!=null&&nm>=o&&nm<=e){idx=k;break;}}
+  if(idx<0)for(var k2=0;k2<legs.length;k2++){var o2=tmMin(legs[k2].ot);if(o2!=null&&nm<o2){idx=k2;break;}}
+  if(idx<0)idx=legs.length-1;
+  if(legs[idx].type!=='回送')return '';
+  for(var dst=1;dst<legs.length;dst++){var lo=idx-dst,hi=idx+dst;
+    if(lo>=0){var c1=car(legs[lo].tr);if(c1)return c1;}
+    if(hi<legs.length){var c2=car(legs[hi].tr);if(c2)return c2;}}
+  return '';}
 function carHtml(tr){var c=car(tr);if(!c)return '';return '<span class="car'+(c.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+c+'\')">'+c+'</span>';}
 
 function renderDep(){

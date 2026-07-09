@@ -323,6 +323,9 @@ function _startTimers(){if(_beatIv)clearInterval(_beatIv);_beatIv=setInterval(_b
 /* スリープ復帰(腕上げ)で自動再開：クロック秒とマップを即再同期し、止まったタイマーを作り直す */
 function _wake(){try{_beat();render();}catch(e){}_startTimers();}
 _startTimers();
+/* スリープ復帰を高速化：描画に連動するrAFで、画面ON第1フレームに即再同期（イベント待ち不要）。長時間停止(>2.5s)なら全再描画＋タイマー再作成 */
+function _rafTick(){var _n=Date.now();if(_n-_lastBeat>=950){var _big=(_n-_lastBeat>2500);_beat();if(_big){try{render();}catch(e){}_startTimers();}}if(window.requestAnimationFrame)requestAnimationFrame(_rafTick);}
+if(window.requestAnimationFrame)requestAnimationFrame(_rafTick);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)_wake();});
 window.addEventListener('pageshow',_wake);window.addEventListener('focus',_wake);document.addEventListener('resume',_wake,false);
 /* 画面ONで復帰イベントが来ない機種向け：タッチ/クラウン(ホイール)を触れたら停止から自動再開 */

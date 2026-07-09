@@ -317,8 +317,17 @@ function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){retu
 
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);
 _syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
-setInterval(function(){var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+'分'+('0'+(_wr%60)).slice(-2)+'秒';}},1000);
-window.addEventListener('scroll',function(){_syncHdr();scrolling=true;if(!_hdrRAF&&window.requestAnimationFrame){_hdrRAF=true;window.requestAnimationFrame(_hdrTick);}if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
-setInterval(function(){render();},20000);
+var _lastBeat=Date.now(),_beatIv=null,_renderIv=null;
+function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+'分'+('0'+(_wr%60)).slice(-2)+'秒';}}
+function _startTimers(){if(_beatIv)clearInterval(_beatIv);_beatIv=setInterval(_beat,1000);if(_renderIv)clearInterval(_renderIv);_renderIv=setInterval(function(){render();},20000);}
+/* スリープ復帰(腕上げ)で自動再開：クロック秒とマップを即再同期し、止まったタイマーを作り直す */
+function _wake(){try{_beat();render();}catch(e){}_startTimers();}
+_startTimers();
+document.addEventListener('visibilitychange',function(){if(!document.hidden)_wake();});
+window.addEventListener('pageshow',_wake);window.addEventListener('focus',_wake);document.addEventListener('resume',_wake,false);
+/* 画面ONで復帰イベントが来ない機種向け：タッチ/クラウン(ホイール)を触れたら停止から自動再開 */
+document.addEventListener('touchstart',function(){if(Date.now()-_lastBeat>1400)_wake();},{passive:true});
+window.addEventListener('wheel',function(){if(Date.now()-_lastBeat>800)_wake();},{passive:true});
+window.addEventListener('scroll',function(){_syncHdr();scrolling=true;if(Date.now()-_lastBeat>1400)_wake();if(!_hdrRAF&&window.requestAnimationFrame){_hdrRAF=true;window.requestAnimationFrame(_hdrTick);}if(scrollT)clearTimeout(scrollT);scrollT=setTimeout(function(){scrolling=false;render();},400);},{passive:true});
 setInterval(loadCar,90000);
 </script></body></html>

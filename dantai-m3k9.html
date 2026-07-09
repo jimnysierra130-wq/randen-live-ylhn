@@ -12,7 +12,8 @@
 body{margin:0;font-family:"Hiragino Sans","メイリオ",Meiryo,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;}
 .wrap{max-width:720px;margin:0 auto;padding:10px 10px 40px;}
 h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
-.tabs{display:flex;gap:8px;margin-bottom:12px;}
+.tabs{display:flex;gap:8px;margin-bottom:12px;max-width:50%;}
+@media(max-width:640px){.tabs{max-width:100%;}}
 .tab{flex:1;padding:12px 4px;border-radius:10px;text-align:center;font-size:16px;font-weight:800;cursor:pointer;border:2px solid #b0bec5;background:#fff;color:#455a64;}
 .tab.g.on{background:var(--grn);border-color:var(--grn);color:#fff;}
 .tab.k.on{background:var(--org);border-color:var(--org);color:#fff;}

@@ -247,7 +247,7 @@ function renderMap(){
   var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=(''+du[s]).replace('①','1').replace('②','2').replace('③','3');if(!_nm)continue;var _vac=!isReal(_nm);
     var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off'||p.st==='predep'||p.st==='chukyu')continue;
-    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='',shk=0;
+    var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=carSys(s,d,nm),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='',shk=0;
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}
       else{var fi=nms.indexOf(seg.from),ti=nms.indexOf(seg.to);ind=(ti>fi)?'▼':'▲';anchor=(fi<ti)?seg.from:seg.to;}}
@@ -261,7 +261,7 @@ function renderMap(){
   for(_i=0;_i<recs.length;_i++){var R2=recs[_i];if(R2.rear&&bySys[R2.rear]&&!merged[R2.rear])merged[R2.rear]=1;}
   var restList=[],botList=[],waitList=[];
   for(_i=0;_i<recs.length;_i++){var R3=recs[_i];if(merged[R3.sys])continue;any=true;var sn=parseInt(R3.sys,10);
-    if(sn>=25&&sn<=27&&!(R3.typ==='営業'&&!R3.hn&&!!R3.anchor)){R3.showLoc=1;R3.noTap=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else if(R3.wait){R3.showLoc=1;waitList.push(R3);}else{var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
+    if(sn>=25&&sn<=27&&!R3.anchor){R3.showLoc=1;R3.noTap=1;botList.push(R3);}else if(R3.ind==='休'){R3.showLoc=1;restList.push(R3);}else if(R3.wait){R3.showLoc=1;waitList.push(R3);}else{if(sn>=25&&sn<=27)R3.noTap=1;var bk=R3.hn?kitB:honB;(bk[R3.anchor]=bk[R3.anchor]||[]).push(R3);}}
   for(var _z=25;_z<=27;_z++){var _zs=''+_z;if(du[_zs]&&!bySys[_zs]){var _zn=(''+du[_zs]).replace('①','1').replace('②','2').replace('③','3');botList.push({sys:_zs,name:_zn,hn:false,ind:'',da:'',kb:'',typ:'営業',host:'',rear:'',riders:null,vac:!isReal(_zn),anchor:'',showLoc:0,noTap:1});}}
   botList.sort(function(a,b){return parseInt(a.sys,10)-parseInt(b.sys,10);});
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';

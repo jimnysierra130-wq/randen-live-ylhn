@@ -235,7 +235,7 @@ function renderMap(){
   var honN=ord.hon.map(function(k){return NAME[k];}),kitN=ord.kit.map(function(k){return NAME[k];});
   var honB={},kitB={},any=false,recs=[],bySys={};
   for(var s in du){if(!du.hasOwnProperty(s))continue;var _nm=(''+du[s]).replace('①','1').replace('②','2').replace('③','3');if(!_nm)continue;var _vac=!isReal(_nm);
-    var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off')continue;
+    var p=sysPos(s,d,nm);if(!p||p.st==='before'||p.st==='off'||p.st==='predep'||p.st==='chukyu')continue;
     var seg=trainSeg(s,d,sec),tr=sysTr(s,d,nm),c=car(tr),hn,anchor,ind,typ='営業',kb='',host='',rear='',da='',rtime='',shk=0;
     if(seg){hn=(seg.line==='北野');kb=seg.kb||'';typ=seg.type||'営業';host=seg.host||'';rear=seg.rear||'';var nms=hn?kitN:honN;
       if(seg.at){anchor=seg.at;ind='停';da=(seg.dir==='上り')?'▲':'▼';}

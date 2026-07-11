@@ -128,7 +128,7 @@ function saveSta(k){try{localStorage.setItem('rdnSta',k);}catch(e){}}
 (function(){try{if(location.hash&&window.history&&history.replaceState){history.replaceState(null,'',location.pathname+location.search);}}catch(e){}})();
 
 function jstNow(){var n=new Date();var u=n.getTime()+n.getTimezoneOffset()*60000;return new Date(u+540*60000);}
-var OPDAY_CUT=25;
+var OPDAY_CUT=30;  /* 2026-07-12 25→30分＝系統15最終2402(西院着24:25:35)を最後まで表示 */
 function jstDateStr(){var j=jstNow();if(j.getHours()*60+j.getMinutes()<OPDAY_CUT){j=new Date(j.getTime()-OPDAY_CUT*60000);}return j.getFullYear()+'-'+('0'+(j.getMonth()+1)).slice(-2)+'-'+('0'+j.getDate()).slice(-2);}
 function _opMin(){var j=jstNow();var m=j.getHours()*60+j.getMinutes();return (m<OPDAY_CUT)?m+1440:m;}
 function _opSec(){var j=jstNow();var m=j.getHours()*60+j.getMinutes();var s=j.getHours()*3600+j.getMinutes()*60+j.getSeconds();return (m<OPDAY_CUT)?s+86400:s;}

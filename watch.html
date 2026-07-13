@@ -165,7 +165,7 @@ function sysPos(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs||!rt.l
     if(_dw>35&&!_tm)return {st:'off',line:ln};
     var rest=null;for(var ri=0;ri<rests.length;ri++){if(rests[ri].after===(k2-1)){rest=rests[ri];break;}}
     if(rest){var mm=(''+rest.text).match(/〜(\d{1,2}:\d{2})/),_rr=(''+rest.text).match(/(\d{1,2}:\d{2})[^0-9]+(\d{1,2}:\d{2})/),_shk=/出庫点検/.test(''+rest.text);return {st:'rest',line:ln,shk:(_shk?1:0),text:loc+' '+(_shk?'出庫点検中':'休憩')+(mm?'（〜'+mm[1]+'）':''),kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,rtime:(_rr?_rr[1]+'〜'+_rr[2]:'')};}
-    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,depban:((loc==='帷子ノ辻'&&legs[k2].line==='北野線'&&legs[k2].dir==='上り'&&k2>=1)?(legs[k2-1].dpl||''):''),wait:((loc==='帷子ノ辻'&&legs[k2].line==='北野線'&&legs[k2].dir==='上り'&&k2>=1&&nm<(tmMin(legs[k2].ot)-3))?1:0),deptime:(loc==='帷子ノ辻'?legs[k2].ot:'')};}}
+    return {st:'stop',line:ln,text:loc,next:legs[k2].ot,nfrom:legs[k2].o,kb:(legs[k2].cpl?legs[k2].koubu:''),dir:legs[k2].dir,depban:((loc==='帷子ノ辻'&&legs[k2].line==='北野線'&&legs[k2].dir==='上り'&&k2>=1)?(legs[k2].opl||legs[k2-1].dpl||''):''),/*2026-07-14 発番線=行路Q列(opl)優先・前レグ着番線はフォールバック*/wait:((loc==='帷子ノ辻'&&legs[k2].line==='北野線'&&legs[k2].dir==='上り'&&k2>=1&&nm<(tmMin(legs[k2].ot)-3))?1:0),deptime:(loc==='帷子ノ辻'?legs[k2].ot:'')};}}
   return {st:'off',line:line,text:'運行終了'};
 }
 function sysTr(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return null;var legs=rt.legs;

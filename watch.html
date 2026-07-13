@@ -62,7 +62,9 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 .mtr .mnm{font-size:21px;font-weight:500;color:#fff;}
 .mtr .mnm.vac{color:#8a939b;}
 .mtr .msys.vac{background:#2b3138;color:#9aa5ad;}
-.mtr .mcar{font-size:16px;font-weight:800;background:#7c3aed;color:#fff;border-radius:8px;padding:2px 8px;font-variant-numeric:tabular-nums;}.mtr .mcartop{flex-basis:100%;display:flex;align-items:center;margin-bottom:1px;}
+.mtr .mcar{font-size:16px;font-weight:800;background:#7c3aed;color:#fff;border-radius:8px;padding:2px 8px;font-variant-numeric:tabular-nums;}
+.mtrn{font-size:11px;font-weight:700;background:#2c2c54;color:#b9a8ff;border-radius:5px;padding:1px 4px;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.mtrn.s{font-size:9px;padding:0 3px;}.mtr .mcartop{flex-basis:100%;display:flex;align-items:center;margin-bottom:1px;}
 .mtr .mcar.split{background:#6d28d9;color:#fff;}
 .mtr .mtag{font-size:13px;color:#9aa4ac;font-weight:700;}
 .mtr .mbin{flex-basis:100%;font-size:13px;color:#c8ced4;font-weight:700;}
@@ -219,14 +221,14 @@ function popSys(sys){
   var loc=posText(p)+(p&&p.st==='run'?' 走行中':'');
   var h='<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">'
     +'<div class="sys '+(hn?'k':'h')+'" style="font-size:20px;">'+sys+'</div>'
-    +'<div style="flex:1;min-width:0;font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+nmv+'</div>'+carHtml(tr)+'</div>';
+    +'<div style="flex:1;min-width:0;font-size:17px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+nmv+'</div>'+(tr?('<span class="mtrn">'+tr+'列車</span>'):'')+carHtml(tr)+'</div>';
   h+='<div style="font-size:12px;color:'+(p&&p.st==='run'?'#30d158':'#9aa4ac')+';font-weight:700;margin-bottom:8px;">'+(p&&p.st==='run'?'🚃 ':'')+loc+'</div>';
   if(rt&&rt.legs&&rt.legs.length){
     h+='<div style="font-size:11px;color:#9aa4ac;margin:2px 2px 4px;">本日の行路</div>';
     for(var i=0;i<rt.legs.length;i++){var lg=rt.legs[i];var eig=(lg.type==='営業');
       var tag=eig?'':' <span style="color:#9aa4ac;">'+lg.type+'</span>';
       h+='<div class="dseg"><div class="dt" style="color:'+(eig?'#0a84ff':'#7a848c')+';">'+lg.ot+'</div>'
-        +'<div class="dx">'+lg.o+' → '+lg.d+tag+'</div>'+carHtml(lg.tr)+'</div>';}
+        +'<div class="dx">'+lg.o+' → '+lg.d+tag+'</div>'+(lg.tr?('<span class="mtrn s">'+lg.tr+'</span>'):'')+carHtml(lg.tr)+'</div>';}
   } else { h+='<div class="empty">行路データなし</div>'; }
   document.getElementById('detailbody').innerHTML=h+'<div class="ovbot"><button class="ovx" onclick="closeAll()">✕ 閉じる</button></div>';
   _showDetail();
@@ -254,7 +256,7 @@ function renderMap(){
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(/ (?:休憩|出庫点検中)/)[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';shk=(p.st==='rest'&&p.shk)?1:0;}
     else continue;
-    var r={sys:s,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||'')};
+    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||'')};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -269,8 +271,8 @@ function renderMap(){
     var _rt='',_rl=(t.shk?'出庫点検中':'休憩');if(t.rtime){var _ee=(''+t.rtime).split('〜')[1];if(_ee){var _ep=_ee.split(':'),_em=(+_ep[0])*60+(+_ep[1]),_lf=_em-nm;_rt='<span class="mrt">'+_rl+' '+t.rtime+'（あと'+(_lf<=0?0:_lf)+'分）</span>';}else{_rt='<span class="mrt">'+_rl+' '+t.rtime+'</span>';}}
     var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
-    var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';
-    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+((t.car&&t.car.indexOf('+')>=0)?'':dind)+(t.car?((t.car.indexOf('+')>=0)?('<span class="mcartop">'+dind+'<span class="mcar split"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span></span>'):('<span class="mcar"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>')):'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+    var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+t.tr+'列車</span>'):'');/* 2026-07-13 列車番号=車番の左 */
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+((t.car&&t.car.indexOf('+')>=0)?'':(dind+trc))+(t.car?((t.car.indexOf('+')>=0)?('<span class="mcartop">'+dind+trc+'<span class="mcar split"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span></span>'):('<span class="mcar"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>')):'')+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(t.kb?'<span class="mkbh">＋後部'+t.kb+'</span>':'')+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],sd='',bl='';
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');

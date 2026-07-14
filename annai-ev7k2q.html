@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>嵐電 イベント・きっぷ案内</title>
+<style>
+:root{--bg:#f4f4f7;--card:#fff;--tx:#1c1c22;--sub:#6b6b76;--line:#e3e3ea;--acc:#5b4ac7;--ok:#0f6e56;--okbg:#e1f5ee;--end:#a32d2d;--endbg:#fcebeb;--warn:#854f0b;--warnbg:#faeeda;--soon:#185fa5;--soonbg:#e6f1fb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif;font-size:15px;line-height:1.55}
+#hd{position:sticky;top:0;z-index:9;background:#2d2a45;color:#fff;padding:10px 14px 8px}
+#hd h1{margin:0;font-size:17px;font-weight:700}
+#hd .sub{font-size:11px;opacity:.75;margin-top:1px}
+#hd input{width:100%;margin-top:8px;padding:9px 12px;border:none;border-radius:8px;font-size:15px;background:#fff;color:var(--tx)}
+#chips{display:flex;gap:6px;overflow-x:auto;padding:8px 0 2px;-webkit-overflow-scrolling:touch}
+.chip{flex:0 0 auto;font-size:12.5px;padding:5px 13px;border-radius:99px;background:#454163;color:#d9d7ee;cursor:pointer;white-space:nowrap;border:none}
+.chip.on{background:#fff;color:#2d2a45;font-weight:700}
+#bd{max-width:860px;margin:0 auto;padding:12px 12px 60px}
+.sec{font-size:13px;font-weight:700;color:var(--sub);margin:16px 4px 8px;letter-spacing:.05em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px}
+.card.end{opacity:.72;padding:9px 14px}
+.tt{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.cat{font-size:10.5px;padding:2px 8px;border-radius:4px;font-weight:700;flex:0 0 auto}
+.cat.event{background:#eeedfe;color:#3c3489}.cat.ticket{background:#e6f1fb;color:#0c447c}.cat.goods{background:#fbeaf0;color:#72243e}.cat.joho{background:#f1efe8;color:#444441}
+.name{font-size:15.5px;font-weight:700}
+.card.end .name{font-weight:500;color:var(--sub)}
+.st{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:700;margin-left:auto;flex:0 0 auto}
+.st.ok{background:var(--okbg);color:var(--ok)}.st.soon{background:var(--soonbg);color:var(--soon)}.st.fin{background:var(--endbg);color:var(--end)}.st.pend{background:var(--warnbg);color:var(--warn)}
+.per{font-size:12px;color:var(--sub);margin:3px 0 8px}
+.gd{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:7px;margin-bottom:8px}
+.gi{background:var(--bg);border-radius:8px;padding:7px 10px}
+.gi .k{font-size:10.5px;color:var(--sub)}
+.gi .v{font-size:13px}
+.pt{margin:0 0 8px;padding:0;list-style:none}
+.pt li{font-size:13px;padding:2px 0 2px 18px;position:relative}
+.pt li:before{content:'◆';position:absolute;left:2px;color:var(--acc);font-size:10px;top:6px}
+.cau{background:var(--warnbg);border-radius:8px;padding:8px 11px;margin-bottom:8px}
+.cau div{font-size:12.5px;color:var(--warn);padding:1px 0 1px 16px;position:relative}
+.cau div:before{content:'⚠';position:absolute;left:0;font-size:11px}
+details{margin-bottom:4px}
+summary{font-size:12px;color:var(--acc);cursor:pointer;user-select:none}
+.dtb{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:5px}
+.dtb td{padding:4px 6px;border-top:1px solid var(--line);vertical-align:top}
+.dtb td:first-child{color:var(--sub);width:32%}
+.src{font-size:10.5px;color:#9a9aa5;margin-top:6px;word-break:break-all}
+.endnote{font-size:12px;color:var(--sub);margin-top:4px}
+#none{color:var(--sub);font-size:13px;padding:20px;text-align:center}
+#ft{max-width:860px;margin:0 auto;padding:0 14px 30px;font-size:10.5px;color:#9a9aa5}
+@media(max-width:480px){.gd{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="hd">
+<h1>嵐電 イベント・きっぷ案内</h1>
+<div class="sub">データ更新 2026-07-15 ／ 期間状態は<span id="today"></span>時点で自動判定</div>
+<input id="q" type="search" placeholder="キーワード検索（例：比叡山・フリーきっぷ・スタンプ）">
+<div id="chips"></div>
+</div>
+<div id="bd"></div>
+<div id="ft">終了済みの項目は自動でグレー表示に切り替わり、履歴として残ります。掲載内容は社内通達ベース＝最新の現地情報と異なる場合があります。</div>
+<script>
+var EV=[{"id":"stamp-ichigan","cat":"event","title":"一願成就祈願スタンプラリー（北野線100周年）","start":"2026-07-10","end":"2026-12-20","place":"スタンプ5カ所＝北野天満宮（宝物殿・境内絵馬所）／仁和寺（一願不動尊前・御所庭園）／嵐電 北野白梅町駅","price":"参加無料（台紙は対象者に配布）","how":"5カ所のスタンプを順番に重ね押しすると1つの絵柄（牛×不動明王×KYOTRAM）が完成","points":["台紙の配布対象＝①嵐電1日フリーきっぷ購入者（駅窓口で配布）②北野天満宮 宝物殿拝観者 ③仁和寺 拝観券購入者","主催＝北野天満宮×総本山仁和寺×嵐電（協力JR西日本）"],"cautions":["台紙は1日フリーきっぷ購入が条件（普通乗車券のみでは対象外）","スタンプ設置箇所ごとに設置時間が異なる→各公式サイト確認を案内"],"details":[["アクセス","北野天満宮＝北野白梅町駅 徒歩約5分／仁和寺＝御室仁和寺駅 徒歩約3分"],["関連商品","仁和寺「一願水掛不動守り」700円（7/10〜）"]],"sources":["駅運営/イベント/北野線100周年/(260703)NEWS_一願成就祈願スタンプラリー_北野線100周年.pdf"]},{"id":"natsu-tabi-2026","cat":"event","title":"第51回 京の夏の旅 文化財特別公開（沿線関連）","start":"2026-07-10","end":"2026-09-30","place":"市内8カ所（嵐電沿線＝北野天満宮 宝物殿・仁和寺 御所庭園ほか、高台寺・大雲院祇園閣・渉成園・上賀茂神社・下鴨神社・旧三井家下鴨別邸）","price":"各所有料公開（渉成園は庭園維持寄付金 大人700円以上・中高生300円以上）","how":"公開時間 10:00〜16:30（受付16:00終了）※高台寺・仁和寺御所庭園など一部例外あり","points":["嵐電最寄り＝北野天満宮（北野白梅町駅）・仁和寺御所庭園（御室仁和寺駅）","主催＝京都市観光協会"],"cautions":["箇所により公開期間・休止日が異なる（渉成園は8/5〜、高台寺は8/31まで等）→最新は公式サイト確認","問合せ 075-585-5181（10:00〜16:30）"],"details":[["公式","https://ja.kyoto.travel/specialopening/summer/"]],"sources":["駅運営/イベント/(260618)京の夏の旅2026_招待券送付案内.pdf"]},{"id":"goshuin-100th","cat":"event","title":"北野天満宮 特別御朱印（北野線100周年）","start":"2026-03-10","end":"2027-03-09","place":"北野天満宮","price":"初穂料 500円","how":"北野線全線開通100周年を記念した特別御朱印2種を授与（2026/3/10から1年間）","points":["100周年関連で現在も継続中の企画"],"cautions":[],"details":[],"sources":["駅運営/イベント/北野線100周年/(260220)鉄達2025-22_北野線100周年記念行事・関連イベント.pdf"]},{"id":"eiga-night","cat":"ticket","title":"太秦映画村ナイトタイム入村券","start":"2026-06-13","end":null,"place":"四条大宮・帷子ノ辻・嵐山・北野白梅町の各駅窓口","price":"大人 2,000円／子供（3歳〜小学生）1,300円 ※中・高校生の設定なし","how":"映画村の夜間営業（ナイトタイム）専用の入村券。入村可能時間は17:00〜21:00のみ","points":["乗車券は付かない入村券単体","通年販売"],"cautions":["ナイトタイム営業時間帯以外は入村不可＝販売時に必ず申し添える","駅窓口での払戻不可","映画村の定休村日に注意して発売"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/太秦映画村/(260610)鉄達2026-05_太秦映画村ナイトタイム入村券_発売.pdf"]},{"id":"hiei-freepass","cat":"ticket","title":"比叡山フリーパス","start":"2026-03-20","end":"2026-12-06","place":"発売＝叡山電車 出町柳駅／大津市坂本観光案内所／セブンチケット／LINE（比叡山・びわ湖）※嵐電の駅では発売なし","price":"大人 3,500円／小児 1,800円","how":"叡電（出町柳〜八瀬比叡山口）＋叡山ケーブル・ロープウェイ＋坂本ケーブル＋江若交通（坂本線・山内シャトルバス）が乗り降り自由","points":["有効＝発売日から翌月末までの好きな1日","山内シャトルバスは京阪バス・京都バス運行便にも乗車可"],"cautions":["紙券の払戻＝使用前かつ発売日当日に購入駅でのみ","拝観料（延暦寺等）は別途","セブン発券は緑色台紙"],"details":[["デジタル版","LINE「比叡山・びわ湖〈山と水と光の回廊〉」＝初回のみ「利用開始」タップ→改札で「見せる」"]],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/比叡山連携きっぷ/(260318)鉄達2025-26_比叡山フリーパス_取扱.pdf"]},{"id":"hiei-higaeri","cat":"ticket","title":"比叡山日帰りきっぷ","start":"2026-03-20","end":"2026-12-06","place":"発売＝叡山電車 出町柳駅（リンクティビティは予定）※嵐電の駅では発売なし","price":"大人 3,100円／小児 1,600円","how":"叡電＋叡山ケーブル・ロープウェイ＋山内シャトルバスが乗り降り自由（フリーパスとの違い＝坂本側〔坂本ケーブル・江若路線バス〕を含まない）","points":["有効＝購入から3カ月以内の好きな1日","券面呈示で比叡山諸堂巡拝の団体割引適用"],"cautions":["払戻＝使用前かつ発売日当日に購入駅でのみ","無人駅から利用開始時はお客様が券面に利用日を油性ペンで記入"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/比叡山連携きっぷ/(260318)鉄達2025-27_比叡山日帰りきっぷ_取扱.pdf"]},{"id":"hiei-ohfuku","cat":"ticket","title":"京都・比叡山頂往復切符（LINE専売）","start":"2026-04-18","end":"2026-12-06","place":"LINE「比叡山・びわ湖DMO」のみ（友だち登録が必要）＝駅窓口発売なし","price":"〜11/23＝大人 3,000円・小児 1,500円／11/24〜12/6＝大人 2,500円・小児 1,250円","how":"叡電（出町柳〜八瀬比叡山口）往復＋叡山ケーブル・ロープウェイ往復＋ガーデンミュージアム比叡入園券。いずれも途中下車前途無効","points":["スマホで「利用開始」タップ→当日限り有効のチケット画面を提示"],"cautions":["係員確認＝画面下部が「動きのある画面」で現在時刻が秒単位で動いていること","区間外乗越しは別途運賃収受","ガーデンミュージアム比叡の休園日は設定・発売なし"],"details":[["表示不調時","購入時のLINEメッセージで確認"],["問合せ","京阪 info@keihan.co.jp"]],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/比叡山連携きっぷ/(260417)鉄達2026-2_京都比叡山頂往復切符_取扱.pdf","乗車券・運賃・団体/企画乗車券（イベント移設）/比叡山連携きっぷ/(260408)京阪_京都比叡山頂往復切符_運用マニュアル.pdf"]},{"id":"hiei-odan","cat":"ticket","title":"比叡山横断チケット","start":"2026-04-18","end":"2026-12-06","place":"発売＝叡山電車 出町柳駅（紙券）※嵐電の駅では発売なし","price":"〜11/23＝大人 3,000円・小児 1,500円／11/24〜12/6＝大人 2,500円・小児 1,250円","how":"出町柳→八瀬→比叡山頂→延暦寺→坂本を各区間片道1回ずつ通り抜ける「横断」型＋ガーデンミュージアム比叡入園券","points":["有効＝発売日から翌月末までの好きな1日","乗り降り自由ではなく各社区間 片道1回限り（フリーパスとの違い）"],"cautions":["払戻＝使用前かつ発売日当日に購入駅でのみ","諸堂巡拝料等は別途","ガーデンミュージアム比叡の休園日は設定・発売なし"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/比叡山連携きっぷ/(260417)鉄達2026-3_比叡山横断チケット_取扱.pdf"]},{"id":"eigamura-set","cat":"ticket","title":"嵐電・映画村セット券（デジタル）","start":"2026-06-01","end":null,"place":"WEB販売＝LINKTIVITY／JTRweb（駅では引換のみ）","price":"大人 3,200円／こども 1,770円","how":"嵐電1日フリーきっぷ（全線）＋映画村入村券（1日通し・再入場不可）。お客様のバウチャーQRを駅で読取り→引換用フリーきっぷを発券","points":["引換駅が販売元で異なる＝LINKTIVITY版：四条大宮・帷子ノ辻・北野白梅町（9:00〜17:00）・嵐山（9:30〜17:00）／JTRweb版：四条大宮・嵐山のみ","通年販売"],"cautions":["引換は「催行会社 京福電気鉄道株式会社（嵐電）」表示のバウチャーで（LINKTIVITY・東映太秦映画村名義の画面は別バウチャーを表示してもらう）","キャンセル＝前日まで手数料220円/人・当日100%・お客様自身が販売元サイトで手続（駅では返金しない）","引換処理前に当日利用か確認"],"details":[["映画村入村","映画村窓口でQR提示"]],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/デジタル券取扱/(260525)通知_LINKTIVITY取扱券種追加.pdf","乗車券・運賃・団体/企画乗車券（イベント移設）/デジタル券取扱/(260528)通知_JTRweb取扱券種追加.pdf"]},{"id":"tetsuin","cat":"goods","title":"鉄印・鉄印帳","start":"2025-07-01","end":null,"place":"嵐山駅インフォメーション（9:30〜18:00）","price":"鉄印 各500円（福王子ひかる／京福書体／京都観光あらん／KYOTRAM）／鉄印帳 フリー版1,500円・近畿エリア版1,800円","how":"鉄印帳（フリー版または近畿エリア版）持参＋当社線利用の方に販売。京福・京都観光デザインは販売時に係員が専用スタンプを押印","points":["近畿エリア版参画＝叡山電鉄・京都丹後鉄道・和歌山電鐵など9社"],"cautions":["鉄印単体では販売不可（鉄印帳提示＋乗車利用が条件）"],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(250624)鉄達2025-05_鉄印帳コラボグッズ_発売.pdf","駅運営/嵐山駅インフォメーション全般/グッズ/(251204)通知_鉄印_追加発売.pdf"]},{"id":"goods-kyotram","cat":"goods","title":"KYOTRAMグッズ","start":"2025-10-20","end":null,"place":"嵐山駅インフォメーション（一部は京都市内郵便局でも）","price":"ハンドタオル800円／もちもちぬいぐるみ1,000円／レザーパスケース1,000円／珪藻土コースター1,000円／A5クリアファイル300円／ポストカード300円 ほか","how":"新型車両KYOTRAM関連グッズ","points":["既存品＝クリアファイル各500円・ピンバッジ900円・ご朱印帳＆ご朱印セット1,700円（在庫僅少）など"],"cautions":[],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(251014)鉄達2025-15_嵐電グッズ_発売開始.pdf","駅運営/嵐山駅インフォメーション全般/グッズ/グッズ一覧.xlsx"]},{"id":"goods-100th","cat":"goods","title":"100周年記念グッズ（北野線・叡山ケーブル）","start":"2026-03-10","end":null,"place":"北野線100周年グッズ＝北野白梅町駅・映菓座／叡山ケーブル100周年グッズ＝ケーブル八瀬駅のみ ※嵐山駅では取扱なし","price":"記念硬券乗車券セット（17枚入）4,250円／アクリル連結キーホルダー700円／クリアファイル500円／ロゴピンバッジ800円（以上北野線）／キーホルダー500円・バッジ600円・マグネット500円・トート500円・クリアファイル500円（以上叡山ケーブル）","how":"北野線全線開通100周年（2026/3/10）・叡山ケーブル開業100周年（2026/3/20）の記念商品","points":["映菓座＝帷子ノ辻駅ビル「ランデンプラザ帷子」2階・11:00〜18:00"],"cautions":["3/10イベントで売切れた品は以後取扱なし（在庫要確認）"],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(260306)鉄達2025-25_新グッズ発売開始_100周年記念.pdf"]},{"id":"goshuincho","cat":"goods","title":"ご朱印帳（3柄）","start":null,"end":null,"place":"各駅にて販売","price":"各 1,000円（2026/3/20改定＝旧800円）","how":"友禅紙御朱印帳（桜・てまり・おしどり の3柄）","points":["「京都・嵐山1dayパス」提示で200円引き（→800円）※春版パスは5/24販売終了のため現在は対象者僅少"],"cautions":["御朱印めぐりキット（フリーきっぷセット）は2026/3/20で発売終了＝以後は単品販売のみ"],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(260319)鉄達2025-31_ご朱印帳価格改定_御朱印めぐりキット発売終了.pdf"]},{"id":"goods-basho","cat":"joho","title":"グッズ取扱場所の変更・オンラインストア","start":null,"end":null,"place":"映菓座（帷子ノ辻駅ビル2階・11:00〜18:00）／JR東海MARKET「京福電気鉄道オンラインストア」","price":"—","how":"帷子ノ辻駅窓口でのグッズ販売は2025/12/31で終了→購入希望のお客様は映菓座へ案内。オンラインはJR東海MARKET（2026/4/23開設）","points":["オンライン主要商品＝KYOTRAM製造記念アクリルプレート8,000円・ラバーキーホルダー800円"],"cautions":[],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(251217)通知_映菓座グッズ取扱開始_帷子ノ辻グッズ販売終了.pdf","駅運営/嵐山駅インフォメーション全般/グッズ/グッズ商品一覧_100周年記念等.pdf"]},{"id":"free-kippu-refund","cat":"joho","title":"引換用「嵐電1日フリーきっぷ」＝払戻不可の券面運用","start":"2026-03-17","end":null,"place":"各駅窓口","price":"—","how":"2026/3/17以降、引換用1日フリーきっぷの券面下部に「払戻不可」表記を追加（販売金額表示は削除）","points":["デジタル券（セット券等）の引換で発券するフリーきっぷが対象"],"cautions":["払戻の要望時は適用日付と券面を確認し、「払戻不可」記載があるものは返金処理を行わない"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/癒しの嵐電1日フリーきっぷ/(260317)通知_嵐電1日フリーきっぷ_券面変更.pdf"]},{"id":"iyashi-2026spring","cat":"ticket","title":"癒しの嵐電1日フリーきっぷ（2026春版）","start":"2026-03-14","end":"2026-06-30","place":"四条大宮・帷子ノ辻・嵐山・北野白梅町","price":"1,700円（大人券のみ）","how":"宝厳院庭園拝観券＋宝厳院本堂参拝券＋弘源寺拝観割引券の冊子＋嵐電1日フリーきっぷのセット","points":["通常合計1,900円相当"],"cautions":["領収書はPOS発券のものではなく手書きで対応（但書＝癒しの嵐電1日フリーきっぷ乗車券代として）"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/癒しの嵐電1日フリーきっぷ/(260305)通知_2026春版_癒しの嵐電1日フリーきっぷ発売.pdf"],"ended_note":"秋版の通知が届き次第、新項目として登録"},{"id":"1daypass-2026spring","cat":"ticket","title":"京都・嵐山1dayパス（2026春版・デジタル）","start":"2026-03-20","end":"2026-05-24","place":"スルッとQRttoサイトのみ（磁気券は今期より終了・駅窓口発売なし）","price":"阪急版1,400円／能勢版1,700円／山陽・明石以東版2,200円／山陽全線版2,700円／神戸市営地下鉄版2,000円（各大人のみ）","how":"阪急全線等＋嵐電全線＋京都バス（嵐山・嵯峨野エリア）乗り放題のデジタル乗車券","points":["嵐電特典＝駅の足湯50円引き・ご朱印帳200円引き"],"cautions":["降車時にスマホ画面の券面（券種名・有効期限・人数）を確認"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/京都・嵐山1dayパス/(260319)鉄達2025-28_京都嵐山1dayパス春版_取扱.pdf"],"ended_note":"夏版・秋版の通知が届き次第、新項目として登録"},{"id":"yokai-densha","cat":"event","title":"妖怪電車","start":null,"end":null,"status_override":"pending","place":"嵐山本線 四条大宮〜嵐山（チケット販売＝嵐山駅・四条大宮駅）","price":"専用乗車券 大人250円・こども120円（2024年実績）","how":"ブラックライト・妖怪装飾の特別列車（例年8月上旬・夕方〜夜に運行）。専用乗車券を各便発車前に駅で販売（当日券のみ）","points":["妖怪仮装のお客様には「妖怪札」進呈（過去実績）"],"cautions":["専用乗車券は払戻不可・ICカード利用不可","完売あり（1便130枚程度・過去実績）"],"details":[],"sources":["駅運営/イベント/妖怪電車/2024年/(240728)妖怪電車【嵐山駅】まとめ2024.docx"],"pending_note":"2026年版の実施資料は未着＝詳細未定。資料が届き次第ここを更新（上記は2024年実績）"},{"id":"100th-march","cat":"event","title":"北野線100周年 記念行事（3月）","start":"2026-03-10","end":"2026-03-31","place":"北野白梅町駅ほか北野線各所","price":"御朱印500円・グッズ各種","how":"3/10に御朱印授与・和菓子振舞い（先着300名）・グッズ販売・KYOTRAM2/3号車営業開始・記念ヘッドマーク掲出","points":["堂本印象美術館アート展示（3/10〜22）・北野線5駅スタンプラリー・旧邸御室特別公開（3/28・29）・帷子ノ辻駅写真展"],"cautions":[],"details":[],"sources":["駅運営/イベント/北野線100周年/(260220)鉄達2025-22_北野線100周年記念行事・関連イベント.pdf"],"ended_note":"継続中の関連企画＝特別御朱印（進行中欄）・100周年グッズ（グッズ欄）参照"},{"id":"100th-tour","cat":"event","title":"嵐山〜北野白梅町 直通列車ツアー（100周年）","start":"2026-03-12","end":"2026-03-12","place":"嵐山駅3番線発着","price":"5,000円（大人こども同額）","how":"KYOTRAM初の重連貸切・2部制（ローソントラベル申込）。帰着後に撮影会・部品販売会","points":[],"cautions":[],"details":[],"sources":["駅運営/イベント/北野線100周年/(260220)鉄達2025-23_嵐山〜北野白梅町_直通列車運行イベント.pdf"]},{"id":"linktivity-torokko","cat":"ticket","title":"嵐電1日フリー＋トロッコ片道セット（LINKTIVITY）","start":"2025-09-13","end":"2025-12-29","place":"WEB予約のみ（引換＝四条大宮・帷子ノ辻・北野白梅町9:00〜17:00・嵐山9:30〜17:00）","price":"大人1,580円／こども790円","how":"嵐電全線1日乗り放題＋トロッコ片道（指定列車）","points":[],"cautions":["キャンセル＝トロッコ:前日まで無料・当日100%／嵐電:前日まで220円・当日100%（オンライン手続のみ）"],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/デジタル券取扱/(250909)通知_LINKTIVITY取扱券種追加.pdf"],"ended_note":"2026年秋版が出た場合は新項目として登録"},{"id":"yase-sotoasobi","cat":"ticket","title":"『やせのそとあそび』ケーブル往復割引クーポン","start":"2026-05-16","end":"2026-05-17","place":"ケーブル八瀬駅前","price":"往復 大人2,000→1,800円／こども1,000→900円","how":"イベントチラシ持参者に割引運賃で往復券を発売（2日間限定）","points":[],"cautions":[],"details":[],"sources":["乗車券・運賃・団体/企画乗車券（イベント移設）/その他クーポン/(260430)鉄達2026-04_やせのそとあそび_ケーブル往復割引クーポン.pdf"]},{"id":"goshuin-kit","cat":"goods","title":"御朱印めぐりキット（ご朱印帳＋フリーきっぷ）","start":null,"end":"2026-03-20","place":"各駅","price":"—","how":"ご朱印帳と嵐電1日フリーきっぷのセット商品","points":[],"cautions":[],"details":[],"sources":["駅運営/嵐山駅インフォメーション全般/グッズ/(260319)鉄達2025-31_ご朱印帳価格改定_御朱印めぐりキット発売終了.pdf"],"ended_note":"2026/3/20で発売終了＝以後ご朱印帳は単品販売のみ（1,000円）"}];
+var CATN={event:'イベント',ticket:'企画乗車券・きっぷ',goods:'グッズ',joho:'常設・共通'};
+function jnow(){var d=new Date(Date.now()+9*3600e3);return d.toISOString().slice(0,10);}
+function fmtd(s){if(!s)return '';var p=s.split('-');return (+p[1])+'/'+(+p[2]);}
+function fmtdy(s){if(!s)return '';var p=s.split('-');return p[0]+'/'+(+p[1])+'/'+(+p[2]);}
+function daysTo(s,today){var a=new Date(s+'T00:00:00'),b=new Date(today+'T00:00:00');return Math.round((a-b)/864e5);}
+function stOf(e,today){
+ if(e.status_override==='pending')return{k:'pend',t:'実施未定・資料待ち'};
+ if(e.end&&today>e.end)return{k:'fin',t:fmtd(e.end)+' 終了'};
+ if(e.start&&today<e.start)return{k:'soon',t:fmtd(e.start)+' 開始予定'};
+ if(!e.end)return{k:'ok',t:e.start?'実施中・通年':'常設'};
+ var d=daysTo(e.end,today);
+ return{k:'ok',t:'実施中・あと'+d+'日'};
+}
+function period(e){
+ if(!e.start&&!e.end)return '期間の定めなし（終了通知が出るまで継続）';
+ var a=e.start?fmtdy(e.start):'', b=e.end?fmtdy(e.end):'当分の間（通年）';
+ return '期間 '+a+' 〜 '+b;
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function card(e,st){
+ var h='<div class="card'+(st.k==='fin'?' end':'')+'" data-cat="'+e.cat+'" data-st="'+st.k+'">';
+ h+='<div class="tt"><span class="cat '+e.cat+'">'+CATN[e.cat]+'</span><span class="name">'+esc(e.title)+'</span><span class="st '+st.k+'">'+st.t+'</span></div>';
+ h+='<div class="per">'+esc(period(e))+'</div>';
+ if(st.k!=='fin'){
+  h+='<div class="gd">';
+  h+='<div class="gi"><div class="k">取扱・場所</div><div class="v">'+esc(e.place||'—')+'</div></div>';
+  h+='<div class="gi"><div class="k">金額</div><div class="v">'+esc(e.price||'—')+'</div></div>';
+  h+='<div class="gi"><div class="k">内容・方法</div><div class="v">'+esc(e.how||'—')+'</div></div>';
+  h+='</div>';
+  if(e.points&&e.points.length){h+='<ul class="pt">';e.points.forEach(function(p){h+='<li>'+esc(p)+'</li>';});h+='</ul>';}
+  if(e.cautions&&e.cautions.length){h+='<div class="cau">';e.cautions.forEach(function(c){h+='<div>'+esc(c)+'</div>';});h+='</div>';}
+  if(e.details&&e.details.length){h+='<details><summary>詳細を開く</summary><table class="dtb">';e.details.forEach(function(r){h+='<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';});h+='</table></details>';}
+  if(e.pending_note)h+='<div class="endnote">'+esc(e.pending_note)+'</div>';
+ }else{
+  var mini=[];if(e.price&&e.price!=='—')mini.push(e.price);if(e.place)mini.push(e.place);
+  h+='<details><summary>終了時の内容を見る</summary><table class="dtb">';
+  [['取扱・場所',e.place],['金額',e.price],['内容',e.how]].forEach(function(r){if(r[1]&&r[1]!=='—')h+='<tr><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';});
+  (e.cautions||[]).forEach(function(c){h+='<tr><td>注意</td><td>'+esc(c)+'</td></tr>';});
+  h+='</table></details>';
+  if(e.ended_note)h+='<div class="endnote">▶ '+esc(e.ended_note)+'</div>';
+ }
+ if(e.sources&&e.sources.length)h+='<details class="src"><summary style="color:#9a9aa5">出典（社内資料）</summary>'+e.sources.map(esc).join('<br>')+'</details>';
+ h+='</div>';
+ return h;
+}
+var CUR='all';
+function render(){
+ var today=jnow();document.getElementById('today').textContent=fmtdy(today);
+ var q=(document.getElementById('q').value||'').trim().toLowerCase();
+ var act=[],fin=[];
+ EV.forEach(function(e){
+  if(CUR!=='all'&&CUR!=='fin'&&e.cat!==CUR)return;
+  if(q){var blob=(e.title+' '+(e.place||'')+' '+(e.price||'')+' '+(e.how||'')+' '+(e.points||[]).join(' ')+' '+(e.cautions||[]).join(' ')).toLowerCase();if(blob.indexOf(q)<0)return;}
+  var st=stOf(e,today);
+  if(st.k==='fin')fin.push([e,st]);else act.push([e,st]);
+ });
+ act.sort(function(a,b){var ea=a[0].end||'9999',eb=b[0].end||'9999';if(ea!==eb)return ea<eb?-1:1;return (a[0].start||'')<(b[0].start||'')?-1:1;});
+ fin.sort(function(a,b){var ea=a[0].end||'',eb=b[0].end||'';return ea>eb?-1:1;});
+ var h='';
+ if(CUR!=='fin'){
+  h+='<div class="sec">進行中・発売中（'+act.length+'件・終了が近い順）</div>';
+  if(!act.length)h+='<div id="none">該当なし</div>';
+  act.forEach(function(x){h+=card(x[0],x[1]);});
+ }
+ if(fin.length&&(CUR==='all'||CUR==='fin')){
+  h+='<div class="sec">終了済み（'+fin.length+'件・履歴）</div>';
+  fin.forEach(function(x){h+=card(x[0],x[1]);});
+ }else if(CUR==='fin'&&!fin.length){h+='<div id="none">該当なし</div>';}
+ document.getElementById('bd').innerHTML=h;
+}
+var chips=[['all','すべて'],['event','イベント'],['ticket','きっぷ'],['goods','グッズ'],['joho','常設'],['fin','終了済み']];
+var ch=document.getElementById('chips');
+chips.forEach(function(c){var b=document.createElement('button');b.className='chip'+(c[0]==='all'?' on':'');b.textContent=c[1];b.onclick=function(){CUR=c[0];ch.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');render();};ch.appendChild(b);});
+document.getElementById('q').addEventListener('input',render);
+render();
+setInterval(function(){var t=jnow();if(window._lastD!==t){window._lastD=t;render();}},60000);
+</script>
+</body>
+</html>

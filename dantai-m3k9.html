@@ -158,6 +158,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 <div class="card res" id="kRes" style="display:none;">
   <div class="resL">
   <div class="rrow"><span>貸切基本料金</span><b id="kBase"></b></div>
+  <div class="rrow" id="kKaisoRow"><span>回送料金（片道・1.5往復時）</span><b id="kKaiso"></b></div>
   <div class="rrow"><span>乗車運賃</span><b id="kFare"></b></div>
   <div class="rrow"><span>留置料金</span><b id="kRyu"></b></div>
   <div class="rrow"><span>オプション（ガイド/テーブル/音響/HM/車両指定）</span><b id="kOpt"></b></div>
@@ -169,7 +170,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 </div>
 <div class="card notes">
-<b>料金</b>＝基本25,000円/両（1.5往復・2往復は×2）＋運賃 片道130/往復260/1.5往復390/2往復520円×人数。留置＝30分まで無料/31〜60分6,000円/61〜90分12,000円（最大90分）。ガイド電車6,000円・テーブル/音響 各3,000円（音響はガイド電車なら不要）・ヘッドマーク25,000円・プレミアムトレイン35,000円。<br>
+<b>料金</b>＝<b>基本12,500円/両（片道1本につき）</b>。<b>片道・1.5往復は車両が起点に戻らないため回送料12,500円/両を加算</b>。→ 片道25,000円・往復25,000円・1.5往復50,000円・2往復50,000円（1両あたり）。＋運賃 片道130/往復260/1.5往復390/2往復520円×人数。留置＝30分まで無料/31〜60分6,000円/61〜90分12,000円（最大90分）。ガイド電車6,000円・テーブル/音響 各3,000円（音響はガイド電車なら不要）・ヘッドマーク25,000円・プレミアムトレイン35,000円。<br>
 ・貸切は1日2件まで。受付不可時間帯＝平日 四条大宮14:50〜15:50頃／土日休日 12:50〜13:50頃。<br>
 ・「1.5往復」「2往復」はお客様の要望時のみ。KYOTRAM・301号は貸切/プレミアム対象外。申込＝運輸課（075-801-2511/2512）。<br>
 <b>【お客様説明・年齢区分】</b>幼児（1歳以上6歳未満）も乗車人員1名として計算（マニュアル1-4の幼児取扱い）。乳児（1歳未満）は人数に含めない。<br>
@@ -198,21 +199,27 @@ function calcGroup(p){ // {kind:'ippan'|'gakusei', ad, ch, ow:1|2}
 }
 // ─ 貸切計算（原本「嵐電 貸切電車計算表」と同一ロジック） ─
 function calcKashi(p){ // {ry, nn, kt:1-4, rc:0|2|3, gd, tb, on, hm, pm}
-  var base=p.ry*25000*(p.kt>=3?2:1);
+  // 基本料金＝片道12,500円/両（細則 別表1・公式サイト）。片道本数が奇数＝車両が起点に戻らないため回送料12,500円/両を加算。
+  // 片道=12,500+回送12,500=25,000／往復=25,000／1.5往復=37,500+回送12,500=50,000／2往復=50,000
+  var TRIPS=[0,1,2,3,4][p.kt];           // 片道本数
+  var base=p.ry*12500*TRIPS;
+  var kaiso=(TRIPS%2===1)?p.ry*12500:0;  // 奇数本（片道・1.5往復）のみ回送料
   var unit=[0,130,260,390,520][p.kt];
   var fare=p.nn*unit;
   var ryu=(p.rc<=1)?0:(p.rc===2?6000:12000);
   var gd=p.gd?6000:0, tb=p.tb*3000, on=(p.on&&!p.gd)?3000:0, hm=p.hm?25000:0, pm=p.pm?35000:0;
-  var sum=base+fare+ryu+gd+tb+on+hm+pm;
+  var sum=base+kaiso+fare+ryu+gd+tb+on+hm+pm;
   var KTL=['','片道','往復','1.5往復','2往復'];
-  var parts=['基本料金 '+YEN(base),'運賃（'+KTL[p.kt]+' '+YEN(unit)+'）×'+p.nn+'名'];
+  var parts=['基本料金 '+YEN(base)];
+  if(kaiso)parts.push('回送料 '+YEN(kaiso));
+  parts.push('運賃（'+KTL[p.kt]+' '+YEN(unit)+'）×'+p.nn+'名');
   if(ryu)parts.push('留置 '+YEN(ryu));
   if(gd)parts.push('ガイド '+YEN(gd));
   if(tb)parts.push('テーブル '+YEN(tb));
   if(on)parts.push('音響 '+YEN(on));
   if(hm)parts.push('ヘッドマーク '+YEN(hm));
   if(pm)parts.push('車両指定 '+YEN(pm));
-  return {base:base,fare:fare,ryu:ryu,opt:gd+tb+on+hm+pm,sum:sum,unit:unit,
+  return {base:base,kaiso:kaiso,fare:fare,ryu:ryu,opt:gd+tb+on+hm+pm,sum:sum,unit:unit,
     f:parts.join(' ＋ ')+' ＝ '+YEN(sum)};
 }
 // ─ 特別割引（第1種＝本人・介護者 各5割引・10円未満切上げ／規程2025-04-01） ─
@@ -348,6 +355,8 @@ function render(){
     var r2=calcKashi({ry:st.kRy,nn:nn,kt:st.kKt,rc:st.kRc,gd:st.kOp.gd,tb:tb,on:st.kOp.on,hm:st.kOp.hm,pm:st.kOp.pm});
     box2.style.display='block';
     document.getElementById('kBase').textContent=YEN(r2.base);
+    document.getElementById('kKaisoRow').style.display=(r2.kaiso>0)?'':'none';
+    document.getElementById('kKaiso').textContent=YEN(r2.kaiso);
     document.getElementById('kFare').textContent=YEN(r2.unit)+'×'+nn+'名＝'+YEN(r2.fare);
     document.getElementById('kRyu').textContent=YEN(r2.ryu);
     document.getElementById('kOpt').textContent=YEN(r2.opt);

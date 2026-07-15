@@ -177,7 +177,7 @@ function render(){
   if(!act.length)h+='<div id="none">該当なし</div>';
   h+='<div class="cards">'+act.map(function(x){return card(x[0],x[1],today);}).join('')+'</div>';
  }
- if(fin.length&&(CUR==='all'||CUR==='fin')){
+ if(fin.length){
   h+='<div class="sec">⚪ 終了済み <span class="n">'+fin.length+'</span><span class="s">新しい順・履歴として保持</span></div>';
   h+='<div class="cards">'+fin.map(function(x){return card(x[0],x[1],today);}).join('')+'</div>';
  }else if(CUR==='fin'&&!fin.length){h+='<div id="none">該当なし</div>';}

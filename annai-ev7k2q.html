@@ -160,14 +160,13 @@ function render(){
   var st=stOf(e,today);
   if(st.k==='fin')fin.push([e,st]);else act.push([e,st]);
  });
- var co={event:0,ticket:1,regular:2,goods:3,joho:4};
- act.sort(function(a,b){var ca=co[a[0].cat],cb=co[b[0].cat];if(ca!==cb)return ca-cb;var ea=a[0].end||'9999',eb=b[0].end||'9999';if(ea!==eb)return ea<eb?-1:1;return 0;});
+ act.sort(function(a,b){var sa=a[0].start||'0000',sb=b[0].start||'0000';if(sa!==sb)return sa>sb?-1:1;var ea=a[0].end||'9999',eb=b[0].end||'9999';return ea<eb?-1:1;});
  fin.sort(function(a,b){var ea=a[0].end||'',eb=b[0].end||'';return ea>eb?-1:1;});
  var h='';
  var _all=act.concat(fin);
  if(_all.length>1){h+='<div class="ovw">'+_all.map(function(x){var e=x[0],st=x[1];return '<button class="ovt s-'+st.k+'" data-jump="'+e.id+'"><span class="d"></span><span class="tx">'+CATI[e.cat]+' '+esc(e.title)+'</span></button>';}).join('')+'</div>';}
  if(CUR!=='fin'){
-  h+='<div class="sec">🟢 進行中・発売中 <span class="n">'+act.length+'</span><span class="s">カテゴリ順→終了が近い順</span></div>';
+  h+='<div class="sec">🟢 進行中・発売中 <span class="n">'+act.length+'</span><span class="s">最新順（開始日の新しい順）</span></div>';
   if(!act.length)h+='<div id="none">該当なし</div>';
   var lastCat='';
   act.forEach(function(x){h+=card(x[0],x[1],today);});

@@ -41,6 +41,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 .bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#34c48f,#0f9e75);border-radius:99px}
 .bar b{position:absolute;top:-2px;width:2px;height:12px;background:#25223d}
 .ovw{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+@media(min-width:680px){.ovw{grid-template-columns:1fr 1fr 1fr}}
 .ovt{text-align:left;font-size:12.5px;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:#fafafe;cursor:pointer;display:flex;gap:6px;align-items:center;font-family:inherit;color:var(--tx)}
 .ovt span.tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ovt .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
@@ -48,6 +49,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 .ovt.s-fin{opacity:.6}.ovt.s-fin .tx{text-decoration:line-through}
 .card.flash{outline:3px solid #7c3aed;outline-offset:2px}
 .kvs{margin-bottom:9px;background:#f7f7fa;border-radius:10px;padding:8px 12px;display:grid;grid-template-columns:1fr;gap:7px}
+@media(min-width:680px){.kvs{grid-template-columns:1fr 1fr}.kv.wide{grid-column:1/-1}}
 .vl.ck{list-style:none;padding-left:2px}
 .vl.ck li{padding-left:19px;position:relative}
 .vl.ck li:before{content:'✓';position:absolute;left:0;color:#0f9e75;font-weight:700}

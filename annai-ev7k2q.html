@@ -19,10 +19,13 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 .chip{flex:0 0 auto;font-size:13px;padding:6px 14px;border-radius:99px;background:#413d63;color:#d9d7ee;cursor:pointer;white-space:nowrap;border:none;font-family:inherit}
 .chip.on{background:#fff;color:#25223d;font-weight:700}
 #bd{max-width:880px;margin:0 auto;padding:12px 12px 40px}
+@media(min-width:1000px){#bd{max-width:1400px}}
+.cards{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:8px}
+@media(min-width:1000px){.cards{grid-template-columns:1fr 1fr;align-items:start}}
 .sec{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin:18px 4px 10px}
 .sec .n{font-size:12px;font-weight:700;background:#25223d;color:#fff;border-radius:99px;padding:1px 9px}
 .sec .s{font-size:11px;font-weight:400;color:var(--sub)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 0 10px;margin-bottom:12px;overflow:hidden}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 0 10px;margin-bottom:0;overflow:hidden}
 .card.end{opacity:.68;padding-bottom:8px}
 .chd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px 8px;border-left:5px solid}
 .chd.event{border-color:var(--ev);background:var(--evbg)}.chd.ticket{border-color:var(--tk);background:var(--tkbg)}.chd.regular{border-color:var(--rg);background:var(--rgbg)}.chd.goods{border-color:var(--gd);background:var(--gdbg)}.chd.joho{border-color:var(--jh);background:var(--jhbg)}
@@ -175,12 +178,11 @@ function render(){
  if(CUR!=='fin'){
   h+='<div class="sec">🟢 進行中・発売中 <span class="n">'+act.length+'</span><span class="s">最新順（開始日の新しい順）</span></div>';
   if(!act.length)h+='<div id="none">該当なし</div>';
-  var lastCat='';
-  act.forEach(function(x){h+=card(x[0],x[1],today);});
+  h+='<div class="cards">'+act.map(function(x){return card(x[0],x[1],today);}).join('')+'</div>';
  }
  if(fin.length&&(CUR==='all'||CUR==='fin')){
   h+='<div class="sec">⚪ 終了済み <span class="n">'+fin.length+'</span><span class="s">新しい順・履歴として保持</span></div>';
-  fin.forEach(function(x){h+=card(x[0],x[1],today);});
+  h+='<div class="cards">'+fin.map(function(x){return card(x[0],x[1],today);}).join('')+'</div>';
  }else if(CUR==='fin'&&!fin.length){h+='<div id="none">該当なし</div>';}
  document.getElementById('bd').innerHTML=h;
 }

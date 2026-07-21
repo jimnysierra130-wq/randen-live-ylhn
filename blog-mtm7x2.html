@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ブログ新着まとめ</title>
+<style>
+:root{--bg:#f6f3ef;--card:#fff;--tx:#221c14;--sub:#7a6f63;--line:#e8e2d9;--hd:#a8420a;--hd2:#c4703a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif;font-size:15px;line-height:1.55}
+#hd{position:sticky;top:0;z-index:9;background:var(--hd);color:#fff;padding:6px 14px 5px;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+#hd .ttl{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap}
+#hd h1{margin:0;font-size:17px;font-weight:700;white-space:nowrap}
+#hd .cnt{font-size:12px;font-weight:400;opacity:.85}
+#hd .sub{font-size:11px;opacity:.75;white-space:nowrap}
+#hd input{flex:1 1 220px;min-width:170px;padding:7px 14px;border:none;border-radius:10px;font-size:15px;background:#fff;color:var(--tx)}
+#chips{display:flex;gap:6px;overflow-x:auto;padding:6px 0 3px;-webkit-overflow-scrolling:touch}
+#chips::-webkit-scrollbar{height:0}
+.chip{flex:0 0 auto;font-size:13px;padding:6px 14px;border-radius:99px;background:rgba(255,255,255,.18);color:#ffe9db;cursor:pointer;white-space:nowrap;border:1px solid rgba(255,255,255,.35);font-family:inherit}
+.chip.on{background:#fff;color:var(--hd);font-weight:700;border-color:#fff}
+#bd{max-width:880px;margin:0 auto;padding:12px 12px 40px}
+@media(min-width:1000px){#bd{max-width:1400px}}
+.secov,.sec{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin:16px 4px 9px}
+.secov .n,.sec .n{font-size:12px;font-weight:700;background:var(--hd);color:#fff;border-radius:99px;padding:1px 9px}
+.secov .s{font-size:11px;font-weight:400;color:var(--sub)}
+.ovw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
+@media(min-width:680px){.ovw{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.ovt{text-align:left;font-size:12.5px;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:#fdfbf8;cursor:pointer;display:flex;gap:6px;align-items:center;font-family:inherit;color:var(--tx);min-width:0}
+.ovt .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.ovt .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.cards{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:6px}
+@media(min-width:1000px){.cards{grid-template-columns:1fr 1fr;align-items:start}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;scroll-margin-top:110px}
+.card.flash{outline:3px solid var(--hd);outline-offset:2px}
+.chd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 12px 6px;border-left:5px solid}
+.cat{font-size:10.5px;padding:2px 8px;border-radius:4px;font-weight:700;color:#fff}
+.bnm{font-size:12px;font-weight:700;color:#4a3f33;flex:1 1 auto}
+.dt{font-size:11.5px;color:var(--sub);font-variant-numeric:tabular-nums}
+.st.new{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:800;background:#fcebeb;color:#c1272d}
+.crow{display:flex;gap:11px;padding:9px 12px;cursor:pointer;align-items:center}
+.crow:hover{background:#faf7f2}
+.thumb{flex:0 0 auto;width:104px;height:70px;border-radius:9px;object-fit:cover;background:#efe9e1;border:1px solid var(--line)}
+.thumb.ph{display:flex;align-items:center;justify-content:center;font-size:26px}
+.name{font-size:13.5px;font-weight:700;flex:1;min-width:0;color:#31281c;overflow-wrap:anywhere}
+.arw{flex:0 0 auto;color:var(--sub);font-size:11px;transition:transform .2s}
+.card.open .arw{transform:rotate(90deg)}
+.cbody{display:none;padding:0 12px 12px}
+.card.open .cbody{display:block}
+.prev{display:flex;gap:12px;flex-wrap:wrap;background:#fbf9f5;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.prev .big{width:240px;max-width:100%;max-height:190px;height:auto;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:0 0 auto}
+.prev p{margin:0;flex:1;min-width:200px;font-size:13px;color:#3d342a;line-height:1.7}
+.custw{margin-top:8px}
+.cust{display:inline-block;font-size:12.5px;color:#8a3d00;background:#fdefe0;border:1px solid #f0d4b0;border-radius:8px;padding:4px 11px;text-decoration:none;font-weight:700}
+.cust:hover{background:#fbe2c8}
+#none{color:var(--sub);font-size:13px;padding:24px;text-align:center;display:none}
+#ft{max-width:880px;margin:0 auto;padding:0 14px 30px;font-size:11px;color:#9a8f80;line-height:1.7}
+#ft summary{cursor:pointer;font-weight:700;color:#6b5c49}
+#ft ul{list-style:none;padding-left:6px;margin-top:6px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:3px}
+#ft li::before{content:'・';color:var(--hd)}
+@media(max-width:640px){.thumb{width:86px;height:58px}.name{font-size:12.5px}.prev .big{width:100%;max-height:220px}}
+</style>
+</head>
+<body>
+<div id="hd">
+<div class="ttl"><h1>📰 ブログ新着まとめ <span class="cnt">（144件）</span></h1><span class="sub">更新 2026-07-21 12:15 ／ 15ブログ自動監視・毎日5時/18時更新</span><input id="q" type="search" placeholder="🔍 検索（店名・地名・ブログ名など）"></div>
+<div id="chips"><button class="chip on" data-c="all">すべて（144）</button><button class="chip" data-c="kyoto">京都（64）</button><button class="chip" data-c="shiga">滋賀（15）</button><button class="chip" data-c="thai">タイ・パタヤ（42）</button><button class="chip" data-c="car">ジムニー・車（14）</button><button class="chip" data-c="rail">鉄道ニュース（9）</button></div>
+</div>
+<div id="bd">
+<div class="secov">🆕 直近の新着 <span class="n">23</span><span class="s">タップでその記事へ移動</span></div><div class="ovw"><button class="ovt" data-target="c0" data-c="shiga"><span class="d" style="background:#0e8a7b"></span><span class="tx">【大調査】あなたはパン派？ごはん派？毎日の朝食事情を教えてください！</span></button><button class="ovt" data-target="c1" data-c="shiga"><span class="d" style="background:#0e8a7b"></span><span class="tx">滋賀県初「ロピア 彦根ナフコ店」が2026年今秋オープンへ 正式発表</span></button><button class="ovt" data-target="c2" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">京都西京区大枝［PIZZERIA IL PICCOLINO（イル ピッコリーノ）］自然の中で味わう本格ピッツァ</span></button><button class="ovt" data-target="c3" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都市伏見区】伏見大手筋に女性専用24時間ジム「SHE-FIT24H」が登場予定！現地には看板もありましたよ～。</span></button><button class="ovt" data-target="c4" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都】烏丸の路地裏にライブ感溢れる炉端酒場が誕生！名物はのどぐろ姿焼き「SuSuCoLi」</span></button><button class="ovt" data-target="c5" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【新店】京都駅近くで名物ローストビーフと洋風アテを気軽に！昼飲みでもできる「SUNS」</span></button><button class="ovt" data-target="c6" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都】朝4時半から並ぶファンも…背脂醤油ラーメンの老舗「ますたに本店」最後の営業日</span></button><button class="ovt" data-target="c7" data-c="shiga"><span class="d" style="background:#0e8a7b"></span><span class="tx">滋賀県民は食べてる？伝統の発酵食品「鮒寿司」実食アンケート</span></button><button class="ovt" data-target="c8" data-c="thai"><span class="d" style="background:#b7791f"></span><span class="tx">終わってしまったサッカーW杯２０２６…【２０２６.７】</span></button><button class="ovt" data-target="c9" data-c="thai"><span class="d" style="background:#b7791f"></span><span class="tx">タイ航空のフラッシュセール 運賃15,000円なれど</span></button><button class="ovt" data-target="c10" data-c="rail"><span class="d" style="background:#57534e"></span><span class="tx">会津鉄道の列車とクマが衝突 乗客・乗員にケガなし 福島・下郷町</span></button><button class="ovt" data-target="c11" data-c="rail"><span class="d" style="background:#57534e"></span><span class="tx">線路内のクマ2頭、列車と衝突 福島</span></button><button class="ovt" data-target="c12" data-c="rail"><span class="d" style="background:#57534e"></span><span class="tx">JR鹿児島線の橋桁にトラック衝突 久留米−荒木間で運転見合わせ</span></button><button class="ovt" data-target="c13" data-c="rail"><span class="d" style="background:#57534e"></span><span class="tx">「ホームで列車と人が接触」女性が列車の下敷きに 心肺停止で搬送 堺市</span></button><button class="ovt" data-target="c14" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都エンタメ】祇園四条通り歌舞伎発祥地『京都南座』の夏以降が熱い！注目作品続々☆</span></button><button class="ovt" data-target="c15" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都イベント】大丸に響き渡る悲鳴！伝説の「比叡山お化け屋敷」で恐怖納涼体験</span></button><button class="ovt" data-target="c16" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都】非公開「香雲亭」で唯一無二の食体験！二条城で味わう夏朝食「ゆば粥御膳」</span></button><button class="ovt" data-target="c17" data-c="kyoto"><span class="d" style="background:#c0392b"></span><span class="tx">【京都市伏見区】7月25日は「砂川夏まつり2026」開催！駅チカ1分で楽しめる地域の夏イベント。</span></button><button class="ovt" data-target="c18" data-c="shiga"><span class="d" style="background:#0e8a7b"></span><span class="tx">物価高に伴う生活意識と経済対策に関するアンケート2026</span></button><button class="ovt" data-target="c19" data-c="shiga"><span class="d" style="background:#0e8a7b"></span><span class="tx">三井アウトレットパーク滋賀竜王で らぁ〜めん京 の旨辛「朱（あか）らぁ〜めん」を食べてきました</span></button><button class="ovt" data-target="c20" data-c="car"><span class="d" style="background:#2563eb"></span><span class="tx">【徹底解説】車検に通るリアフォグの保安基準について【リアフォグ後付けDIY】</span></button><button class="ovt" data-target="c21" data-c="thai"><span class="d" style="background:#b7791f"></span><span class="tx">タイ・エアアジアX 日本線は冬季スケジュールで増便に</span></button><button class="ovt" data-target="c22" data-c="rail"><span class="d" style="background:#57534e"></span><span class="tx">JR福塩線で男性が列車と衝突、死亡 広島</span></button></div>
+<div class="sec">📅 2026年7月21日（火） <span class="n">2</span></div><div class="cards" data-date="2026-07-21"><div class="card" id="c0" data-c="shiga" data-txt="【大調査】あなたはパン派？ごはん派？毎日の朝食事情を教えてください！ 滋賀つーしん 滋賀県民を対象に「朝食はパン派かごはん派か」を尋ねる読者参加型アンケート企画。毎日の朝食事情について投票形式で調査し、県民の食生活の傾向を探る。結果は集計され、読者が地域の朝食トレンドを知るきっかけとなる内容。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/21</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/%E3%81%94%E3%81%AF%E3%82%93%E6%B4%BE.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">【大調査】あなたはパン派？ごはん派？毎日の朝食事情を教えてください！</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/%E3%81%94%E3%81%AF%E3%82%93%E6%B4%BE.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>滋賀県民を対象に「朝食はパン派かごはん派か」を尋ねる読者参加型アンケート企画。毎日の朝食事情について投票形式で調査し、県民の食生活の傾向を探る。結果は集計され、読者が地域の朝食トレンドを知るきっかけとなる内容。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/breakfast-survey-bread-vs-rice/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c1" data-c="shiga" data-txt="滋賀県初「ロピア 彦根ナフコ店」が2026年今秋オープンへ 正式発表 滋賀つーしん 食品スーパー「ロピア」が滋賀県初出店となる「ロピア 彦根ナフコ店」を2026年秋にオープンすると正式発表。人気ディスカウントスーパーの県内進出として注目され、出店場所や開業時期など現時点で判明した情報をまとめている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/21</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/06/IMG_0492-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">滋賀県初「ロピア 彦根ナフコ店」が2026年今秋オープンへ 正式発表</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/06/IMG_0492-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>食品スーパー「ロピア」が滋賀県初出店となる「ロピア 彦根ナフコ店」を2026年秋にオープンすると正式発表。人気ディスカウントスーパーの県内進出として注目され、出店場所や開業時期など現時点で判明した情報をまとめている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/lopia-hikone-nafco-2026-autumn-open/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div></div><div class="sec">📅 2026年7月20日（月） <span class="n">12</span></div><div class="cards" data-date="2026-07-20"><div class="card" id="c2" data-c="kyoto" data-txt="京都西京区大枝［pizzeria il piccolino（イル ピッコリーノ）］自然の中で味わう本格ピッツァ グッチジャパンの京都最新グルメ 京都西京区大枝、柿畑に囲まれた隠れ家ピッツェリア「イル ピッコリーノ」を紹介。ローマで修業した店主が薪窯で焼き上げる本格ナポリピッツァが自慢で、イタリア産と北海道産の小麦をブレンドした生地が特徴。マルゲリータは1540円。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">グッチジャパンの京都最新グルメ</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3407.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京都西京区大枝［PIZZERIA IL PICCOLINO（イル ピッコリーノ）］自然の中で味わう本格ピッツァ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3407.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都西京区大枝、柿畑に囲まれた隠れ家ピッツェリア「イル ピッコリーノ」を紹介。ローマで修業した店主が薪窯で焼き上げる本格ナポリピッツァが自慢で、イタリア産と北海道産の小麦をブレンドした生地が特徴。マルゲリータは1540円。</p></div><div class="custw"><a class="cust" href="https://gcjapan-kyoto.com/pizzeria-il-piccolino/" target="_blank" rel="noopener">🔗 元記事を読む（グッチジャパンの京都最新グルメ）</a></div></div>
+</div><div class="card" id="c3" data-c="kyoto" data-txt="【京都市伏見区】伏見大手筋に女性専用24時間ジム「she-fit24h」が登場予定！現地には看板もありましたよ～。 号外net 伏見区 女性専用の24時間フィットネスジム「she-fit24h」が伏見桃山エリアにオープン予定。大手筋商店街のオーエスドラッグ2階に位置し、8月中旬の開業を見込む。女性だけの安心感と24時間利用の自由さを兼ね備え、地域のニーズに応える新型ジムとなりそう。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44539917.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】伏見大手筋に女性専用24時間ジム「SHE-FIT24H」が登場予定！現地には看板もありましたよ～。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44539917.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>女性専用の24時間フィットネスジム「SHE-FIT24H」が伏見桃山エリアにオープン予定。大手筋商店街のオーエスドラッグ2階に位置し、8月中旬の開業を見込む。女性だけの安心感と24時間利用の自由さを兼ね備え、地域のニーズに応える新型ジムとなりそう。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/20/she-fit/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c4" data-c="kyoto" data-txt="【京都】烏丸の路地裏にライブ感溢れる炉端酒場が誕生！名物はのどぐろ姿焼き「susucoli」 kyotopi 2026年7月、烏丸の路地裏にオープンした炉端酒場「susucoli」を紹介。炭火焼きのライブ感が魅力で、名物はのどぐろの姿焼き。昭和の懐かしさを感じる空間で、日本酒や創作小皿料理とともに臨場感ある食体験が楽しめる注目の新店。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/539/medium/4f41cc1e-7375-4260-8b39-b9592642ad62.png?1784537775" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】烏丸の路地裏にライブ感溢れる炉端酒場が誕生！名物はのどぐろ姿焼き「SuSuCoLi」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/539/medium/4f41cc1e-7375-4260-8b39-b9592642ad62.png?1784537775" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年7月、烏丸の路地裏にオープンした炉端酒場「SuSuCoLi」を紹介。炭火焼きのライブ感が魅力で、名物はのどぐろの姿焼き。昭和の懐かしさを感じる空間で、日本酒や創作小皿料理とともに臨場感ある食体験が楽しめる注目の新店。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/susucoli" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c5" data-c="kyoto" data-txt="【新店】京都駅近くで名物ローストビーフと洋風アテを気軽に！昼飲みでもできる「suns」 kyotopi 2026年5月に京都駅近くへオープンした洋風バル「suns」を紹介。名物のローストビーフをはじめ、ほとんどが1000円以下の洋風おつまみを気軽に楽しめ、昼飲みにも対応。とうもろこしと卵のポテサラや魚のカルパッチョなど創作メニューも揃う。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/544/medium/c975a21b-2979-43f5-abe4-831d5a3c20f2.jpg?1784519445" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【新店】京都駅近くで名物ローストビーフと洋風アテを気軽に！昼飲みでもできる「SUNS」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/544/medium/c975a21b-2979-43f5-abe4-831d5a3c20f2.jpg?1784519445" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年5月に京都駅近くへオープンした洋風バル「SUNS」を紹介。名物のローストビーフをはじめ、ほとんどが1000円以下の洋風おつまみを気軽に楽しめ、昼飲みにも対応。とうもろこしと卵のポテサラや魚のカルパッチョなど創作メニューも揃う。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/sunsroastbeef" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c6" data-c="kyoto" data-txt="【京都】朝4時半から並ぶファンも…背脂醤油ラーメンの老舗「ますたに本店」最後の営業日 kyotopi 京都背脂醤油ラーメンの元祖とされる創業78年の老舗「ますたに 北白川本店」が7月19日で一時閉店。最終営業日には朝4時半から並ぶファンも現れ、多くの常連が最後の一杯を求めて行列を作った。営業は梅小路の新店舗へ引き継がれ、メニューも拡充される。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/543/medium/5dbdf4ac-0af1-4ea7-9759-d49e196fe299.jpg?1784521566" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】朝4時半から並ぶファンも…背脂醤油ラーメンの老舗「ますたに本店」最後の営業日</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/543/medium/5dbdf4ac-0af1-4ea7-9759-d49e196fe299.jpg?1784521566" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都背脂醤油ラーメンの元祖とされる創業78年の老舗「ますたに 北白川本店」が7月19日で一時閉店。最終営業日には朝4時半から並ぶファンも現れ、多くの常連が最後の一杯を求めて行列を作った。営業は梅小路の新店舗へ引き継がれ、メニューも拡充される。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/masutani-lastday" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c7" data-c="shiga" data-txt="滋賀県民は食べてる？伝統の発酵食品「鮒寿司」実食アンケート 滋賀つーしん 滋賀県の伝統発酵食品「鮒寿司」を実際に食べているかを県民に尋ねる読者参加型アンケート記事。琵琶湖の郷土名物である鮒寿司について、食べる派・食べない派の割合を二択形式で調査し、地元での実際の消費実態を探る内容となっている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_674-1200-675-1.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">滋賀県民は食べてる？伝統の発酵食品「鮒寿司」実食アンケート</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_674-1200-675-1.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>滋賀県の伝統発酵食品「鮒寿司」を実際に食べているかを県民に尋ねる読者参加型アンケート記事。琵琶湖の郷土名物である鮒寿司について、食べる派・食べない派の割合を二択形式で調査し、地元での実際の消費実態を探る内容となっている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/funazushi-survey-shiga/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c8" data-c="thai" data-txt="終わってしまったサッカーw杯２０２６…【２０２６.７】 のりすけブログ パタヤ在住の筆者がサッカーw杯2026の閉幕を回顧。市内のスポーツバーで計12試合をリアルタイム観戦し、生活サイクルが狂うほど熱中した約1か月を振り返る。大会後のパタヤ観光はインド・中東系旅行者が牽引すると予想し、2030年大会への期待も綴る。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">のりすけブログ</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/747217330_122118961191072195_2379056460541536566_n.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">終わってしまったサッカーW杯２０２６…【２０２６.７】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/747217330_122118961191072195_2379056460541536566_n.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>パタヤ在住の筆者がサッカーW杯2026の閉幕を回顧。市内のスポーツバーで計12試合をリアルタイム観戦し、生活サイクルが狂うほど熱中した約1か月を振り返る。大会後のパタヤ観光はインド・中東系旅行者が牽引すると予想し、2030年大会への期待も綴る。</p></div><div class="custw"><a class="cust" href="https://www.norisukeblog.com/36019/" target="_blank" rel="noopener">🔗 元記事を読む（のりすけブログ）</a></div></div>
+</div><div class="card" id="c9" data-c="thai" data-txt="タイ航空のフラッシュセール 運賃15,000円なれど パタヤ千夜一夜 タイ国際航空が日本＝バンコク線のフラッシュセールを実施。運賃15,000円をうたうものの、往復総額は最安約82,340円から。日本の出国税引き上げや燃油サーチャージ高騰の影響で、セールでも総支払額は以前より高くなっている実情を解説する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://pattayalife.net/wp-content/uploads/2026/07/%E3%82%BF%E3%82%A4%E8%88%AA%E7%A9%BA%E3%83%95%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5%E3%82%BB%E3%83%BC%E3%83%AB-473x480.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">タイ航空のフラッシュセール 運賃15,000円なれど</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://pattayalife.net/wp-content/uploads/2026/07/%E3%82%BF%E3%82%A4%E8%88%AA%E7%A9%BA%E3%83%95%E3%83%A9%E3%83%83%E3%82%B7%E3%83%A5%E3%82%BB%E3%83%BC%E3%83%AB-473x480.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>タイ国際航空が日本＝バンコク線のフラッシュセールを実施。運賃15,000円をうたうものの、往復総額は最安約82,340円から。日本の出国税引き上げや燃油サーチャージ高騰の影響で、セールでも総支払額は以前より高くなっている実情を解説する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76617" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c10" data-c="rail" data-txt="会津鉄道の列車とクマが衝突 乗客・乗員にケガなし 福島・下郷町 yahoo!フォロー「鉄道事故」 福島県下郷町で、走行中の会津鉄道の列車が線路上に現れた体長約0.4メートルのクマと衝突した。乗客・乗員にけがはなかった。線路周辺でのクマの出没が相次ぐ中、鉄道の運行への影響と野生動物対策が課題となっている。福島中央テレビが報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://news-pctr.c.yimg.jp/uUzvQ3lML_bkIqyakc1vFvK0QkuSBtgPQWP51fwdiBZm0hqJJvSMUoOeRS3uxn7cF4-slnT1PxUwZ-TDEVv939aBUx3jpnRfdVulGhTycO6mnVR34hMmgt0zC0BPVTCBQld1L7daSUWVy3iuA1AweWBwMOMh_HorYEkxa5k1RbyZqWZrPhDxKHakPddg4PWl" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚃</div>'"><div class="name">会津鉄道の列車とクマが衝突 乗客・乗員にケガなし 福島・下郷町</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://news-pctr.c.yimg.jp/uUzvQ3lML_bkIqyakc1vFvK0QkuSBtgPQWP51fwdiBZm0hqJJvSMUoOeRS3uxn7cF4-slnT1PxUwZ-TDEVv939aBUx3jpnRfdVulGhTycO6mnVR34hMmgt0zC0BPVTCBQld1L7daSUWVy3iuA1AweWBwMOMh_HorYEkxa5k1RbyZqWZrPhDxKHakPddg4PWl" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>福島県下郷町で、走行中の会津鉄道の列車が線路上に現れた体長約0.4メートルのクマと衝突した。乗客・乗員にけがはなかった。線路周辺でのクマの出没が相次ぐ中、鉄道の運行への影響と野生動物対策が課題となっている。福島中央テレビが報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/0ed4258f3500f69859781f300773a77bda41ae63" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div><div class="card" id="c11" data-c="rail" data-txt="線路内のクマ2頭、列車と衝突 福島 yahoo!フォロー「鉄道事故」 福島県内の線路内にクマ2頭が出没し、走行中の列車と衝突した。乗客らにけがはなかったもよう。夏場のクマの活動活発化に伴い、鉄道沿線での野生動物との接触事故が相次いでいる。福島テレビの報道。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">線路内のクマ2頭、列車と衝突 福島</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>福島県内の線路内にクマ2頭が出没し、走行中の列車と衝突した。乗客らにけがはなかったもよう。夏場のクマの活動活発化に伴い、鉄道沿線での野生動物との接触事故が相次いでいる。福島テレビの報道。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/762405578d642debf1c2bd8487472b4f982d9ce5" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div><div class="card" id="c12" data-c="rail" data-txt="jr鹿児島線の橋桁にトラック衝突 久留米−荒木間で運転見合わせ yahoo!フォロー「鉄道事故」 7月19日午前8時半ごろ、jr鹿児島線の久留米駅―荒木駅間で線路の橋桁にトラックが衝突し、同区間で列車の運転を見合わせた。安全確認のため周辺区間のダイヤが乱れ、日曜朝の利用客の足に影響が出た。佐賀新聞が報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">JR鹿児島線の橋桁にトラック衝突 久留米−荒木間で運転見合わせ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>7月19日午前8時半ごろ、JR鹿児島線の久留米駅―荒木駅間で線路の橋桁にトラックが衝突し、同区間で列車の運転を見合わせた。安全確認のため周辺区間のダイヤが乱れ、日曜朝の利用客の足に影響が出た。佐賀新聞が報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/1b6bac8ee8b9080b661c5ee0f3bb83f4121146c3" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div><div class="card" id="c13" data-c="rail" data-txt="「ホームで列車と人が接触」女性が列車の下敷きに 心肺停止で搬送 堺市 yahoo!フォロー「鉄道事故」 大阪府堺市の駅ホームで女性が列車と接触し、車両の下敷きになった。女性は約35分後に救助されたが心肺停止の状態で搬送された。現場のホームには転落防止柵が設置されておらず、駅の安全対策のあり方が改めて問われている。関西テレビが報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/20</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://newsatcl-pctr.c.yimg.jp/t/amd-img/20260719-90028431-kantelev-000-4-view.jpg?pri=l&amp;w=640&amp;h=360&amp;exp=10800" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚃</div>'"><div class="name">「ホームで列車と人が接触」女性が列車の下敷きに 心肺停止で搬送 堺市</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://newsatcl-pctr.c.yimg.jp/t/amd-img/20260719-90028431-kantelev-000-4-view.jpg?pri=l&amp;w=640&amp;h=360&amp;exp=10800" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>大阪府堺市の駅ホームで女性が列車と接触し、車両の下敷きになった。女性は約35分後に救助されたが心肺停止の状態で搬送された。現場のホームには転落防止柵が設置されておらず、駅の安全対策のあり方が改めて問われている。関西テレビが報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/67388f730cadb6e4b4f9126ae64becf37963f0e6" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div></div><div class="sec">📅 2026年7月19日（日） <span class="n">9</span></div><div class="cards" data-date="2026-07-19"><div class="card" id="c14" data-c="kyoto" data-txt="【京都エンタメ】祇園四条通り歌舞伎発祥地『京都南座』の夏以降が熱い！注目作品続々☆ kyotopi 歌舞伎発祥の地・京都南座の夏以降の注目公演を紹介。「成瀬は天下を取りにいく」の舞台化や「ルパン三世」の歌舞伎公演など話題作が続々と登場する。小説の舞台となった京都・大津を巡るスタンプラリー企画も実施され、観劇と街歩きを合わせて楽しめる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/541/medium/a3e098d8-c602-4331-8ff3-948260b69fc1.jpg?1784444247" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都エンタメ】祇園四条通り歌舞伎発祥地『京都南座』の夏以降が熱い！注目作品続々☆</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/541/medium/a3e098d8-c602-4331-8ff3-948260b69fc1.jpg?1784444247" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>歌舞伎発祥の地・京都南座の夏以降の注目公演を紹介。「成瀬は天下を取りにいく」の舞台化や「ルパン三世」の歌舞伎公演など話題作が続々と登場する。小説の舞台となった京都・大津を巡るスタンプラリー企画も実施され、観劇と街歩きを合わせて楽しめる。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/DnyEQ" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c15" data-c="kyoto" data-txt="【京都イベント】大丸に響き渡る悲鳴！伝説の「比叡山お化け屋敷」で恐怖納涼体験 kyotopi 大丸京都店6階イベントホールで伝説の「比叡山お化け屋敷」が2年連続で開催中。期間は8月31日まで。アナログな仕掛けと90年代を思わせる懐かしい恐怖演出が特徴で、館内は撮影ok。snsでシェアしながら楽しめる夏の納涼イベントとなっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/540/medium/5023a431-aa7b-4cba-81ed-df1cad40396b.jpg?1784447315" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都イベント】大丸に響き渡る悲鳴！伝説の「比叡山お化け屋敷」で恐怖納涼体験</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/540/medium/5023a431-aa7b-4cba-81ed-df1cad40396b.jpg?1784447315" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>大丸京都店6階イベントホールで伝説の「比叡山お化け屋敷」が2年連続で開催中。期間は8月31日まで。アナログな仕掛けと90年代を思わせる懐かしい恐怖演出が特徴で、館内は撮影OK。SNSでシェアしながら楽しめる夏の納涼イベントとなっている。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/MZGo1" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c16" data-c="kyoto" data-txt="【京都】非公開「香雲亭」で唯一無二の食体験！二条城で味わう夏朝食「ゆば粥御膳」 kyotopi 二条城の通常非公開の建物「香雲亭」で、夏限定の朝食「ゆば粥御膳」が提供される。京料理の名店・いそべが手掛ける湯葉粥のセットで料金は4500円。1日40席限定の完全予約制で、歴史ある特別な空間での唯一無二の朝食体験が味わえる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/538/medium/3de0a9f2-ff29-4230-b888-490fc1157615.jpg?1784363195" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】非公開「香雲亭」で唯一無二の食体験！二条城で味わう夏朝食「ゆば粥御膳」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/538/medium/3de0a9f2-ff29-4230-b888-490fc1157615.jpg?1784363195" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>二条城の通常非公開の建物「香雲亭」で、夏限定の朝食「ゆば粥御膳」が提供される。京料理の名店・いそべが手掛ける湯葉粥のセットで料金は4500円。1日40席限定の完全予約制で、歴史ある特別な空間での唯一無二の朝食体験が味わえる。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/nijojokountei-breakfast" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c17" data-c="kyoto" data-txt="【京都市伏見区】7月25日は「砂川夏まつり2026」開催！駅チカ1分で楽しめる地域の夏イベント。 号外net 伏見区 「砂川夏まつり2026」が7月25日に京都市立砂川小学校グラウンドで開催。龍谷大前深草駅西口から徒歩約1分の好立地。和太鼓やフラダンス、ピアノライブなど多彩なステージのほか、限定クラフトビール「砂川エール」やグルメ、縁日ゲームなど17店舗が出店予定。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/2025_01.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】7月25日は「砂川夏まつり2026」開催！駅チカ1分で楽しめる地域の夏イベント。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/2025_01.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>「砂川夏まつり2026」が7月25日に京都市立砂川小学校グラウンドで開催。龍谷大前深草駅西口から徒歩約1分の好立地。和太鼓やフラダンス、ピアノライブなど多彩なステージのほか、限定クラフトビール「砂川エール」やグルメ、縁日ゲームなど17店舗が出店予定。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/19/sunagawafes2026/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c18" data-c="shiga" data-txt="物価高に伴う生活意識と経済対策に関するアンケート2026 滋賀つーしん 物価高が続く中での生活意識と求める経済対策について読者に尋ねるアンケート企画の2026年版。家計への影響や節約の工夫、期待する支援策などを調査し、滋賀県内の家庭が感じる暮らしの実情を明らかにしようとする参加型の内容。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/20260719-1344-1200x655.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">物価高に伴う生活意識と経済対策に関するアンケート2026</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/20260719-1344-1200x655.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>物価高が続く中での生活意識と求める経済対策について読者に尋ねるアンケート企画の2026年版。家計への影響や節約の工夫、期待する支援策などを調査し、滋賀県内の家庭が感じる暮らしの実情を明らかにしようとする参加型の内容。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/bukka-mamas-enquete/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c19" data-c="shiga" data-txt="三井アウトレットパーク滋賀竜王で らぁ〜めん京 の旨辛「朱（あか）らぁ〜めん」を食べてきました 滋賀つーしん 三井アウトレットパーク滋賀竜王のフードコートにある「らぁ〜めん京」で旨辛の「朱（あか）らぁ〜めん」を実食レポート。味の特徴や辛さの程度、価格や店舗の雰囲気などを写真とともに紹介する買い物ついでに役立つグルメ記事。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2128-1200-675-1.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">三井アウトレットパーク滋賀竜王で らぁ〜めん京 の旨辛「朱（あか）らぁ〜めん」を食べてきました</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2128-1200-675-1.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>三井アウトレットパーク滋賀竜王のフードコートにある「らぁ〜めん京」で旨辛の「朱（あか）らぁ〜めん」を実食レポート。味の特徴や辛さの程度、価格や店舗の雰囲気などを写真とともに紹介する買い物ついでに役立つグルメ記事。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/mitsui-outlet-shiga-ryuo-ramen-miyako/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c20" data-c="car" data-txt="【徹底解説】車検に通るリアフォグの保安基準について【リアフォグ後付けdiy】 48rider.com ホワイトアウトや豪雪時に後続車へ存在を知らせる命綱となるリアフォグについて、後付けdiyでも車検に通る保安基準を徹底解説。灯光の色や取付高さ、明るさ、点灯機構など、日本の車検基準を満たすための要件を詳しくまとめている。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://48rider.com/wp-content/uploads/2026/07/300dpi_OSRAM_SyniosP2720_RearFogLight_application-e1784345074158-1024x739.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">【徹底解説】車検に通るリアフォグの保安基準について【リアフォグ後付けDIY】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://48rider.com/wp-content/uploads/2026/07/300dpi_OSRAM_SyniosP2720_RearFogLight_application-e1784345074158-1024x739.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ホワイトアウトや豪雪時に後続車へ存在を知らせる命綱となるリアフォグについて、後付けDIYでも車検に通る保安基準を徹底解説。灯光の色や取付高さ、明るさ、点灯機構など、日本の車検基準を満たすための要件を詳しくまとめている。</p></div><div class="custw"><a class="cust" href="https://48rider.com/safety-standards-for-rear-fog-lamps/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div><div class="card" id="c21" data-c="thai" data-txt="タイ・エアアジアx 日本線は冬季スケジュールで増便に パタヤ千夜一夜 バンコクを拠点に日本路線を多数運航する中距離lccタイ・エアアジアxが、冬季スケジュールで日本線を増便する。中東情勢による燃料費高騰で減便が続いていたが回復に向かう動きで、gwスケジュールからの変更点も含め各路線の状況を紹介する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><img class="thumb" src="https://pattayalife.net/wp-content/uploads/2026/07/%E3%82%BF%E3%82%A4%E3%83%BB%E3%82%A8%E3%82%A2%E3%82%A2%E3%82%B8%E3%82%A2X%E5%A2%97%E4%BE%BF-4-480x480.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">タイ・エアアジアX 日本線は冬季スケジュールで増便に</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://pattayalife.net/wp-content/uploads/2026/07/%E3%82%BF%E3%82%A4%E3%83%BB%E3%82%A8%E3%82%A2%E3%82%A2%E3%82%B8%E3%82%A2X%E5%A2%97%E4%BE%BF-4-480x480.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>バンコクを拠点に日本路線を多数運航する中距離LCCタイ・エアアジアXが、冬季スケジュールで日本線を増便する。中東情勢による燃料費高騰で減便が続いていたが回復に向かう動きで、GWスケジュールからの変更点も含め各路線の状況を紹介する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76609" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c22" data-c="rail" data-txt="jr福塩線で男性が列車と衝突、死亡 広島 yahoo!フォロー「鉄道事故」 広島県内のjr福塩線で、男性が走行中の列車と衝突して死亡する事故が発生した。事故の影響で同区間は一時運転を見合わせ、後続列車に遅れが出た。警察と消防が現場で対応にあたり、男性が線路内にいた経緯を調べている。広島テレビが報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/19</span><span class="st new">NEW</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">JR福塩線で男性が列車と衝突、死亡 広島</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>広島県内のJR福塩線で、男性が走行中の列車と衝突して死亡する事故が発生した。事故の影響で同区間は一時運転を見合わせ、後続列車に遅れが出た。警察と消防が現場で対応にあたり、男性が線路内にいた経緯を調べている。広島テレビが報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/0280058651cd34221f4a7bc513892689342d8b40" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div></div><div class="sec">📅 2026年7月18日（土） <span class="n">7</span></div><div class="cards" data-date="2026-07-18"><div class="card" id="c23" data-c="kyoto" data-txt="京都左京区吉田［吉田チキン］食べ応え抜群ローストチキン専門店！ グッチジャパンの京都最新グルメ 京都大学近く、左京区吉田のローストチキン専門店「吉田チキン」を紹介。ブラジル産鶏肉を特製スパイスに12時間漬け込み、約1時間かけてじっくり焼き上げる。皮はパリッと中はジューシーで旨みが凝縮。ハーフサイズのプレートは1550円で学生にも人気。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">グッチジャパンの京都最新グルメ</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3320.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京都左京区吉田［吉田チキン］食べ応え抜群ローストチキン専門店！</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3320.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都大学近く、左京区吉田のローストチキン専門店「吉田チキン」を紹介。ブラジル産鶏肉を特製スパイスに12時間漬け込み、約1時間かけてじっくり焼き上げる。皮はパリッと中はジューシーで旨みが凝縮。ハーフサイズのプレートは1550円で学生にも人気。</p></div><div class="custw"><a class="cust" href="https://gcjapan-kyoto.com/yoshida-chicken/" target="_blank" rel="noopener">🔗 元記事を読む（グッチジャパンの京都最新グルメ）</a></div></div>
+</div><div class="card" id="c24" data-c="kyoto" data-txt="【京都スイーツ】極上のサクサク体験！名店出身パティシエが焼き上げるフランス伝統菓子 kyotopi 御所南の実力派パティスリー「アン ソン ドゥ」を紹介。東京の名店やヨーロッパのショコラトリーで修業したシェフが、ピティヴィエなどフランス地方菓子を丁寧に焼き上げる。町家を改装した店舗は朝8時開店で、クロワッサンなどの焼きたても並ぶ。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/528/medium/268605e1-c179-4982-96fa-8aeac64529f8.jpg?1783950005" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都スイーツ】極上のサクサク体験！名店出身パティシエが焼き上げるフランス伝統菓子</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/528/medium/268605e1-c179-4982-96fa-8aeac64529f8.jpg?1783950005" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>御所南の実力派パティスリー「アン ソン ドゥ」を紹介。東京の名店やヨーロッパのショコラトリーで修業したシェフが、ピティヴィエなどフランス地方菓子を丁寧に焼き上げる。町家を改装した店舗は朝8時開店で、クロワッサンなどの焼きたても並ぶ。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/NTwcA" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c25" data-c="kyoto" data-txt="【京都市伏見区】びしょ濡れ確定！？水鉄砲で戦う「ウォーターサバイバルゲーム2026」が7月26日開催！参加無料＆事前予約優先。 号外net 伏見区 「ウォーターサバイバルゲーム2026」が7月26日、abcハウジング桃山六地蔵住宅博で開催。5〜12歳対象で定員60名、参加無料。水鉄砲での対戦型ゲームや射的など複数のコンテンツが約45分で展開され、最後には全員参加の「びしょびしょタイム」も用意される。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/m2.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】びしょ濡れ確定！？水鉄砲で戦う「ウォーターサバイバルゲーム2026」が7月26日開催！参加無料＆事前予約優先。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/m2.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>「ウォーターサバイバルゲーム2026」が7月26日、ABCハウジング桃山六地蔵住宅博で開催。5〜12歳対象で定員60名、参加無料。水鉄砲での対戦型ゲームや射的など複数のコンテンツが約45分で展開され、最後には全員参加の「びしょびしょタイム」も用意される。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/18/momoyamarokujizo/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c26" data-c="shiga" data-txt="【目撃情報】大津市北比良でツキノワグマらしき動物を目撃 7月18日 滋賀つーしん 2026年7月18日、大津市北比良でツキノワグマとみられる動物の目撃情報が寄せられたことを伝える注意喚起記事。目撃場所や状況を整理し、付近の住民や比良山系を訪れる登山者・観光客に警戒を呼びかけている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/05/202605291651.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">【目撃情報】大津市北比良でツキノワグマらしき動物を目撃 7月18日</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/05/202605291651.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年7月18日、大津市北比良でツキノワグマとみられる動物の目撃情報が寄せられたことを伝える注意喚起記事。目撃場所や状況を整理し、付近の住民や比良山系を訪れる登山者・観光客に警戒を呼びかけている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/otsu-kitahira-bear-sighting-20260718/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c27" data-c="shiga" data-txt="スーパー万代 栗東小柿店が新店舗オープンに向けて出店を計画中｜滋賀県2店舗目 滋賀つーしん 関西の食品スーパー「万代」が滋賀県2店舗目となる「栗東小柿店」の新規出店を計画中であることを伝える記事。出店予定地は栗東市の旧アヤハディオ跡地とされ、現地の様子や判明している出店計画の情報をまとめて紹介している。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_9260.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">スーパー万代 栗東小柿店が新店舗オープンに向けて出店を計画中｜滋賀県2店舗目</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_9260.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>関西の食品スーパー「万代」が滋賀県2店舗目となる「栗東小柿店」の新規出店を計画中であることを伝える記事。出店予定地は栗東市の旧アヤハディオ跡地とされ、現地の様子や判明している出店計画の情報をまとめて紹介している。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/mandai-kurita-okaki-open/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c28" data-c="rail" data-txt="北海道・上富良野町でレンタカーが列車と衝突 5人けが yahoo!フォロー「鉄道事故」 北海道上富良野町の踏切で、外国人5人が乗ったレンタカーがjr富良野線の列車と衝突した。車に乗っていた5人がけがをして病院に搬送されたが、列車の乗客・乗務員にけがはなかった。踏切内で車が停止した経緯などを警察が調べている。fnnの報道。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">北海道・上富良野町でレンタカーが列車と衝突 5人けが</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>北海道上富良野町の踏切で、外国人5人が乗ったレンタカーがJR富良野線の列車と衝突した。車に乗っていた5人がけがをして病院に搬送されたが、列車の乗客・乗務員にけがはなかった。踏切内で車が停止した経緯などを警察が調べている。FNNの報道。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/2e47cd011157b795cf283ba382785989ec042b5b" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div><div class="card" id="c29" data-c="rail" data-txt="jr富良野線踏切事故 中国籍の5人を搬送 一部列車に運休・遅れ yahoo!フォロー「鉄道事故」 jr富良野線の踏切でレンタカーが踏切内に停止し、走行してきた列車と衝突した。車に乗っていた中国籍の5人が病院に搬送された。列車側にけが人はなく、事故の影響で同線の一部列車に運休や遅れが生じた。stvニュース北海道が報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/18</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">JR富良野線踏切事故 中国籍の5人を搬送 一部列車に運休・遅れ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>JR富良野線の踏切でレンタカーが踏切内に停止し、走行してきた列車と衝突した。車に乗っていた中国籍の5人が病院に搬送された。列車側にけが人はなく、事故の影響で同線の一部列車に運休や遅れが生じた。STVニュース北海道が報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/e2203d7b0f95f694546186159a0873ea7fb4e5eb" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div></div><div class="sec">📅 2026年7月17日（金） <span class="n">7</span></div><div class="cards" data-date="2026-07-17"><div class="card" id="c30" data-c="kyoto" data-txt="京都駅［ダブルツリーbyヒルトン京都駅］2026年夏は「アジアン サマーディナービュッフェ」 グッチジャパンの京都最新グルメ 京都駅八条口から徒歩5分の「ダブルツリーbyヒルトン京都駅」で、7〜9月の週末・祝日に「アジアン サマーディナービュッフェ」を開催。韓国・中国・タイ・ベトナムなどアジア各国の料理をライブステーションで提供し、京都にいながらアジア旅行気分を味わえる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">グッチジャパンの京都最新グルメ</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3131.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京都駅［ダブルツリーbyヒルトン京都駅］2026年夏は「アジアン サマーディナービュッフェ」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gcjapan-kyoto.com/wp-content/uploads/2026/07/IMG_3131.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都駅八条口から徒歩5分の「ダブルツリーbyヒルトン京都駅」で、7〜9月の週末・祝日に「アジアン サマーディナービュッフェ」を開催。韓国・中国・タイ・ベトナムなどアジア各国の料理をライブステーションで提供し、京都にいながらアジア旅行気分を味わえる。</p></div><div class="custw"><a class="cust" href="https://gcjapan-kyoto.com/doubletree-kyoto/" target="_blank" rel="noopener">🔗 元記事を読む（グッチジャパンの京都最新グルメ）</a></div></div>
+</div><div class="card" id="c31" data-c="kyoto" data-txt="【京都グルメ】ミシュラン掲載の人気餃子店！京都駅で味わう京風ぎょうざ「亮昌」 kyotopi 京都駅直結の京都タワーサンド内にある「ぎょうざ処 亮昌」を紹介。京都産食材を使いニンニク不使用で仕上げる京風餃子は、ミシュランのビブグルマンにも掲載された実力派。かつおだしと味噌を効かせた上品な味わいで、観光の合間にも立ち寄りやすい。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/435/medium/c5f5ad45-d771-47b9-bdef-854f8f9490da.jpg?1784264449" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都グルメ】ミシュラン掲載の人気餃子店！京都駅で味わう京風ぎょうざ「亮昌」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/435/medium/c5f5ad45-d771-47b9-bdef-854f8f9490da.jpg?1784264449" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都駅直結の京都タワーサンド内にある「ぎょうざ処 亮昌」を紹介。京都産食材を使いニンニク不使用で仕上げる京風餃子は、ミシュランのビブグルマンにも掲載された実力派。かつおだしと味噌を効かせた上品な味わいで、観光の合間にも立ち寄りやすい。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/sukemasa-kyototower" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c32" data-c="kyoto" data-txt="【京都】お洒落で最新モードのアジアン料理！二条城近くにたたずむ「poy」 kyotopi 二条城近くにたたずむアジアン料理店「poy」を紹介。台湾出身シェフによる創作フュージョン料理を、京町家をリノベーションした落ち着いた空間で楽しめる。前菜からパスタまで良心的な価格設定で、定期的に通いたくなる最新モードの注目店と評される。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/536/medium/d5c5a00d-7547-4dfc-b6aa-f0bb7e8c2244.jpg?1784255160" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】お洒落で最新モードのアジアン料理！二条城近くにたたずむ「POY」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/536/medium/d5c5a00d-7547-4dfc-b6aa-f0bb7e8c2244.jpg?1784255160" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>二条城近くにたたずむアジアン料理店「POY」を紹介。台湾出身シェフによる創作フュージョン料理を、京町家をリノベーションした落ち着いた空間で楽しめる。前菜からパスタまで良心的な価格設定で、定期的に通いたくなる最新モードの注目店と評される。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/niijyopoy" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c33" data-c="kyoto" data-txt="【京都】ショック、53年愛された「西友」が9月で閉店へ 大型総合スーパー時代の象徴 kyotopi 京都市山科区の「西友山科店」が2026年9月30日に閉店する。1972年の開業から53年間、地域の暮らしを支えてきた大型総合スーパーの閉店は、ネット通販の普及や専門店の台頭、建物の老朽化など時代の変化を象徴する出来事となっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/534/medium/27a4dee4-464f-4a83-80b7-8beb5012110b.jpg?1784183794" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】ショック、53年愛された「西友」が9月で閉店へ 大型総合スーパー時代の象徴</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/534/medium/27a4dee4-464f-4a83-80b7-8beb5012110b.jpg?1784183794" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都市山科区の「西友山科店」が2026年9月30日に閉店する。1972年の開業から53年間、地域の暮らしを支えてきた大型総合スーパーの閉店は、ネット通販の普及や専門店の台頭、建物の老朽化など時代の変化を象徴する出来事となっている。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/seiyuyamashina" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c34" data-c="kyoto" data-txt="【京都伏見市伏見区】深草で「学び×体験」の特別イベント開催！「e-toko深草 meetup!セミナー」が8月からスタート 号外net 伏見区 「e-toko深草 meetup!セミナー」が8月1日〜9月30日に開催。地域の専門家による体験型セミナーで、食・くらし・からだ・文化・地域をテーマに深草の魅力を学べる。3回以上の参加者から抽選で30名にキャラクター吉兆くんのアクリルスタンドが当たる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/inotep25.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都伏見市伏見区】深草で「学び×体験」の特別イベント開催！「E-TOKO深草 meetup!セミナー」が8月からスタート</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/inotep25.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>「E-TOKO深草 meetup!セミナー」が8月1日〜9月30日に開催。地域の専門家による体験型セミナーで、食・くらし・からだ・文化・地域をテーマに深草の魅力を学べる。3回以上の参加者から抽選で30名にキャラクター吉兆くんのアクリルスタンドが当たる。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/17/e-tokofukakusa-3/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c35" data-c="shiga" data-txt="串カツ田中 膳所店が2026年8月オープン予定｜滋賀県内4店舗目 滋賀つーしん 串カツチェーン「串カツ田中」が滋賀県内4店舗目となる膳所店を2026年8月にオープン予定であることを伝える記事。出店場所は大津市の膳所エリアで、開店時期や店舗情報など現時点で分かっている内容をまとめて紹介している。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/20260717-23-556.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">串カツ田中 膳所店が2026年8月オープン予定｜滋賀県内4店舗目</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/20260717-23-556.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>串カツチェーン「串カツ田中」が滋賀県内4店舗目となる膳所店を2026年8月にオープン予定であることを伝える記事。出店場所は大津市の膳所エリアで、開店時期や店舗情報など現時点で分かっている内容をまとめて紹介している。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/kushikatsu-tanaka-zeze-open-2026/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c36" data-c="rail" data-txt="jr北海道の秘密兵器「熊キャッチャー」 出動は年10回前後 yahoo!フォロー「鉄道事故」 列車とクマの衝突が相次ぐjr北海道が備える「熊キャッチャー」を特集。体重1トン級のクマにも対応可能とされ、出動は年10回前後という。線路上の野生動物との衝突事故対策の最前線を紹介する読み物記事。aera digitalの配信。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/17</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">JR北海道の秘密兵器「熊キャッチャー」 出動は年10回前後</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>列車とクマの衝突が相次ぐJR北海道が備える「熊キャッチャー」を特集。体重1トン級のクマにも対応可能とされ、出動は年10回前後という。線路上の野生動物との衝突事故対策の最前線を紹介する読み物記事。AERA DIGITALの配信。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/dd0654a0828fb80e1c0085547aaa531b8ffca1cd" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div></div><div class="sec">📅 2026年7月16日（木） <span class="n">6</span></div><div class="cards" data-date="2026-07-16"><div class="card" id="c37" data-c="kyoto" data-txt="【京都パン】フレンチ×直送野菜！洗練された味わいに感動する行列必至のベーカリー kyotopi 河原町の行列必至ベーカリー「hinami」を紹介。有名ホテルでシェフを務めた職人が、淡路島から直送される新鮮野菜を使い、フレンチの技法を生かしたパンを焼き上げる。店内は2組までの入店制限で常に行列。スコーンや塩パンの実食レポートも掲載。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/521/medium/73974e69-5086-457f-9915-30db0b6c278c.jpg?1783831822" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都パン】フレンチ×直送野菜！洗練された味わいに感動する行列必至のベーカリー</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/521/medium/73974e69-5086-457f-9915-30db0b6c278c.jpg?1783831822" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>河原町の行列必至ベーカリー「hinami」を紹介。有名ホテルでシェフを務めた職人が、淡路島から直送される新鮮野菜を使い、フレンチの技法を生かしたパンを焼き上げる。店内は2組までの入店制限で常に行列。スコーンや塩パンの実食レポートも掲載。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/htyfO" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c38" data-c="kyoto" data-txt="【京都市伏見区】夏休みはmomoテラスで鉄道体験！7/25から、スタンプラリーやワークショップなどイベント盛りだくさん。 号外net 伏見区 momoテラスで7月25日〜8月23日に「京都鉄道博物館10周年特別版 夏休みは学んで遊ぼう」を開催。館内スタンプラリーで博物館入館券やグッズが当たるほか、ジオラマの街づくりワークショップや子ども運転士体験、キャラクターイベントなど家族向け企画が充実。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/momo2.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】夏休みはMOMOテラスで鉄道体験！7/25から、スタンプラリーやワークショップなどイベント盛りだくさん。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/momo2.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>MOMOテラスで7月25日〜8月23日に「京都鉄道博物館10周年特別版 夏休みは学んで遊ぼう」を開催。館内スタンプラリーで博物館入館券やグッズが当たるほか、ジオラマの街づくりワークショップや子ども運転士体験、キャラクターイベントなど家族向け企画が充実。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/16/momo-tetsudo-2/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c39" data-c="shiga" data-txt="abc-martイオンタウン湖南店が2026年9月オープン予定|滋賀県湖南市 滋賀つーしん 靴専門店「abc-mart」がイオンタウン湖南に2026年9月オープン予定であることを伝える出店情報記事。湖南市のショッピングセンター内への出店で、開店時期や場所など現時点で判明している情報を写真とともにまとめている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_7584-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">ABC-MARTイオンタウン湖南店が2026年9月オープン予定|滋賀県湖南市</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_7584-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>靴専門店「ABC-MART」がイオンタウン湖南に2026年9月オープン予定であることを伝える出店情報記事。湖南市のショッピングセンター内への出店で、開店時期や場所など現時点で判明している情報を写真とともにまとめている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/abc-mart-aeontown-konan-2026-open/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c40" data-c="shiga" data-txt="琵琶湖のbiwakoモニュメントで気温や水温を計ってみた【7月10日現在】 滋賀つーしん 琵琶湖畔の人気撮影スポット「biwakoモニュメント」を訪れ、7月10日時点の気温や琵琶湖の水温を実際に計測したレポート記事。夏の琵琶湖周辺の様子を写真とともに伝え、観光や湖水浴の参考になる現地情報を紹介している。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2099-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">琵琶湖のBIWAKOモニュメントで気温や水温を計ってみた【7月10日現在】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2099-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>琵琶湖畔の人気撮影スポット「BIWAKOモニュメント」を訪れ、7月10日時点の気温や琵琶湖の水温を実際に計測したレポート記事。夏の琵琶湖周辺の様子を写真とともに伝え、観光や湖水浴の参考になる現地情報を紹介している。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/biwako-monument-visit-report/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c41" data-c="rail" data-txt="北九州貨物ターミナル駅で貨車2両が脱線 けが人なし yahoo!フォロー「鉄道事故」 北九州貨物ターミナル駅の構内で貨車同士が接触し、貨車2両が脱線した。けが人はいなかった。貨物列車の入れ替え作業中のトラブルとみられ、jr貨物などが脱線した原因や構内作業の状況を調べている。テレビ朝日系（ann）が報じた。">
+<div class="chd" style="border-color:#57534e;background:#f0efec">
+<span class="cat" style="background:#57534e">鉄道ニュース</span><span class="bnm">Yahoo!フォロー「鉄道事故」</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><div class="thumb ph">🚃</div><div class="name">北九州貨物ターミナル駅で貨車2両が脱線 けが人なし</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>北九州貨物ターミナル駅の構内で貨車同士が接触し、貨車2両が脱線した。けが人はいなかった。貨物列車の入れ替え作業中のトラブルとみられ、JR貨物などが脱線した原因や構内作業の状況を調べている。テレビ朝日系（ANN）が報じた。</p></div><div class="custw"><a class="cust" href="https://news.yahoo.co.jp/articles/91f14bcfc8a5a9e881ef363153713c0880fdf111" target="_blank" rel="noopener">🔗 元記事を読む（Yahoo!フォロー「鉄道事故」）</a></div></div>
+</div><div class="card" id="c42" data-c="car" data-txt="【mtb選び】最新エンデューロバイクのジオメトリー比較【スペシャライズド エンデューロ購入検討】 48rider.com スペシャライズド エンデューロ購入を検討した筆者が、最新エンデューロバイク各車のジオメトリーを比較しやすい一覧表にまとめた記事。リーチやヘッド角などを横並びで確認でき、下り性能と登坂性能を両立するエンデューロが業界ベンチマークである理由も解説している。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/16</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/58651022/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">【MTB選び】最新エンデューロバイクのジオメトリー比較【スペシャライズド エンデューロ購入検討】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/58651022/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>スペシャライズド エンデューロ購入を検討した筆者が、最新エンデューロバイク各車のジオメトリーを比較しやすい一覧表にまとめた記事。リーチやヘッド角などを横並びで確認でき、下り性能と登坂性能を両立するエンデューロが業界ベンチマークである理由も解説している。</p></div><div class="custw"><a class="cust" href="https://48rider.com/enduro-bike-geometry/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月15日（水） <span class="n">7</span></div><div class="cards" data-date="2026-07-15"><div class="card" id="c43" data-c="kyoto" data-txt="【京都銭湯】四条烏丸の好立地！祇園祭合間にサッパリ一風呂☆サウナ＆露天風呂充実「白山湯」 kyotopi 四条烏丸近くの銭湯「白山湯高辻店」を紹介。天然名水を使った浴槽にサウナ、露天風呂も完備し、日曜は朝7時から営業。祇園祭の山鉾町に位置し、祭り見物の合間にサッと汗を流せる好立地が魅力。併設の居酒屋で湯上がりの一杯も楽しめる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/532/medium/e30b1431-a8a9-4d02-907f-de4095992f91.jpg?1784105101" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都銭湯】四条烏丸の好立地！祇園祭合間にサッパリ一風呂☆サウナ＆露天風呂充実「白山湯」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/532/medium/e30b1431-a8a9-4d02-907f-de4095992f91.jpg?1784105101" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>四条烏丸近くの銭湯「白山湯高辻店」を紹介。天然名水を使った浴槽にサウナ、露天風呂も完備し、日曜は朝7時から営業。祇園祭の山鉾町に位置し、祭り見物の合間にサッと汗を流せる好立地が魅力。併設の居酒屋で湯上がりの一杯も楽しめる。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/HQ530" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c44" data-c="kyoto" data-txt="【京都ニュース】170年以上の歴史に幕…四条通の老舗そば店が閉店「総本家ゑびや」 kyotopi 安政元年創業、170年以上の歴史を持つ四条通堺町の老舗そば店「総本家ゑびや」が2026年6月20日に閉店した。手打ちそばで長年親しまれた店の跡地では原状回復工事が進行中。京都で老舗飲食店の閉店が相次ぐ中、時代の移り変わりを象徴する出来事となった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/533/medium/5bb09561-008c-4841-8020-bd74a582f66d.jpg?1784115085" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都ニュース】170年以上の歴史に幕…四条通の老舗そば店が閉店「総本家ゑびや」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/533/medium/5bb09561-008c-4841-8020-bd74a582f66d.jpg?1784115085" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>安政元年創業、170年以上の歴史を持つ四条通堺町の老舗そば店「総本家ゑびや」が2026年6月20日に閉店した。手打ちそばで長年親しまれた店の跡地では原状回復工事が進行中。京都で老舗飲食店の閉店が相次ぐ中、時代の移り変わりを象徴する出来事となった。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/sohonkeebiya-close" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c45" data-c="kyoto" data-txt="【京都】伏見桃山の素敵なスイーツカフェ「パレード伏見洋菓子店」 kyotopi 伏見桃山のスイーツカフェ「パレード伏見洋菓子店」を紹介。国産米粉やきび砂糖を使い、添加物を使わずに手作りされるケーキやシュークリームが魅力。特にサクサク食感の皮が印象的な窯焼きシュークリームが評判で、カフェ利用もできる心地よい一軒。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/518/medium/1e53ed9f-9f82-41e1-a72f-4aea327bbc70.jpg?1783741583" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都】伏見桃山の素敵なスイーツカフェ「パレード伏見洋菓子店」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/518/medium/1e53ed9f-9f82-41e1-a72f-4aea327bbc70.jpg?1783741583" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>伏見桃山のスイーツカフェ「パレード伏見洋菓子店」を紹介。国産米粉やきび砂糖を使い、添加物を使わずに手作りされるケーキやシュークリームが魅力。特にサクサク食感の皮が印象的な窯焼きシュークリームが評判で、カフェ利用もできる心地よい一軒。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/P7qnb" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c46" data-c="kyoto" data-txt="【京都市伏見区】今年も開催！藤森神社で夏の風物詩「藤森盆踊りフェスティバル」2026は8/2開催！ 号外net 伏見区 「藤森盆踊りフェスティバル」が8月2日17時30分〜20時30分に開催。地域住民と商店街が一体となり、炭坑節や藤森音頭、ハピハピ音頭を踊る。和太鼓演奏やダンスステージのほか、墨染ショッピング街の屋台やマルシェも並び、提灯の灯りの中で夏の風物詩を楽しめる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/fujinomori2.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】今年も開催！藤森神社で夏の風物詩「藤森盆踊りフェスティバル」2026は8/2開催！</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/fujinomori2.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>「藤森盆踊りフェスティバル」が8月2日17時30分〜20時30分に開催。地域住民と商店街が一体となり、炭坑節や藤森音頭、ハピハピ音頭を踊る。和太鼓演奏やダンスステージのほか、墨染ショッピング街の屋台やマルシェも並び、提灯の灯りの中で夏の風物詩を楽しめる。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/15/fujinomori-bonfes2026/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c47" data-c="shiga" data-txt="マクドナルド柳が崎店、2026年9月2日にグランドオープンへ 大津市松山町 滋賀つーしん 大津市松山町のマクドナルド柳が崎店が2026年9月2日にグランドオープン予定であることを伝える記事。改装のため休業していた店舗の営業再開情報で、オープン日や場所など現時点で判明している内容を写真付きでまとめている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2196-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">マクドナルド柳が崎店、2026年9月2日にグランドオープンへ 大津市松山町</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2196-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>大津市松山町のマクドナルド柳が崎店が2026年9月2日にグランドオープン予定であることを伝える記事。改装のため休業していた店舗の営業再開情報で、オープン日や場所など現時点で判明している内容を写真付きでまとめている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/mcdonalds-yanagasaki-otsu-reopen-2026/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c48" data-c="thai" data-txt="タイのビザ制度見直しの見直しが内閣承認される、ノービザ滞在期間30日に短縮 パタヤ千夜一夜 タイ内閣がビザ制度見直しの再修正を承認した。ビザ免除対象国の絞り込みに加え、ノービザでの滞在可能期間が従来の60日から30日に短縮される内容で、長期滞在者や訪タイリピーターへの影響が大きい制度変更のポイントを解説する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイのビザ制度見直しの見直しが内閣承認される、ノービザ滞在期間30日に短縮</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ内閣がビザ制度見直しの再修正を承認した。ビザ免除対象国の絞り込みに加え、ノービザでの滞在可能期間が従来の60日から30日に短縮される内容で、長期滞在者や訪タイリピーターへの影響が大きい制度変更のポイントを解説する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76595" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c49" data-c="car" data-txt="jb64/74ジムニーに最適なドリンクホルダーは？色々試した感想から「最適」を語る。 48rider.com 純正ドリンクホルダーが使いにくいjb64/74ジムニー向けに、社外品を複数試した結果を紹介。運転席右側のエアコン吹き出し口前が最適位置で、セイワwa98やカーメイトnz588を推奨。シフトレバー手前のデッドスペース活用も次点として挙げている。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/48817926/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">JB64/74ジムニーに最適なドリンクホルダーは？色々試した感想から「最適」を語る。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/48817926/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>純正ドリンクホルダーが使いにくいJB64/74ジムニー向けに、社外品を複数試した結果を紹介。運転席右側のエアコン吹き出し口前が最適位置で、セイワWA98やカーメイトNZ588を推奨。シフトレバー手前のデッドスペース活用も次点として挙げている。</p></div><div class="custw"><a class="cust" href="https://48rider.com/jb74-jimny-drink-holder/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月14日（火） <span class="n">7</span></div><div class="cards" data-date="2026-07-14"><div class="card" id="c50" data-c="kyoto" data-txt="【京都ラーメン】不定期で味わえる知る人ぞ知る名物「焼飯」！〆にも使える人気店「きんざん」 kyotopi 下京区の人気店「京都ラーメン きんざん 七条本店」を紹介。不定期で提供される名物「焼飯」は、醤油の香ばしさとラードのコクが幾重にも重なる力強い味わいで酒のアテにも合う。おつまみメニューも充実し、夜遅くまで営業するため飲み会の〆にも使える。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">Kyotopi</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://image.kyotopi.jp/articles/images/000/019/525/medium/44c8ae5b-ca3f-498a-bc37-34775ea81724.jpg?1784015739" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都ラーメン】不定期で味わえる知る人ぞ知る名物「焼飯」！〆にも使える人気店「きんざん」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://image.kyotopi.jp/articles/images/000/019/525/medium/44c8ae5b-ca3f-498a-bc37-34775ea81724.jpg?1784015739" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>下京区の人気店「京都ラーメン きんざん 七条本店」を紹介。不定期で提供される名物「焼飯」は、醤油の香ばしさとラードのコクが幾重にも重なる力強い味わいで酒のアテにも合う。おつまみメニューも充実し、夜遅くまで営業するため飲み会の〆にも使える。</p></div><div class="custw"><a class="cust" href="https://kyotopi.jp/articles/ramenkinzan" target="_blank" rel="noopener">🔗 元記事を読む（Kyotopi）</a></div></div>
+</div><div class="card" id="c51" data-c="kyoto" data-txt="【京都市伏見区】500円均一の直売所！？作りたてキムチや人気キンパが並ぶ「ことぶきフーズ京都伏見」が平日の営業もスタート。 号外net 伏見区 創業34年、飲食店にキムチを卸す「ことぶきフーズ京都伏見」の直売所では、作りたてキムチや韓国惣菜を500円均一で販売。平日は8時30分〜13時にキムチを販売し、土曜は韓国惣菜も追加。リピーターに人気の蒸しニンニクや牛肉キンパは数量限定で早めの来店推奨。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44105758.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】500円均一の直売所！？作りたてキムチや人気キンパが並ぶ「ことぶきフーズ京都伏見」が平日の営業もスタート。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44105758.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>創業34年、飲食店にキムチを卸す「ことぶきフーズ京都伏見」の直売所では、作りたてキムチや韓国惣菜を500円均一で販売。平日は8時30分〜13時にキムチを販売し、土曜は韓国惣菜も追加。リピーターに人気の蒸しニンニクや牛肉キンパは数量限定で早めの来店推奨。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/14/kotobuki-kimuchi/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c52" data-c="kyoto" data-txt="マルシェすみのくら – 【京都パン】右京区が新店オープン 京都のお墨付き！ 2026年5月12日に京都市右京区でオープンしたパン屋「マルシェすみのくら」の紹介記事。営業時間は9時30分からで、メニューや値段、定休日など2026年6月20日時点の店舗情報を実際の訪問を基に写真付きで詳しく伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260714192851.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">マルシェすみのくら – 【京都パン】右京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260714192851.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年5月12日に京都市右京区でオープンしたパン屋「マルシェすみのくら」の紹介記事。営業時間は9時30分からで、メニューや値段、定休日など2026年6月20日時点の店舗情報を実際の訪問を基に写真付きで詳しく伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/bakery/225962.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c53" data-c="shiga" data-txt="丸源ラーメンのおすすめメニューは？定番の肉そばやとんこつなど人気投票アンケート 滋賀つーしん ラーメンチェーン「丸源ラーメン」のおすすめメニューを読者投票で決める人気アンケート企画。定番の肉そばやとんこつなど各メニューへの投票を募り、県内の店舗利用者に向けて人気メニューの傾向を明らかにする参加型の記事。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_6880-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">丸源ラーメンのおすすめメニューは？定番の肉そばやとんこつなど人気投票アンケート</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_6880-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ラーメンチェーン「丸源ラーメン」のおすすめメニューを読者投票で決める人気アンケート企画。定番の肉そばやとんこつなど各メニューへの投票を募り、県内の店舗利用者に向けて人気メニューの傾向を明らかにする参加型の記事。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/marugen-ramen-recommend/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c54" data-c="car" data-txt="デュワーズ ジャパニーズスムース 8年レビュー ミズナラ樽が醸す「香木」の香りとスムースな口当たり 48rider.com ミズナラ樽でフィニッシュしたブレンデッドスコッチ「デュワーズ ジャパニーズスムース 8年」のレビュー。香木を思わせる和の香りとスムースな口当たりが特徴で、ストレート・ロック・ハイボールでの味わいの違いも詳しく紹介する。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://48rider.com/wp-content/uploads/2026/07/IMG_2652-1.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">デュワーズ ジャパニーズスムース 8年レビュー ミズナラ樽が醸す「香木」の香りとスムースな口当たり</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://48rider.com/wp-content/uploads/2026/07/IMG_2652-1.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ミズナラ樽でフィニッシュしたブレンデッドスコッチ「デュワーズ ジャパニーズスムース 8年」のレビュー。香木を思わせる和の香りとスムースな口当たりが特徴で、ストレート・ロック・ハイボールでの味わいの違いも詳しく紹介する。</p></div><div class="custw"><a class="cust" href="https://48rider.com/dewars-japanese-smooth-review/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div><div class="card" id="c55" data-c="thai" data-txt="パタヤ＝スワンナプーム空港、バンコクのバス運賃が値下げ パタヤ千夜一夜 パタヤ＝スワンナプーム空港間およびバンコク方面のバス運賃が値下げされた。運行会社のルンルンコーチは中東情勢による燃料費高騰を受けて4月に値上げしていたが、その後の再改定として運賃引き下げを発表。旅行者の移動コスト軽減につながる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">パタヤ＝スワンナプーム空港、バンコクのバス運賃が値下げ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ＝スワンナプーム空港間およびバンコク方面のバス運賃が値下げされた。運行会社のルンルンコーチは中東情勢による燃料費高騰を受けて4月に値上げしていたが、その後の再改定として運賃引き下げを発表。旅行者の移動コスト軽減につながる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76592" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c56" data-c="kyoto" data-txt="つげ義春の『ねじ式』が意味するもの 京都三昧、書き候 漫画家つげ義春の代表作『ねじ式』を取り上げ、その前衛的な表現が漫画界に与えた影響を考察する。海外のアンダーグラウンド・コミックの先駆者たちとも比較しながら、つげ作品の持つ独特の世界観と意味を、筆者ならではの視点で読み解いていく。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/07/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260714/17/kyo-bonbon/9a/bb/j/o0689102415802480106.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">つげ義春の『ねじ式』が意味するもの</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260714/17/kyo-bonbon/9a/bb/j/o0689102415802480106.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>漫画家つげ義春の代表作『ねじ式』を取り上げ、その前衛的な表現が漫画界に与えた影響を考察する。海外のアンダーグラウンド・コミックの先駆者たちとも比較しながら、つげ作品の持つ独特の世界観と意味を、筆者ならではの視点で読み解いていく。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12972699870.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年7月13日（月） <span class="n">6</span></div><div class="cards" data-date="2026-07-13"><div class="card" id="c57" data-c="kyoto" data-txt="【京都市伏見区】京都信用金庫 六地蔵支店が建替えへ。一時的にmomoテラス別館へ移転しています。 号外net 伏見区 京都信用金庫六地蔵支店が建物の老朽化に伴う建替工事のため仮店舗へ移転。1976年の開設以来、地域で営業を続けてきた。6月15日からは元店舗の北西約170メートルにあるmomoテラス別館1階で営業中で、2028年1月頃に元の場所での営業再開を予定している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44023934.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】京都信用金庫 六地蔵支店が建替えへ。一時的にMOMOテラス別館へ移転しています。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/S__44023934.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都信用金庫六地蔵支店が建物の老朽化に伴う建替工事のため仮店舗へ移転。1976年の開設以来、地域で営業を続けてきた。6月15日からは元店舗の北西約170メートルにあるMOMOテラス別館1階で営業中で、2028年1月頃に元の場所での営業再開を予定している。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/13/kyoto-shinkin/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c58" data-c="shiga" data-txt="横浜家系ラーメン 梵波家 が長浜市湖北町にオープン 滋賀つーしん 横浜家系ラーメン「梵波家」が長浜市湖北町にオープンしたことを伝える新店情報記事。濃厚な豚骨醤油スープが特徴の家系ラーメン店の県北部への出店で、場所や店舗の様子など現時点で分かっている情報を写真とともに紹介している。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_4943-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">横浜家系ラーメン 梵波家 が長浜市湖北町にオープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_4943-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>横浜家系ラーメン「梵波家」が長浜市湖北町にオープンしたことを伝える新店情報記事。濃厚な豚骨醤油スープが特徴の家系ラーメン店の県北部への出店で、場所や店舗の様子など現時点で分かっている情報を写真とともに紹介している。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/yokohama-iekei-ramen-bombaya-nagahama/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c59" data-c="car" data-txt="jb74ジムニーシエラ グリルバッジ取り付け 48rider.com jb74ジムニーシエラのフロントグリルにグリルバッジを取り付ける手順を解説するdiy記事。ボルト付属のバッジをグリル裏から8mmナットで固定する方法を写真付きで紹介。カラー展開もあり車体色に合わせた選択が可能と伝える。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><img class="thumb" src="https://48rider.com/wp-content/uploads/2026/07/IMG_2789-1.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">JB74ジムニーシエラ グリルバッジ取り付け</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://48rider.com/wp-content/uploads/2026/07/IMG_2789-1.jpeg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>JB74ジムニーシエラのフロントグリルにグリルバッジを取り付ける手順を解説するDIY記事。ボルト付属のバッジをグリル裏から8mmナットで固定する方法を写真付きで紹介。カラー展開もあり車体色に合わせた選択が可能と伝える。</p></div><div class="custw"><a class="cust" href="https://48rider.com/jb74-jimny-grille-badge/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div><div class="card" id="c60" data-c="thai" data-txt="新しいサダオ陸路国境検問所がオープン、どうなるダンノックの街 パタヤ千夜一夜 タイ南部サダオとマレーシア北部ブキッ・カユ・ヒタムを結ぶ新しい陸路国境検問所が開設され、従来のサダオ検問所は運用を終了した。国境の街ダンノックを通る人の流れが変わることで、街の飲食店や宿がどうなっていくのかを考察する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">新しいサダオ陸路国境検問所がオープン、どうなるダンノックの街</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ南部サダオとマレーシア北部ブキッ・カユ・ヒタムを結ぶ新しい陸路国境検問所が開設され、従来のサダオ検問所は運用を終了した。国境の街ダンノックを通る人の流れが変わることで、街の飲食店や宿がどうなっていくのかを考察する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76583" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c61" data-c="thai" data-txt="また１つの老舗名店が幕を閉じた…【２０２６.７】 のりすけブログ パタヤ・ウォーキングストリートの老舗「skyfall」が7月11日に閉店。次のオーナーが決まっている様子でリブランドの可能性も。開業約80日で閉店した「abyss」跡には新店「龍宮」が開店。雨季の閑散期とw杯による客足減少が背景にあると分析する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">のりすけブログ</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><img class="thumb" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/batch_1000020043.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">また１つの老舗名店が幕を閉じた…【２０２６.７】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/batch_1000020043.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>パタヤ・ウォーキングストリートの老舗「SKYFALL」が7月11日に閉店。次のオーナーが決まっている様子でリブランドの可能性も。開業約80日で閉店した「Abyss」跡には新店「龍宮」が開店。雨季の閑散期とW杯による客足減少が背景にあると分析する。</p></div><div class="custw"><a class="cust" href="https://www.norisukeblog.com/36202/" target="_blank" rel="noopener">🔗 元記事を読む（のりすけブログ）</a></div></div>
+</div><div class="card" id="c62" data-c="thai" data-txt="タイ・ベトジェット 大阪・関空＝バンコク・スワンナプーム路線を毎日運航に増便 パタヤ千夜一夜 タイ・ベトジェットが大阪・関空＝バンコク・スワンナプーム線を2026年11月13日から毎日運航に増便する。現在は週4便での運航だが、路線需要の高まりを受けた拡大で、関西からタイへ渡航する旅行者の選択肢がさらに広がることになる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/13</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイ・ベトジェット 大阪・関空＝バンコク・スワンナプーム路線を毎日運航に増便</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ・ベトジェットが大阪・関空＝バンコク・スワンナプーム線を2026年11月13日から毎日運航に増便する。現在は週4便での運航だが、路線需要の高まりを受けた拡大で、関西からタイへ渡航する旅行者の選択肢がさらに広がることになる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76580" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年7月12日（日） <span class="n">2</span></div><div class="cards" data-date="2026-07-12"><div class="card" id="c63" data-c="kyoto" data-txt="【京都市伏見区】7月31日は商店街が一夜のお祭りに！大手筋・納屋町商店街などで毎年恒例「夏の夜市」が開催！ 号外net 伏見区 毎年恒例の「夏の夜市」が7月31日18時〜21時に伏見大手筋商店街など複数の商店街で開催。大手筋ではヨーヨーすくいやくじ引きなど子ども向け屋台が充実し、納屋町商店街では飲食屋台やダンス・音楽のステージも実施。商店街ごとに異なる雰囲気を歩いて楽しめる。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/12</span>
+</div>
+<div class="crow"><img class="thumb" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/yoichi18.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都市伏見区】7月31日は商店街が一夜のお祭りに！大手筋・納屋町商店街などで毎年恒例「夏の夜市」が開催！</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://fushimi.goguynet.jp/wp-content/uploads/sites/114/2026/07/yoichi18.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>毎年恒例の「夏の夜市」が7月31日18時〜21時に伏見大手筋商店街など複数の商店街で開催。大手筋ではヨーヨーすくいやくじ引きなど子ども向け屋台が充実し、納屋町商店街では飲食屋台やダンス・音楽のステージも実施。商店街ごとに異なる雰囲気を歩いて楽しめる。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/12/natsunoyoichi2026/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c64" data-c="kyoto" data-txt="蓮の華と水滴 京都三昧、書き候 雨上がりの植物園で撮影した蓮の花と水滴の写真記録。花や葉に残る雨の雫、朝露をまとった蜘蛛の巣など、雨後ならではの瑞々しい情景をカメラに収めた。京都の夏の風物詩である蓮の美しさを、写真を中心に紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/07/12</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260712/17/kyo-bonbon/4c/89/j/o1024068215801848260.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">蓮の華と水滴</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260712/17/kyo-bonbon/4c/89/j/o1024068215801848260.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>雨上がりの植物園で撮影した蓮の花と水滴の写真記録。花や葉に残る雨の雫、朝露をまとった蜘蛛の巣など、雨後ならではの瑞々しい情景をカメラに収めた。京都の夏の風物詩である蓮の美しさを、写真を中心に紹介している。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12972502441.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年7月11日（土） <span class="n">3</span></div><div class="cards" data-date="2026-07-11"><div class="card" id="c65" data-c="shiga" data-txt="もりやま夏まつり2026が7月25日開催！かつみ♡さゆりなどが出演｜当日交通規制 滋賀つーしん 2026年7月25日開催の「もりやま夏まつり2026」の情報まとめ記事。かつみ♡さゆりなどの出演者やイベント内容、当日の交通規制について詳しく紹介し、守山駅周辺で行われる夏の恒例イベントの見どころを事前に確認できる。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/11</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2162-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">もりやま夏まつり2026が7月25日開催！かつみ♡さゆりなどが出演｜当日交通規制</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2162-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年7月25日開催の「もりやま夏まつり2026」の情報まとめ記事。かつみ♡さゆりなどの出演者やイベント内容、当日の交通規制について詳しく紹介し、守山駅周辺で行われる夏の恒例イベントの見どころを事前に確認できる。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/moriyama-natsumatsuri-2026/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c66" data-c="thai" data-txt="７月から値上げラッシュの海外旅行…【２０２６.７】 のりすけブログ 日本人のパスポート所持率が18％に低下する中、中東情勢による原油の混乱で航空燃油サーチャージが値上げされ、出国税の増額も重なり7月から海外旅行の値上げラッシュが続く状況を、タイ・パタヤ渡航者の視点から嘆きつつ解説する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">のりすけブログ</span><span class="dt">2026/07/11</span>
+</div>
+<div class="crow"><img class="thumb" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/1000020018.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">７月から値上げラッシュの海外旅行…【２０２６.７】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://www.norisukeblog.com/wp-content/uploads/2026/07/1000020018.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>日本人のパスポート所持率が18％に低下する中、中東情勢による原油の混乱で航空燃油サーチャージが値上げされ、出国税の増額も重なり7月から海外旅行の値上げラッシュが続く状況を、タイ・パタヤ渡航者の視点から嘆きつつ解説する。</p></div><div class="custw"><a class="cust" href="https://www.norisukeblog.com/36108/" target="_blank" rel="noopener">🔗 元記事を読む（のりすけブログ）</a></div></div>
+</div><div class="card" id="c67" data-c="car" data-txt="amazonプライムデーで買うべきジムニー用品7選！ 48rider.com 毎年恒例のamazonプライムデーに合わせ、筆者が実際に使って良かったジムニー用品の中からセールで買うべきおすすめ7点を厳選して紹介。ジムニー用品を安く手に入れるチャンスとして、各アイテムの使用感やおすすめする理由を解説している。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/11</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/79777206/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">Amazonプライムデーで買うべきジムニー用品7選！</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/79777206/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>毎年恒例のAmazonプライムデーに合わせ、筆者が実際に使って良かったジムニー用品の中からセールで買うべきおすすめ7点を厳選して紹介。ジムニー用品を安く手に入れるチャンスとして、各アイテムの使用感やおすすめする理由を解説している。</p></div><div class="custw"><a class="cust" href="https://48rider.com/amazon%E3%83%97%E3%83%A9%E3%82%A4%E3%83%A0%E3%83%87%E3%83%BC%E3%81%A7%E8%B2%B7%E3%81%86%E3%81%B9%E3%81%8D%E3%82%B8%E3%83%A0%E3%83%8B%E3%83%BC%E7%94%A8%E5%93%817%E9%81%B8/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月10日（金） <span class="n">4</span></div><div class="cards" data-date="2026-07-10"><div class="card" id="c68" data-c="kyoto" data-txt="【京都市伏見区】7/18、momoテラスで夏祭りが初開催！！ダンスステージや縁日も楽しめる。 号外net 伏見区 momoテラスで7月18日、初開催となる夏祭りイベントが行われる。ダンスステージや縁日ゲーム、屋台グルメなど家族で楽しめるコンテンツが多数用意され、商業施設ならではの気軽さで夏祭り気分を味わえる新しい地域イベントとして注目されている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">号外NET 伏見区</span><span class="dt">2026/07/10</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">【京都市伏見区】7/18、MOMOテラスで夏祭りが初開催！！ダンスステージや縁日も楽しめる。</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>MOMOテラスで7月18日、初開催となる夏祭りイベントが行われる。ダンスステージや縁日ゲーム、屋台グルメなど家族で楽しめるコンテンツが多数用意され、商業施設ならではの気軽さで夏祭り気分を味わえる新しい地域イベントとして注目されている。</p></div><div class="custw"><a class="cust" href="https://fushimi.goguynet.jp/2026/07/11/momo-summer2026/" target="_blank" rel="noopener">🔗 元記事を読む（号外NET 伏見区）</a></div></div>
+</div><div class="card" id="c69" data-c="shiga" data-txt="スーパーセンタートライアル湖南店、棚卸のため一時閉店 滋賀つーしん スーパーセンタートライアル湖南店が棚卸のため2026年7月16日から17日にかけて一時閉店することを知らせるお知らせ記事。休業の日程と営業再開の予定を簡潔にまとめ、普段利用している近隣の買い物客に注意を呼びかけている。">
+<div class="chd" style="border-color:#0e8a7b;background:#e4f4f1">
+<span class="cat" style="background:#0e8a7b">滋賀</span><span class="bnm">滋賀つーしん</span><span class="dt">2026/07/10</span>
+</div>
+<div class="crow"><img class="thumb" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2151-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🏞️</div>'"><div class="name">スーパーセンタートライアル湖南店、棚卸のため一時閉店</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://shiga2.jp/wp-content/uploads/2026/07/IMG_2151-1200-675.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>スーパーセンタートライアル湖南店が棚卸のため2026年7月16日から17日にかけて一時閉店することを知らせるお知らせ記事。休業の日程と営業再開の予定を簡潔にまとめ、普段利用している近隣の買い物客に注意を呼びかけている。</p></div><div class="custw"><a class="cust" href="https://shiga2.jp/trial-konan-inventory-closure-202607/shiga2/" target="_blank" rel="noopener">🔗 元記事を読む（滋賀つーしん）</a></div></div>
+</div><div class="card" id="c70" data-c="kyoto" data-txt="美輪明宏の「紫の履歴書」 京都三昧、書き候 世を去った美輪明宏の自伝『紫の履歴書』を手がかりに、その文化的な存在感を振り返る回想記。筆者自身が出会ってきた前衛芸術家たちの思い出も交えながら、美輪明宏という稀有な表現者が残したものについて綴っている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/07/10</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260710/17/kyo-bonbon/7a/e3/j/o0719102415801190442.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">美輪明宏の「紫の履歴書」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260710/17/kyo-bonbon/7a/e3/j/o0719102415801190442.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>世を去った美輪明宏の自伝『紫の履歴書』を手がかりに、その文化的な存在感を振り返る回想記。筆者自身が出会ってきた前衛芸術家たちの思い出も交えながら、美輪明宏という稀有な表現者が残したものについて綴っている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12972310366.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div><div class="card" id="c71" data-c="car" data-txt="【2026年6月まで】ジムニー/ジムニーシエラ販売台数推移比較【ノマドも追加】 48rider.com 軽のジムニーと普通車のジムニーシエラはどちらが人気なのかという疑問から、月別販売台数の推移をデータで比較した記事。2026年6月分までのデータに更新され、新たに5ドアのジムニーノマドの販売台数も追加。両車の販売動向をグラフで確認できる。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/10</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/62191358/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">【2026年6月まで】ジムニー/ジムニーシエラ販売台数推移比較【ノマドも追加】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/62191358/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>軽のジムニーと普通車のジムニーシエラはどちらが人気なのかという疑問から、月別販売台数の推移をデータで比較した記事。2026年6月分までのデータに更新され、新たに5ドアのジムニーノマドの販売台数も追加。両車の販売動向をグラフで確認できる。</p></div><div class="custw"><a class="cust" href="https://48rider.com/sales-volume-comparison/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月9日（木） <span class="n">4</span></div><div class="cards" data-date="2026-07-09"><div class="card" id="c72" data-c="kyoto" data-txt="shict北大路 – 【京都ドーナツ】北区が新店オープン 京都のお墨付き！ 2026年7月11日に京都市北区でオープンしたドーナツ店「shict北大路」のネット最速実食レビュー記事。営業時間は11時からで、メニューや値段、定休日などオープン当日時点の店舗情報を写真付きで詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/07/09</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260709233618.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">SHICT北大路 – 【京都ドーナツ】北区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260709233618.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年7月11日に京都市北区でオープンしたドーナツ店「SHICT北大路」のネット最速実食レビュー記事。営業時間は11時からで、メニューや値段、定休日などオープン当日時点の店舗情報を写真付きで詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/foodie/225953.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c73" data-c="thai" data-txt="保護中: 2026年 gw バンコク・パタヤ旅行記 其の⑥ gontaro blog 2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第6弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。タグからパタヤのソイ6周辺やホテル滞在に関する記録と推測される。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/07/09</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gontaro.net/wp-content/uploads/2026/07/74991c6c203662145dbcec3df4f6efb4.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">保護中: 2026年 GW バンコク・パタヤ旅行記 其の⑥</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gontaro.net/wp-content/uploads/2026/07/74991c6c203662145dbcec3df4f6efb4.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第6弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。タグからパタヤのソイ6周辺やホテル滞在に関する記録と推測される。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/16024" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div><div class="card" id="c74" data-c="thai" data-txt="深夜2時のソイブッカオでカオマンガイ パタヤ千夜一夜 深夜2時のパタヤ・ソイブッカオで、バー巡りの後にカオマンガイを食べた記録。こんな時間に食べてよいものかという健康面の葛藤を抱えつつも、夜遊び帰りの空腹をしっかり満たしてくれる深夜営業の食堂の様子と味を紹介する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/09</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">深夜2時のソイブッカオでカオマンガイ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>深夜2時のパタヤ・ソイブッカオで、バー巡りの後にカオマンガイを食べた記録。こんな時間に食べてよいものかという健康面の葛藤を抱えつつも、夜遊び帰りの空腹をしっかり満たしてくれる深夜営業の食堂の様子と味を紹介する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76573" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c75" data-c="car" data-txt="ニッカフロンティア レビュー【余市ヘビーピートにモルト比率51%以上、ブレンデッドの境界線を越えるフロンティア】 48rider.com ニッカフロンティアのレビュー記事。余市のヘビーピートモルトを使用しモルト比率51%以上という、ブレンデッドの境界線を越える意欲作を試飲。常飲ウイスキーを基準に据えて他銘柄と比較しながら、香りや味わいの特徴を詳しく解説している。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/09</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/79723779/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">ニッカフロンティア レビュー【余市ヘビーピートにモルト比率51%以上、ブレンデッドの境界線を越えるフロンティア】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/79723779/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ニッカフロンティアのレビュー記事。余市のヘビーピートモルトを使用しモルト比率51%以上という、ブレンデッドの境界線を越える意欲作を試飲。常飲ウイスキーを基準に据えて他銘柄と比較しながら、香りや味わいの特徴を詳しく解説している。</p></div><div class="custw"><a class="cust" href="https://48rider.com/nikka-flontier-review/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月7日（火） <span class="n">1</span></div><div class="cards" data-date="2026-07-07"><div class="card" id="c76" data-c="kyoto" data-txt="植物園の夏の花 京都三昧、書き候 京都の植物園で撮影した夏の花々の写真記録。鮮やかに咲くカンナをはじめ、葉に残る水滴の輝きなど、盛夏の園内の見どころをカメラで切り取った。猛暑の中でも生き生きとした植物の姿を伝える、写真中心の記事となっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/07/07</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260707/16/kyo-bonbon/4c/ac/j/o1024068215800262163.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">植物園の夏の花</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260707/16/kyo-bonbon/4c/ac/j/o1024068215800262163.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都の植物園で撮影した夏の花々の写真記録。鮮やかに咲くカンナをはじめ、葉に残る水滴の輝きなど、盛夏の園内の見どころをカメラで切り取った。猛暑の中でも生き生きとした植物の姿を伝える、写真中心の記事となっている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12972017987.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年7月5日（日） <span class="n">2</span></div><div class="cards" data-date="2026-07-05"><div class="card" id="c77" data-c="kyoto" data-txt="cafe de soleil～カフェ・ド・ソレイユ～ – 【京都カフェ】右京区が新店オープン 京都のお墨付き！ 2026年6月11日に京都市右京区でオープンした新店カフェ「cafe de soleil～カフェ・ド・ソレイユ～」の紹介記事。6月22日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューとともに伝える。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/07/05</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260705172158.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">Cafe de Soleil～カフェ・ド・ソレイユ～ – 【京都カフェ】右京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260705172158.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月11日に京都市右京区でオープンした新店カフェ「Cafe de Soleil～カフェ・ド・ソレイユ～」の紹介記事。6月22日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューとともに伝える。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/cafe/225942.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c78" data-c="thai" data-txt="保護中: 2026年 gw バンコク・パタヤ旅行記 其の⑤ gontaro blog 2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第5弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。バンコク・パタヤ滞在中の飲食やナイトライフ、ホテル滞在の記録と推測される。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/07/05</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gontaro.net/wp-content/uploads/2026/07/PXL_20260503_045245918-1024x768.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">保護中: 2026年 GW バンコク・パタヤ旅行記 其の⑤</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gontaro.net/wp-content/uploads/2026/07/PXL_20260503_045245918-1024x768.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第5弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。バンコク・パタヤ滞在中の飲食やナイトライフ、ホテル滞在の記録と推測される。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15923" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年7月3日（金） <span class="n">2</span></div><div class="cards" data-date="2026-07-03"><div class="card" id="c79" data-c="kyoto" data-txt="朧月夜のアジサイに思う 京都三昧、書き候 朧月夜に照らされたアジサイを撮影した夜の写真とともに、思うところを綴った随想。花の写真に加え、現代日本の政治や皇位継承のあり方についての筆者の意見も展開されており、写真と時事評論が交錯する内容となっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/07/03</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260703/16/kyo-bonbon/aa/73/j/o0682102415798945477.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">朧月夜のアジサイに思う</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260703/16/kyo-bonbon/aa/73/j/o0682102415798945477.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>朧月夜に照らされたアジサイを撮影した夜の写真とともに、思うところを綴った随想。花の写真に加え、現代日本の政治や皇位継承のあり方についての筆者の意見も展開されており、写真と時事評論が交錯する内容となっている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12971585853.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div><div class="card" id="c80" data-c="car" data-txt="ハイエース（標準＆ワイド）のタイヤはみ出し見積もり計算フォーム【ハミタイはやめよう】 48rider.com ハイエースの標準ボディとワイドボディに対応したタイヤはみ出し見積もり計算フォームを公開。タイヤ幅やホイールインセットを入力するだけで、はみ出し量を簡単に見積もれる。はみ出しは車検ngや泥跳ねの原因になるため、タイヤ・ホイール選びの事前確認に役立つ。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/03</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/79623861/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">ハイエース（標準＆ワイド）のタイヤはみ出し見積もり計算フォーム【ハミタイはやめよう】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/79623861/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ハイエースの標準ボディとワイドボディに対応したタイヤはみ出し見積もり計算フォームを公開。タイヤ幅やホイールインセットを入力するだけで、はみ出し量を簡単に見積もれる。はみ出しは車検NGや泥跳ねの原因になるため、タイヤ・ホイール選びの事前確認に役立つ。</p></div><div class="custw"><a class="cust" href="https://48rider.com/hiace-estimate-of-tire-overhang/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年7月2日（木） <span class="n">2</span></div><div class="cards" data-date="2026-07-02"><div class="card" id="c81" data-c="thai" data-txt="タイ（南部）に於ける犯罪ヒエラルキー！？ のりすけブログ パタヤのソンテウ運転手が旅行者へのぼったくり行為の告発を受け1週間の営業停止処分となった件や、タイ南部の外国人犯罪統計でミャンマー人が1位、ロシア人2位、英国人3位となった実態など、タイの治安に関する現地ニュースを紹介する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">のりすけブログ</span><span class="dt">2026/07/02</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイ（南部）に於ける犯罪ヒエラルキー！？</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤのソンテウ運転手が旅行者へのぼったくり行為の告発を受け1週間の営業停止処分となった件や、タイ南部の外国人犯罪統計でミャンマー人が1位、ロシア人2位、英国人3位となった実態など、タイの治安に関する現地ニュースを紹介する。</p></div><div class="custw"><a class="cust" href="https://www.norisukeblog.com/32625/" target="_blank" rel="noopener">🔗 元記事を読む（のりすけブログ）</a></div></div>
+</div><div class="card" id="c82" data-c="thai" data-txt="ウドンタニー空港をハブ空港化、東京・大阪発ウドンタニー行きも検討 パタヤ千夜一夜 タイ運輸省とタイ・ベトジェットが、東北部イサーン地方の玄関口ウドンタニー空港をハブ空港化し国際線接続を強化する構想を発表した。東京・大阪発ウドンタニー行き直行便の開設も検討されており、実現すればイサーン方面への旅行が便利になる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/07/02</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">ウドンタニー空港をハブ空港化、東京・大阪発ウドンタニー行きも検討</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ運輸省とタイ・ベトジェットが、東北部イサーン地方の玄関口ウドンタニー空港をハブ空港化し国際線接続を強化する構想を発表した。東京・大阪発ウドンタニー行き直行便の開設も検討されており、実現すればイサーン方面への旅行が便利になる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76557" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年7月1日（水） <span class="n">1</span></div><div class="cards" data-date="2026-07-01"><div class="card" id="c83" data-c="car" data-txt="【愛車を守る】jb64/jb74にマグネット式ドアガードを取り付ける 48rider.com 傷がつきやすいjb64/jb74ジムニーのドアノブ周りを保護するため、マグネット式ドアガードを取り付けた記事。磁石で貼り付けるだけと手軽ながら、爪傷やドアパンチから愛車を守れる実用アイテムとして、取り付け方法や使用感を紹介している。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/07/01</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/79577312/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">【愛車を守る】JB64/JB74にマグネット式ドアガードを取り付ける</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/79577312/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>傷がつきやすいJB64/JB74ジムニーのドアノブ周りを保護するため、マグネット式ドアガードを取り付けた記事。磁石で貼り付けるだけと手軽ながら、爪傷やドアパンチから愛車を守れる実用アイテムとして、取り付け方法や使用感を紹介している。</p></div><div class="custw"><a class="cust" href="https://48rider.com/jb74-jimny-side-door-guard/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年6月30日（火） <span class="n">2</span></div><div class="cards" data-date="2026-06-30"><div class="card" id="c84" data-c="kyoto" data-txt="【京都ラーメン】2026年6月 ラーメン店 開店・閉店 まとめ ラーメンマニアがおすすめの京都ラーメン 著者ノーディレイが公開する「京都ラーメン店マップ」のデータを基に、2026年6月に京都で開店・閉店したラーメン店をまとめた月次記事。新店と閉店の動向を一覧で確認でき、京都のラーメンシーンの把握に役立つ内容となっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/30</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260318194601.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【京都ラーメン】2026年6月 ラーメン店 開店・閉店 まとめ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260318194601.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>著者ノーディレイが公開する「京都ラーメン店マップ」のデータを基に、2026年6月に京都で開店・閉店したラーメン店をまとめた月次記事。新店と閉店の動向を一覧で確認でき、京都のラーメンシーンの把握に役立つ内容となっている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225930.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div><div class="card" id="c85" data-c="thai" data-txt="タイ・ベトジェットエアvz820 スワンナプーム空港から関空へ搭乗レポート パタヤ千夜一夜 2026年2月にバンコク＝成田線とともに就航したタイ・ベトジェットのバンコク＝関空線vz820便に、スワンナプーム空港から関空まで実際に搭乗したレポート。チェックインから機内の様子まで、日本＝タイ直行便を拡大する同社の実力を確かめる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/30</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイ・ベトジェットエアVZ820 スワンナプーム空港から関空へ搭乗レポート</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年2月にバンコク＝成田線とともに就航したタイ・ベトジェットのバンコク＝関空線VZ820便に、スワンナプーム空港から関空まで実際に搭乗したレポート。チェックインから機内の様子まで、日本＝タイ直行便を拡大する同社の実力を確かめる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76553" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年6月29日（月） <span class="n">1</span></div><div class="cards" data-date="2026-06-29"><div class="card" id="c86" data-c="kyoto" data-txt="wee caledonia（小さいスコットランド） – 【京都カフェ】北区が新店オープン 京都のお墨付き！ 2026年6月に京都市北区でオープンしたスコットランド風カフェ「wee caledonia（小さいスコットランド）」の紹介記事。6月18日の取材を基に、メニューや値段、営業時間、定休日など店舗情報を実食レビュー付きで伝える。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/29</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260629195008.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">Wee Caledonia（小さいスコットランド） – 【京都カフェ】北区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260629195008.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月に京都市北区でオープンしたスコットランド風カフェ「Wee Caledonia（小さいスコットランド）」の紹介記事。6月18日の取材を基に、メニューや値段、営業時間、定休日など店舗情報を実食レビュー付きで伝える。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/cafe/225908.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div></div><div class="sec">📅 2026年6月27日（土） <span class="n">2</span></div><div class="cards" data-date="2026-06-27"><div class="card" id="c87" data-c="kyoto" data-txt="元祖博多だるま 京都拉麺小路店 – 【京都ラーメン】下京区が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年6月12日に京都市下京区の京都拉麺小路にオープンした博多豚骨ラーメンの有名店「元祖博多だるま 京都拉麺小路店」の紹介記事。メニューや値段、営業時間、定休日など6月23日時点の店舗情報を実食を交えて紹介する。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/27</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260627004200.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">元祖博多だるま 京都拉麺小路店 – 【京都ラーメン】下京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260627004200.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月12日に京都市下京区の京都拉麺小路にオープンした博多豚骨ラーメンの有名店「元祖博多だるま 京都拉麺小路店」の紹介記事。メニューや値段、営業時間、定休日など6月23日時点の店舗情報を実食を交えて紹介する。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225895.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div><div class="card" id="c88" data-c="car" data-txt="jb64ジムニー タイヤはみ出し見積もり計算【ハミタイはやめよう】 48rider.com jb74用に続き、読者からの複数の要望を受けて製作したjb64ジムニー用のタイヤはみ出し見積もり計算ツール。タイヤ幅とホイールインセットを入力するだけで、はみ出し量を見積もれる。実車での検証に基づいており、ハミタイを避けるタイヤ選びに便利。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">48rider.com</span><span class="dt">2026/06/27</span>
+</div>
+<div class="crow"><img class="thumb" src="https://img.blogmura.com/sites/760070/post-images/79519677/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">JB64ジムニー タイヤはみ出し見積もり計算【ハミタイはやめよう】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://img.blogmura.com/sites/760070/post-images/79519677/crop/290x290" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>JB74用に続き、読者からの複数の要望を受けて製作したJB64ジムニー用のタイヤはみ出し見積もり計算ツール。タイヤ幅とホイールインセットを入力するだけで、はみ出し量を見積もれる。実車での検証に基づいており、ハミタイを避けるタイヤ選びに便利。</p></div><div class="custw"><a class="cust" href="https://48rider.com/jb64-jimny-estimate-of-tire-overhang/" target="_blank" rel="noopener">🔗 元記事を読む（48rider.com）</a></div></div>
+</div></div><div class="sec">📅 2026年6月26日（金） <span class="n">2</span></div><div class="cards" data-date="2026-06-26"><div class="card" id="c89" data-c="thai" data-txt="バンコクとパタヤ 選挙による禁酒日6月27日から28日 パタヤ千夜一夜 バンコクとパタヤで6月28日に知事・議会議員選挙が実施されるのに伴い、前日27日から当日28日にかけて酒類販売が禁止される。タイでは選挙の前日と当日のアルコール販売が法律で禁止されており、この期間に滞在する旅行者は注意が必要となる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/26</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">バンコクとパタヤ 選挙による禁酒日6月27日から28日</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>バンコクとパタヤで6月28日に知事・議会議員選挙が実施されるのに伴い、前日27日から当日28日にかけて酒類販売が禁止される。タイでは選挙の前日と当日のアルコール販売が法律で禁止されており、この期間に滞在する旅行者は注意が必要となる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76508" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c90" data-c="thai" data-txt="タイ航空の燃油サーチャージが値上げに、セール運賃は値下げ パタヤ千夜一夜 タイ国際航空が7月1日から燃油サーチャージの値上げを発表した。セールにより基本運賃自体は下がるものの、サーチャージや空港使用料などの上昇分が値下げ分を相殺してしまい、利用者の総支払額は必ずしも安くならないという実情を解説する。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/26</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイ航空の燃油サーチャージが値上げに、セール運賃は値下げ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ国際航空が7月1日から燃油サーチャージの値上げを発表した。セールにより基本運賃自体は下がるものの、サーチャージや空港使用料などの上昇分が値下げ分を相殺してしまい、利用者の総支払額は必ずしも安くならないという実情を解説する。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76504" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年6月24日（水） <span class="n">2</span></div><div class="cards" data-date="2026-06-24"><div class="card" id="c91" data-c="kyoto" data-txt="はじまりや～壱之膳～ – 【京都激安定食】南区が新店オープン 京都のお墨付き！ 2026年3月25日に京都市南区でオープンした激安定食店「はじまりや～壱之膳～」の紹介記事。営業時間は11時からで、メニューや値段、定休日など2026年6月23日時点の店舗情報を実食レビューとともに詳しく伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/24</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260624231116.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">はじまりや～壱之膳～ – 【京都激安定食】南区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260624231116.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年3月25日に京都市南区でオープンした激安定食店「はじまりや～壱之膳～」の紹介記事。営業時間は11時からで、メニューや値段、定休日など2026年6月23日時点の店舗情報を実食レビューとともに詳しく伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/foodie/225881.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c92" data-c="thai" data-txt="エアアジアグループが運賃値下げへ、8月までにはフル稼働を目指す パタヤ千夜一夜 原油価格の上昇で各航空会社が燃油サーチャージを課し航空券が値上がりする中、エアアジアグループは運賃の値下げを発表した。8月までにグループ全体のフル稼働を目指す方針で、値上げラッシュのなか競争による運賃低下への期待が高まっている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/24</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">エアアジアグループが運賃値下げへ、8月までにはフル稼働を目指す</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>原油価格の上昇で各航空会社が燃油サーチャージを課し航空券が値上がりする中、エアアジアグループは運賃の値下げを発表した。8月までにグループ全体のフル稼働を目指す方針で、値上げラッシュのなか競争による運賃低下への期待が高まっている。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76493" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年6月23日（火） <span class="n">1</span></div><div class="cards" data-date="2026-06-23"><div class="card" id="c93" data-c="thai" data-txt="保護中: 2026年 gw バンコク・パタヤ旅行記 其の④ gontaro blog 2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第4弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/06/23</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 2026年 GW バンコク・パタヤ旅行記 其の④</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第4弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15803" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年6月22日（月） <span class="n">2</span></div><div class="cards" data-date="2026-06-22"><div class="card" id="c94" data-c="kyoto" data-txt="京ノ御弁当出町本店 – 【京都惣菜】上京区が新店オープン 京都のお墨付き！ 2026年4月20日に京都市上京区でオープンした惣菜・弁当店「京ノ御弁当出町本店」の紹介記事。6月11日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューを交えて写真付きで詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/22</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260622193153.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京ノ御弁当出町本店 – 【京都惣菜】上京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260622193153.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年4月20日に京都市上京区でオープンした惣菜・弁当店「京ノ御弁当出町本店」の紹介記事。6月11日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューを交えて写真付きで詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-foodie/225866.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c95" data-c="thai" data-txt="パタヤアベニューの洋食屋のシュニッツェルとカフェ パタヤ千夜一夜 パタヤ・セカンドロードのショッピングモール「ジ・アベニュー・パタヤ」は夜になるとナイトマーケットの雰囲気も楽しめるスポット。その中の洋食レストランでシュニッツェルを味わい、カフェにも立ち寄った夜の食事処めぐりの食レポをお届けする。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/22</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">パタヤアベニューの洋食屋のシュニッツェルとカフェ</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ・セカンドロードのショッピングモール「ジ・アベニュー・パタヤ」は夜になるとナイトマーケットの雰囲気も楽しめるスポット。その中の洋食レストランでシュニッツェルを味わい、カフェにも立ち寄った夜の食事処めぐりの食レポをお届けする。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76488" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div></div><div class="sec">📅 2026年6月21日（日） <span class="n">3</span></div><div class="cards" data-date="2026-06-21"><div class="card" id="c96" data-c="thai" data-txt="thimアプリでtdac登録するビデオ案内 パタヤ千夜一夜 タイ入国管理局が入国手続きの簡素化のために導入した新アプリ「thim」で、tdac（タイデジタル入国カード）を登録する手順を示すビデオ案内を紹介。現在は試験運用中で、既存のtdacシステムを補完する位置づけのアプリとなっている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/21</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">THIMアプリでTDAC登録するビデオ案内</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>タイ入国管理局が入国手続きの簡素化のために導入した新アプリ「THIM」で、TDAC（タイデジタル入国カード）を登録する手順を示すビデオ案内を紹介。現在は試験運用中で、既存のTDACシステムを補完する位置づけのアプリとなっている。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76466" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c97" data-c="thai" data-txt="タイ・エアアジアxの仙台＝バンコク線が運休に パタヤ千夜一夜 2025年12月から2026年4月まで季節運航されていたタイ・エアアジアxの仙台＝バンコク線が運休となった。一定の利用需要はあったものの運航継続には至らず、東北発のタイ直行便が再び失われる形となり、地方発着路線の難しさがうかがえる。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">パタヤ千夜一夜</span><span class="dt">2026/06/21</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">タイ・エアアジアXの仙台＝バンコク線が運休に</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2025年12月から2026年4月まで季節運航されていたタイ・エアアジアXの仙台＝バンコク線が運休となった。一定の利用需要はあったものの運航継続には至らず、東北発のタイ直行便が再び失われる形となり、地方発着路線の難しさがうかがえる。</p></div><div class="custw"><a class="cust" href="https://pattayalife.net/archives/76464" target="_blank" rel="noopener">🔗 元記事を読む（パタヤ千夜一夜）</a></div></div>
+</div><div class="card" id="c98" data-c="kyoto" data-txt="御所の紫陽花と夕景 京都三昧、書き候 京都御所周辺で撮影した紫陽花と夕景の写真記録。梅雨時の花の表情と美しい夕空を写真に収めつつ、近年の天候の変化や気候の移り変わりについての所感も添えている。京都の初夏の風景を伝える写真エッセイとなっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/06/21</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260621/14/kyo-bonbon/45/14/j/o0766102415795110540.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">御所の紫陽花と夕景</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260621/14/kyo-bonbon/45/14/j/o0766102415795110540.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都御所周辺で撮影した紫陽花と夕景の写真記録。梅雨時の花の表情と美しい夕空を写真に収めつつ、近年の天候の変化や気候の移り変わりについての所感も添えている。京都の初夏の風景を伝える写真エッセイとなっている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12970355122.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年6月19日（金） <span class="n">1</span></div><div class="cards" data-date="2026-06-19"><div class="card" id="c99" data-c="kyoto" data-txt="屋号がない！担担麺 専門店 – 【京都ラーメン】六地蔵が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年6月11日に京都・六地蔵エリアでオープンした担担麺専門店「屋号がない！担担麺 専門店」の紹介記事。メニューや値段、営業時間、定休日など2026年6月19日時点の店舗情報を実食レビューとともに詳しく伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/19</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260619223318.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">屋号がない！担担麺 専門店 – 【京都ラーメン】六地蔵が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260619223318.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月11日に京都・六地蔵エリアでオープンした担担麺専門店「屋号がない！担担麺 専門店」の紹介記事。メニューや値段、営業時間、定休日など2026年6月19日時点の店舗情報を実食レビューとともに詳しく伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225846.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年6月18日（木） <span class="n">3</span></div><div class="cards" data-date="2026-06-18"><div class="card" id="c100" data-c="kyoto" data-txt="京 和菓子桃すず – 【京都和菓子】左京区が新店オープン 京都のお墨付き！ 2026年6月12日に京都市左京区でオープンした和菓子店「京 和菓子桃すず」の紹介記事。オープン当日の取材を基に、メニューや値段、営業時間、定休日など店舗の基本情報を写真付きの実食レビューとともに詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260618202136.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京 和菓子桃すず – 【京都和菓子】左京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260618202136.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月12日に京都市左京区でオープンした和菓子店「京 和菓子桃すず」の紹介記事。オープン当日の取材を基に、メニューや値段、営業時間、定休日など店舗の基本情報を写真付きの実食レビューとともに詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/sweets/225834.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c101" data-c="kyoto" data-txt="かつや 京都北山通店 – 京都市北区が開業準備中 京都のお墨付き！ 2026年7月24日のオープンに向けて京都市北区・北山大宮で開業準備中のとんかつチェーン「かつや 京都北山通店」を取り上げた開業予定情報。現地で確認した開業準備の様子とオープン予定日など出店に関する情報を伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260618191920.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">かつや 京都北山通店 – 京都市北区が開業準備中</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260618191920.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年7月24日のオープンに向けて京都市北区・北山大宮で開業準備中のとんかつチェーン「かつや 京都北山通店」を取り上げた開業予定情報。現地で確認した開業準備の様子とオープン予定日など出店に関する情報を伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/foodie/225828.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div><div class="card" id="c102" data-c="kyoto" data-txt="京都一乗寺麺家 – 【京都ラーメン】左京区が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年5月13日にラーメン激戦区・京都市左京区でオープンしたラーメン店「京都一乗寺麺家」の紹介記事。6月17日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューとともに詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/18</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260618001858.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">京都一乗寺麺家 – 【京都ラーメン】左京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260618001858.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年5月13日にラーメン激戦区・京都市左京区でオープンしたラーメン店「京都一乗寺麺家」の紹介記事。6月17日の取材を基に、メニューや値段、営業時間、定休日などの店舗情報を実食レビューとともに詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225816.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年6月15日（月） <span class="n">1</span></div><div class="cards" data-date="2026-06-15"><div class="card" id="c103" data-c="kyoto" data-txt="ごはん屋 千鶴 – 【京都洋食】左京区が新店オープン 京都のお墨付き！ 2026年5月29日に京都市左京区でオープンした洋食店「ごはん屋 千鶴」の紹介記事。6月12日の取材を基に、メニューや値段、営業時間、定休日など店舗の基本情報を実食レビューとともに写真付きで詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都のお墨付き！</span><span class="dt">2026/06/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260615223645.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">ごはん屋 千鶴 – 【京都洋食】左京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260615223645.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年5月29日に京都市左京区でオープンした洋食店「ごはん屋 千鶴」の紹介記事。6月12日の取材を基に、メニューや値段、営業時間、定休日など店舗の基本情報を実食レビューとともに写真付きで詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/foodie/225795.html" target="_blank" rel="noopener">🔗 元記事を読む（京都のお墨付き！）</a></div></div>
+</div></div><div class="sec">📅 2026年6月14日（日） <span class="n">1</span></div><div class="cards" data-date="2026-06-14"><div class="card" id="c104" data-c="kyoto" data-txt="絶対褒めない「すき家 とん汁みそらーめん」実食レビュー ラーメンマニアがおすすめの京都ラーメン 牛丼チェーンのすき家が2026年6月に始めた「とん汁みそらーめん」を辛口目線で実食レビュー。豚汁で食べるラーメンとはどんなものか、味や価格を「絶対褒めない」スタンスで検証したラーメンマニアによる批評記事となっている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260614210242.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">絶対褒めない「すき家 とん汁みそらーめん」実食レビュー</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260614210242.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>牛丼チェーンのすき家が2026年6月に始めた「とん汁みそらーめん」を辛口目線で実食レビュー。豚汁で食べるラーメンとはどんなものか、味や価格を「絶対褒めない」スタンスで検証したラーメンマニアによる批評記事となっている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225784.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年6月11日（木） <span class="n">1</span></div><div class="cards" data-date="2026-06-11"><div class="card" id="c105" data-c="kyoto" data-txt="人類みな麺類 背脂にんにく醤油まぜそば 京都店 – 【京都ラーメン】中京区が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年6月11日に京都市中京区でオープンした「人類みな麺類 背脂にんにく醤油まぜそば 京都店」の紹介記事。大阪の人気店による新業態で、メニューや値段、営業時間、定休日などオープン時点の店舗情報を詳しく伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/11</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260611152340.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">人類みな麺類 背脂にんにく醤油まぜそば 京都店 – 【京都ラーメン】中京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260611152340.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月11日に京都市中京区でオープンした「人類みな麺類 背脂にんにく醤油まぜそば 京都店」の紹介記事。大阪の人気店による新業態で、メニューや値段、営業時間、定休日などオープン時点の店舗情報を詳しく伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225756.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年6月7日（日） <span class="n">1</span></div><div class="cards" data-date="2026-06-07"><div class="card" id="c106" data-c="kyoto" data-txt="真如堂、月夜の紫陽花 京都三昧、書き候 京都・真如堂で月明かりに照らされる紫陽花の撮影に挑んだ記録。夜ならではの幻想的な花の表情を追い求めつつ、観光客の集中など京都の都市観光を巡る課題についても言及する、写真と随想を組み合わせた記事。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/06/07</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260607/16/kyo-bonbon/1c/ff/j/o1024068215790479956.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">真如堂、月夜の紫陽花</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260607/16/kyo-bonbon/1c/ff/j/o1024068215790479956.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>京都・真如堂で月明かりに照らされる紫陽花の撮影に挑んだ記録。夜ならではの幻想的な花の表情を追い求めつつ、観光客の集中など京都の都市観光を巡る課題についても言及する、写真と随想を組み合わせた記事。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12968812211.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年6月3日（水） <span class="n">1</span></div><div class="cards" data-date="2026-06-03"><div class="card" id="c107" data-c="kyoto" data-txt="麺やkotetsu 京都店 – 【京都ラーメン】中京区が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年6月5日に京都市中京区でオープンしたラーメン店「麺やkotetsu 京都店」の紹介記事。メニューや値段、営業時間、定休日など2026年6月3日時点の店舗情報を掲載し、京都ラーメン新店の最新動向を詳しく伝えている。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/03</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260603145004.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">麺やKotetsu 京都店 – 【京都ラーメン】中京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260603145004.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月5日に京都市中京区でオープンしたラーメン店「麺やKotetsu 京都店」の紹介記事。メニューや値段、営業時間、定休日など2026年6月3日時点の店舗情報を掲載し、京都ラーメン新店の最新動向を詳しく伝えている。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225689.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年6月1日（月） <span class="n">1</span></div><div class="cards" data-date="2026-06-01"><div class="card" id="c108" data-c="kyoto" data-txt="ラーメン食堂 玉吉屋 – 【京都ラーメン】西京区が新店オープン ラーメンマニアがおすすめの京都ラーメン 2026年6月1日に京都市西京区でオープンした「ラーメン食堂 玉吉屋」の紹介記事。営業時間は11時30分からで、メニューや値段、定休日などオープン当日時点の店舗情報を実食レビューとともに写真付きで詳しく紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">ラーメンマニアがおすすめの京都ラーメン</span><span class="dt">2026/06/01</span>
+</div>
+<div class="crow"><img class="thumb" src="https://osumituki.com/wp-content/uploads/20260601130248.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">ラーメン食堂 玉吉屋 – 【京都ラーメン】西京区が新店オープン</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://osumituki.com/wp-content/uploads/20260601130248.webp" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年6月1日に京都市西京区でオープンした「ラーメン食堂 玉吉屋」の紹介記事。営業時間は11時30分からで、メニューや値段、定休日などオープン当日時点の店舗情報を実食レビューとともに写真付きで詳しく紹介している。</p></div><div class="custw"><a class="cust" href="https://osumituki.com/kyoto-ramen/225661.html" target="_blank" rel="noopener">🔗 元記事を読む（ラーメンマニアがおすすめの京都ラーメン）</a></div></div>
+</div></div><div class="sec">📅 2026年5月30日（土） <span class="n">1</span></div><div class="cards" data-date="2026-05-30"><div class="card" id="c109" data-c="kyoto" data-txt="植物園の「夜の女王」と「月下美人」 京都三昧、書き候 植物園で夜に開花するサボテン「夜の女王」と「月下美人」を撮影した記録。一夜限りで咲く神秘的な花の姿を写真に収め、それぞれの品種の特徴や開花の様子を紹介している。夜の植物園ならではの貴重な光景を伝える記事。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/05/30</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260530/15/kyo-bonbon/c2/07/j/o1024076815787665505.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">植物園の「夜の女王」と「月下美人」</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260530/15/kyo-bonbon/c2/07/j/o1024076815787665505.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>植物園で夜に開花するサボテン「夜の女王」と「月下美人」を撮影した記録。一夜限りで咲く神秘的な花の姿を写真に収め、それぞれの品種の特徴や開花の様子を紹介している。夜の植物園ならではの貴重な光景を伝える記事。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12967771140.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年5月27日（水） <span class="n">2</span></div><div class="cards" data-date="2026-05-27"><div class="card" id="c110" data-c="thai" data-txt="保護中: 2026年 gw バンコク・パタヤ旅行記 其の③ gontaro blog 2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第3弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/05/27</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 2026年 GW バンコク・パタヤ旅行記 其の③</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第3弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15660" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div><div class="card" id="c111" data-c="kyoto" data-txt="青いケシはどこまでも幻想的 京都三昧、書き候 植物園で撮影した希少な青いケシ（メコノプシス）の写真記録。ヒマラヤの高地に咲くことで知られる花の幻想的な青色の魅力を写真で伝えつつ、その美しさや文化的な背景にも触れている。どこまでも幻想的な花の姿を堪能できる記事。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都三昧、書き候</span><span class="dt">2026/05/27</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260527/16/kyo-bonbon/c2/07/j/o1024076815786709388.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">青いケシはどこまでも幻想的</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260527/16/kyo-bonbon/c2/07/j/o1024076815786709388.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>植物園で撮影した希少な青いケシ（メコノプシス）の写真記録。ヒマラヤの高地に咲くことで知られる花の幻想的な青色の魅力を写真で伝えつつ、その美しさや文化的な背景にも触れている。どこまでも幻想的な花の姿を堪能できる記事。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/kyo-bonbon/entry-12967474660.html" target="_blank" rel="noopener">🔗 元記事を読む（京都三昧、書き候）</a></div></div>
+</div></div><div class="sec">📅 2026年5月22日（金） <span class="n">1</span></div><div class="cards" data-date="2026-05-22"><div class="card" id="c112" data-c="thai" data-txt="保護中: 2026年 gw バンコク・パタヤ旅行記 其の② gontaro blog 2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第2弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/05/22</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 2026年 GW バンコク・パタヤ旅行記 其の②</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年ゴールデンウィークのバンコク・パタヤ旅行記シリーズ第2弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15507" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年5月9日（土） <span class="n">1</span></div><div class="cards" data-date="2026-05-09"><div class="card" id="c113" data-c="thai" data-txt="2026年 gw バンコク・パタヤ旅行記 其の① gontaro blog 2026年ゴールデンウィークのタイ旅行がスタート。羽田空港から出発し、機内で睡眠を取りながらスワンナプーム国際空港に到着した。バンコク・トンローのホテルにアーリーチェックインし、仮眠を経て周辺の散策や日用品の買い出しを行った初日の記録。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/05/09</span>
+</div>
+<div class="crow"><img class="thumb" src="https://gontaro.net/wp-content/uploads/2022/05/cropped-0f63966dda5a612f10d45194c00151d2.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">2026年 GW バンコク・パタヤ旅行記 其の①</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://gontaro.net/wp-content/uploads/2022/05/cropped-0f63966dda5a612f10d45194c00151d2.png" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2026年ゴールデンウィークのタイ旅行がスタート。羽田空港から出発し、機内で睡眠を取りながらスワンナプーム国際空港に到着した。バンコク・トンローのホテルにアーリーチェックインし、仮眠を経て周辺の散策や日用品の買い出しを行った初日の記録。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15409" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年4月1日（水） <span class="n">1</span></div><div class="cards" data-date="2026-04-01"><div class="card" id="c114" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑬ gontaro blog 2025年年末年始バンコク・パタヤ旅行記の最終回。長かったパタヤ滞在を終え、見送りに来てくれたx嬢とスワンナプーム国際空港で別れを告げ、日本へ帰国するまでの最終日の様子を記録。年末年始の長旅の締めくくりと帰国の道中を綴っている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/04/01</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑬</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2025年年末年始バンコク・パタヤ旅行記の最終回。長かったパタヤ滞在を終え、見送りに来てくれたX嬢とスワンナプーム国際空港で別れを告げ、日本へ帰国するまでの最終日の様子を記録。年末年始の長旅の締めくくりと帰国の道中を綴っている。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15325" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月20日（金） <span class="n">1</span></div><div class="cards" data-date="2026-03-20"><div class="card" id="c115" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑫ gontaro blog パタヤ滞在7日目の記録。金の指輪の購入や寺院への参拝、ビーチ訪問、マッサージ体験と盛りだくさんの一日を過ごす。翌日に帰国を控えたパタヤ最後の夜を思い残すことなく楽しむ様子が綴られている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/20</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑫</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ滞在7日目の記録。金の指輪の購入や寺院への参拝、ビーチ訪問、マッサージ体験と盛りだくさんの一日を過ごす。翌日に帰国を控えたパタヤ最後の夜を思い残すことなく楽しむ様子が綴られている。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15193" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月16日（月） <span class="n">1</span></div><div class="cards" data-date="2026-03-16"><div class="card" id="c116" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑪ gontaro blog パタヤ滞在6日目の記録。ウボン出身の古い友人がパタヤに到着し、カオトムのレストランで食事を共にする。夜はlkメトロやソイ・チャイヤプーンを巡り歩いた一日の顛末が綴られている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/16</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑪</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ滞在6日目の記録。ウボン出身の古い友人がパタヤに到着し、カオトムのレストランで食事を共にする。夜はLKメトロやソイ・チャイヤプーンを巡り歩いた一日の顛末が綴られている。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15134" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月14日（土） <span class="n">2</span></div><div class="cards" data-date="2026-03-14"><div class="card" id="c117" data-c="thai" data-txt="保護中: 【報道特別ブログ】2026年 ｇｗのタイ旅行を真剣に考える gontaro blog 2026年ゴールデンウィークのタイ旅行計画を真剣に検討する報道特別ブログ。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/14</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 【報道特別ブログ】2026年 ＧＷのタイ旅行を真剣に考える</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年ゴールデンウィークのタイ旅行計画を真剣に検討する報道特別ブログ。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/15089" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div><div class="card" id="c118" data-c="thai" data-txt="パタヤws 3/13 theoactoneのブログ 終業後にバスでパタヤへ移動し、友人と待ち合わせて21時頃にウォーキングストリートへ。この日巡った8店舗の様子を、写真を交えつつ常連ならではの視点で簡潔にレポートしている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/03/14</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260314/13/theoactone/67/0c/j/o1080077315760382272.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS 3/13</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260314/13/theoactone/67/0c/j/o1080077315760382272.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>終業後にバスでパタヤへ移動し、友人と待ち合わせて21時頃にウォーキングストリートへ。この日巡った8店舗の様子を、写真を交えつつ常連ならではの視点で簡潔にレポートしている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12959692745.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年3月7日（土） <span class="n">1</span></div><div class="cards" data-date="2026-03-07"><div class="card" id="c119" data-c="thai" data-txt="保護中: 2025年年末年始 バンコク・パタヤ旅行記 其の⑩ gontaro blog 2025年年末年始のバンコク・パタヤ旅行記シリーズ第10弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/07</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 2025年年末年始 バンコク・パタヤ旅行記 其の⑩</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2025年年末年始のバンコク・パタヤ旅行記シリーズ第10弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/14943" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月5日（木） <span class="n">1</span></div><div class="cards" data-date="2026-03-05"><div class="card" id="c120" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑨ gontaro blog 2026年の元旦をパタヤで過ごした一日の記録。バミー屋での食事やジムでの運動をこなした後、夜は複数の店をはしご。お目当ての女性が他の客に連れて行かれてしまい、オフ会に暗雲が立ち込める展開に。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/05</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑨</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2026年の元旦をパタヤで過ごした一日の記録。バミー屋での食事やジムでの運動をこなした後、夜は複数の店をはしご。お目当ての女性が他の客に連れて行かれてしまい、オフ会に暗雲が立ち込める展開に。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/14896" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月3日（火） <span class="n">2</span></div><div class="cards" data-date="2026-03-03"><div class="card" id="c121" data-c="kyoto" data-txt="木屋町三条【肉市場 京都店】で「特製牛ハラミステーキ丼」と「揚げニョッキとパンチェッタの盛り合わせ」をubereatsで注文した 京都目線 ウーバーイーツで木屋町三条のゴーストレストラン「肉市場 京都店」の特製牛ハラミステーキ丼（肉ダブル・ご飯大盛）と揚げニョッキとパンチェッタの盛り合わせを注文。肉とソースは美味しいがご飯はやや乾き気味。ニョッキは薄めの味付けとチーズが好相性だった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/03/03</span>
+</div>
+<div class="crow"><img class="thumb" src="https://livedoor.blogimg.jp/hero3d-you/imgs/0/d/0d1a215f-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">木屋町三条【肉市場 京都店】で「特製牛ハラミステーキ丼」と「揚げニョッキとパンチェッタの盛り合わせ」をUbereatsで注文した</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://livedoor.blogimg.jp/hero3d-you/imgs/0/d/0d1a215f-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ウーバーイーツで木屋町三条のゴーストレストラン「肉市場 京都店」の特製牛ハラミステーキ丼（肉ダブル・ご飯大盛）と揚げニョッキとパンチェッタの盛り合わせを注文。肉とソースは美味しいがご飯はやや乾き気味。ニョッキは薄めの味付けとチーズが好相性だった。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48193286.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div><div class="card" id="c122" data-c="thai" data-txt="保護中: 2025年年末年始 バンコク・パタヤ旅行記 其の⑧ gontaro blog 2025年年末年始のバンコク・パタヤ旅行記シリーズ第8弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/03/03</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">保護中: 2025年年末年始 バンコク・パタヤ旅行記 其の⑧</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>2025年年末年始のバンコク・パタヤ旅行記シリーズ第8弾。本記事はパスワード保護されており、閲覧には筆者発行のパスワードが必要。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/14797" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年3月2日（月） <span class="n">1</span></div><div class="cards" data-date="2026-03-02"><div class="card" id="c123" data-c="thai" data-txt="パタヤws 2/28 theoactoneのブログ 2日続けてのパタヤ滞在となったこの日は、単独で開店直後の時間帯から出撃。ウォーキングストリートの7店舗を巡り、各店のステージの様子や客入りの状況などを写真とともに記録している。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/03/02</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260302/02/theoactone/d3/42/j/o1080107715756329488.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS 2/28</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260302/02/theoactone/d3/42/j/o1080107715756329488.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2日続けてのパタヤ滞在となったこの日は、単独で開店直後の時間帯から出撃。ウォーキングストリートの7店舗を巡り、各店のステージの様子や客入りの状況などを写真とともに記録している。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12958354813.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年2月28日（土） <span class="n">1</span></div><div class="cards" data-date="2026-02-28"><div class="card" id="c124" data-c="thai" data-txt="パタヤws2/27 theoactoneのブログ 元同僚に誘われ、終業後に3人連れでパタヤへ。21時頃からウォーキングストリートを巡回し、各店の雰囲気や状況、同行者との様子などを交えながら、その夜の店巡りの模様をレポートしている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/02/28</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260228/18/theoactone/68/fc/j/o0951108015755788677.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS2/27</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260228/18/theoactone/68/fc/j/o0951108015755788677.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>元同僚に誘われ、終業後に3人連れでパタヤへ。21時頃からウォーキングストリートを巡回し、各店の雰囲気や状況、同行者との様子などを交えながら、その夜の店巡りの模様をレポートしている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12958195575.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年2月27日（金） <span class="n">1</span></div><div class="cards" data-date="2026-02-27"><div class="card" id="c125" data-c="kyoto" data-txt="【ご飯特盛（400g）】唐揚げ商店鳥ーミート壬生森前町店の「鶏唐丼~甘辛レッド~」をubereatsで注文した 京都目線 ウーバーイーツの47%オフで、唐揚げ商店鳥ーミート壬生森前町店の「鶏唐丼〜甘辛レッド〜」を2639円から1413円で注文。大ぶりでジューシーな唐揚げが7個にご飯は特盛400g。別添えの甘辛ダレは写真より量が少なめだったものの、食べ応えは十分だった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/02/27</span>
+</div>
+<div class="crow"><img class="thumb" src="https://livedoor.blogimg.jp/hero3d-you/imgs/2/7/27c5f8a8-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【ご飯特盛（400g）】唐揚げ商店鳥ーミート壬生森前町店の「鶏唐丼~甘辛レッド~」をUbereatsで注文した</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://livedoor.blogimg.jp/hero3d-you/imgs/2/7/27c5f8a8-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>ウーバーイーツの47%オフで、唐揚げ商店鳥ーミート壬生森前町店の「鶏唐丼〜甘辛レッド〜」を2639円から1413円で注文。大ぶりでジューシーな唐揚げが7個にご飯は特盛400g。別添えの甘辛ダレは写真より量が少なめだったものの、食べ応えは十分だった。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48180302.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年2月26日（木） <span class="n">1</span></div><div class="cards" data-date="2026-02-26"><div class="card" id="c126" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑦ gontaro blog パタヤ滞在3日目の記録。朝はチープチャーリーでパンケーキの朝食を取り、スパでの施術でリフレッシュ。夜はお馴染みの店を巡り、新しい出会いもあった充実の一日が綴られている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/02/26</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑦</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ滞在3日目の記録。朝はチープチャーリーでパンケーキの朝食を取り、スパでの施術でリフレッシュ。夜はお馴染みの店を巡り、新しい出会いもあった充実の一日が綴られている。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/14701" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年2月21日（土） <span class="n">1</span></div><div class="cards" data-date="2026-02-21"><div class="card" id="c127" data-c="thai" data-txt="2025年年末年始 バンコク・パタヤ旅行記 其の⑤ gontaro blog パタヤ滞在2日目の記録。昼はカフェでパスタを味わいながらのんびりと過ごし、夜はソイ6やウォーキングストリートの店を巡った夜の様子を綴る。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">gontaro blog</span><span class="dt">2026/02/21</span>
+</div>
+<div class="crow"><div class="thumb ph">🌴</div><div class="name">2025年年末年始 バンコク・パタヤ旅行記 其の⑤</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>パタヤ滞在2日目の記録。昼はカフェでパスタを味わいながらのんびりと過ごし、夜はソイ6やウォーキングストリートの店を巡った夜の様子を綴る。</p></div><div class="custw"><a class="cust" href="https://gontaro.net/14629" target="_blank" rel="noopener">🔗 元記事を読む（gontaro blog）</a></div></div>
+</div></div><div class="sec">📅 2026年2月20日（金） <span class="n">1</span></div><div class="cards" data-date="2026-02-20"><div class="card" id="c128" data-c="kyoto" data-txt="【業務スーパー】神戸物産系のレストラン「神戸クック・ワールドビュッフェ 大津テラス店」に行ってきた 京都目線 業務スーパーの神戸物産系列「神戸クック・ワールドビュッフェ 大津テラス店」を訪問。大人2名で3960円。料理の種類が豊富で、シェフが作る炒飯やデザート、ドリンクも揃う。子ども向けの席や料理など設備も充実し、1人2000円以下とは思えない満足度だった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/02/20</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">【業務スーパー】神戸物産系のレストラン「神戸クック・ワールドビュッフェ 大津テラス店」に行ってきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>業務スーパーの神戸物産系列「神戸クック・ワールドビュッフェ 大津テラス店」を訪問。大人2名で3960円。料理の種類が豊富で、シェフが作る炒飯やデザート、ドリンクも揃う。子ども向けの席や料理など設備も充実し、1人2000円以下とは思えない満足度だった。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48159564.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年2月18日（水） <span class="n">1</span></div><div class="cards" data-date="2026-02-18"><div class="card" id="c129" data-c="kyoto" data-txt="西小路御池「ハイライト食堂御池店」の【カラフルジャンボチキンカツ（ご飯大盛）】を「ubereats」で注文した 京都目線 ウーバーイーツの30%オフで、西小路御池「ハイライト食堂御池店」のカラフルジャンボチキンカツ（ご飯大盛）を配送料込み1292円で注文。チーズ・おろしポン酢・特製ソースの3種のジャンボカツにサラダも付き、大盛ご飯が進むボリューム満点の一品だった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/02/18</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">西小路御池「ハイライト食堂御池店」の【カラフルジャンボチキンカツ（ご飯大盛）】を「Ubereats」で注文した</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>ウーバーイーツの30%オフで、西小路御池「ハイライト食堂御池店」のカラフルジャンボチキンカツ（ご飯大盛）を配送料込み1292円で注文。チーズ・おろしポン酢・特製ソースの3種のジャンボカツにサラダも付き、大盛ご飯が進むボリューム満点の一品だった。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48153972.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年2月15日（日） <span class="n">1</span></div><div class="cards" data-date="2026-02-15"><div class="card" id="c130" data-c="thai" data-txt="パタヤws 2/14 theoactoneのブログ 約1カ月半ぶりのパタヤ訪問。春節の影響で混雑し、バスになかなか乗れないなど移動に苦労した様子から始まり、久々に訪れたウォーキングストリートの各店の変化や客入りを記録している。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/02/15</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260215/13/theoactone/5a/38/j/o1080091515751281335.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS 2/14</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260215/13/theoactone/5a/38/j/o1080091515751281335.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>約1カ月半ぶりのパタヤ訪問。春節の影響で混雑し、バスになかなか乗れないなど移動に苦労した様子から始まり、久々に訪れたウォーキングストリートの各店の変化や客入りを記録している。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12956791181.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年1月30日（金） <span class="n">1</span></div><div class="cards" data-date="2026-01-30"><div class="card" id="c131" data-c="kyoto" data-txt="堺町三条【そば処 大鶴】で「にしんそば」と「きつね丼」を食べてきた 京都目線 堺町三条の京風そば店「そば処 大鶴」で、にしんそば1380円ときつね丼950円を実食。にしんは身が柔らかく甘辛い味付けでそばとの相性が良い。きつね丼は卵とじと違い甘くない味付けで、お揚げそのものを味わえる京都のソウルフード的な一杯と紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/01/30</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">堺町三条【そば処 大鶴】で「にしんそば」と「きつね丼」を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>堺町三条の京風そば店「そば処 大鶴」で、にしんそば1380円ときつね丼950円を実食。にしんは身が柔らかく甘辛い味付けでそばとの相性が良い。きつね丼は卵とじと違い甘くない味付けで、お揚げそのものを味わえる京都のソウルフード的な一杯と紹介している。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48073846.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年1月29日（木） <span class="n">1</span></div><div class="cards" data-date="2026-01-29"><div class="card" id="c132" data-c="kyoto" data-txt="京都駅地下【つくもうどん塩小路本店】でモーニングメニューの「卵かけご飯定食」を食べてきた 京都目線 京都駅地下の「つくもうどん塩小路本店」でモーニングの卵かけご飯定食650円を実食。冷たいうどんと卵かけご飯の組み合わせで、付け合わせのじゃこはほんのり甘め。ご飯と麺を合わせる関西らしい朝食で、朝8時の混雑をさばく店員の手際の良さも印象的だった。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/01/29</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">京都駅地下【つくもうどん塩小路本店】でモーニングメニューの「卵かけご飯定食」を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>京都駅地下の「つくもうどん塩小路本店」でモーニングの卵かけご飯定食650円を実食。冷たいうどんと卵かけご飯の組み合わせで、付け合わせのじゃこはほんのり甘め。ご飯と麺を合わせる関西らしい朝食で、朝8時の混雑をさばく店員の手際の良さも印象的だった。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48072158.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年1月14日（水） <span class="n">1</span></div><div class="cards" data-date="2026-01-14"><div class="card" id="c133" data-c="kyoto" data-txt="【セアブラノ神 壬生本店】で限定【特製背脂鶏白湯そば】を食べてきた 京都目線 「セアブラノ神 壬生本店」で1月限定の特製背脂鶏白湯そば1450円を実食。濃厚な鶏白湯スープにたっぷりの背脂がコクと旨みを深め、トッピングにはレアチャーシューが牛と鶏の2種。替え玉やライス追加で残ったスープまで楽しめる満足度の高い一杯と紹介。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/01/14</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">【セアブラノ神 壬生本店】で限定【特製背脂鶏白湯そば】を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>「セアブラノ神 壬生本店」で1月限定の特製背脂鶏白湯そば1450円を実食。濃厚な鶏白湯スープにたっぷりの背脂がコクと旨みを深め、トッピングにはレアチャーシューが牛と鶏の2種。替え玉やライス追加で残ったスープまで楽しめる満足度の高い一杯と紹介。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/48011402.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年1月7日（水） <span class="n">1</span></div><div class="cards" data-date="2026-01-07"><div class="card" id="c134" data-c="kyoto" data-txt="元田中「ごはんカフェ ケニア」のデカ盛り定食を食べてきた 京都目線 元田中の「ごはんカフェ ケニア」でデカ盛り定食1150円（ご飯特大）を実食。オムレツ・唐揚げ・コロッケ・ハンバーグが一皿に載る優しい味付けのボリューム定食で、ご飯の大盛り・特盛りも少額の追加で可能。量と安さを求める学生に嬉しい店と紹介している。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2026/01/07</span>
+</div>
+<div class="crow"><div class="thumb ph">⛩️</div><div class="name">元田中「ごはんカフェ ケニア」のデカ盛り定食を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><p>元田中の「ごはんカフェ ケニア」でデカ盛り定食1150円（ご飯特大）を実食。オムレツ・唐揚げ・コロッケ・ハンバーグが一皿に載る優しい味付けのボリューム定食で、ご飯の大盛り・特盛りも少額の追加で可能。量と安さを求める学生に嬉しい店と紹介している。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/47981921.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2026年1月4日（日） <span class="n">2</span></div><div class="cards" data-date="2026-01-04"><div class="card" id="c135" data-c="thai" data-txt="2025各ゴーゴー訪問数 theoactoneのブログ 2025年の1年間に訪れた店の訪問回数を集計した年間まとめ記事。のべ訪問回数は513回にのぼり、店ごとの訪問数を整理して1年を振り返る。どの店に足繁く通ったかが一目で分かる、常連ならではの記録となっている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/01/04</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260104/13/theoactone/09/d8/j/o1080064515737394034.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">2025各ゴーゴー訪問数</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260104/13/theoactone/09/d8/j/o1080064515737394034.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>2025年の1年間に訪れた店の訪問回数を集計した年間まとめ記事。のべ訪問回数は513回にのぼり、店ごとの訪問数を整理して1年を振り返る。どの店に足繁く通ったかが一目で分かる、常連ならではの記録となっている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12952232355.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div><div class="card" id="c136" data-c="thai" data-txt="パタヤws1/3 theoactoneのブログ 正月のウォーキングストリートを巡回。各店の様子や、期間限定のサービス、ハイシーズンで賑わう街の状況を伝える。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/01/04</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260104/02/theoactone/de/83/j/o1080082115737277168.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS1/3</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260104/02/theoactone/de/83/j/o1080082115737277168.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>正月のウォーキングストリートを巡回。各店の様子や、期間限定のサービス、ハイシーズンで賑わう街の状況を伝える。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12952263067.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年1月2日（金） <span class="n">1</span></div><div class="cards" data-date="2026-01-02"><div class="card" id="c137" data-c="thai" data-txt="パタヤws1/1 theoactoneのブログ 元日のウォーキングストリートを巡回。盛況の店から閑散とした店まで、正月ならではの各店の客入りと状況を記録している。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/01/02</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260102/02/theoactone/f5/55/j/o1080085415736558560.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤWS1/1</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260102/02/theoactone/f5/55/j/o1080085415736558560.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>元日のウォーキングストリートを巡回。盛況の店から閑散とした店まで、正月ならではの各店の客入りと状況を記録している。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12952048758.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2026年1月1日（木） <span class="n">1</span></div><div class="cards" data-date="2026-01-01"><div class="card" id="c138" data-c="thai" data-txt="パタヤ12/31 theoactoneのブログ 大晦日のパタヤをレポート。年越しカウントダウン直前にもかかわらず店内は5割程度の入りで、期待したほどの盛り上がりではなかった様子。年末の街の客入りと各店の状況を写真とともに伝えている。">
+<div class="chd" style="border-color:#b7791f;background:#fbf3e0">
+<span class="cat" style="background:#b7791f">タイ・パタヤ</span><span class="bnm">theoactoneのブログ</span><span class="dt">2026/01/01</span>
+</div>
+<div class="crow"><img class="thumb" src="https://stat.ameba.jp/user_images/20260101/03/theoactone/89/b2/j/o1080076515736206479.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🌴</div>'"><div class="name">パタヤ12/31</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://stat.ameba.jp/user_images/20260101/03/theoactone/89/b2/j/o1080076515736206479.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>大晦日のパタヤをレポート。年越しカウントダウン直前にもかかわらず店内は5割程度の入りで、期待したほどの盛り上がりではなかった様子。年末の街の客入りと各店の状況を写真とともに伝えている。</p></div><div class="custw"><a class="cust" href="https://ameblo.jp/theoactone/entry-12951912218.html" target="_blank" rel="noopener">🔗 元記事を読む（theoactoneのブログ）</a></div></div>
+</div></div><div class="sec">📅 2025年12月30日（火） <span class="n">1</span></div><div class="cards" data-date="2025-12-30"><div class="card" id="c139" data-c="kyoto" data-txt="【セアブラノ神 slurp】で限定【特製 麻辣麺】を食べてきた 京都目線 「セアブラノ神 slurp」で期間限定の特製麻辣麺を実食。辛さマシのセットはライス付きで1600円。豆板醤や唐辛子、山椒を使った醤油ベースのスープにレアチャーシューや煮卵、湯葉などが載り、刻んだ生玉ねぎとそぼろがアクセントの病みつきになる味わい。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2025/12/30</span>
+</div>
+<div class="crow"><img class="thumb" src="https://livedoor.blogimg.jp/hero3d-you/imgs/9/0/90595494-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">【セアブラノ神 slurp】で限定【特製 麻辣麺】を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://livedoor.blogimg.jp/hero3d-you/imgs/9/0/90595494-s.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>「セアブラノ神 slurp」で期間限定の特製麻辣麺を実食。辛さマシのセットはライス付きで1600円。豆板醤や唐辛子、山椒を使った醤油ベースのスープにレアチャーシューや煮卵、湯葉などが載り、刻んだ生玉ねぎとそぼろがアクセントの病みつきになる味わい。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/47950671.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2025年12月19日（金） <span class="n">1</span></div><div class="cards" data-date="2025-12-19"><div class="card" id="c140" data-c="kyoto" data-txt="烏丸御池 新風館の【天ぷら天寅】で「天ぷら定食（並）」を食べてきた 京都目線 烏丸御池・新風館の天ぷら専門店「天ぷら天寅」で天ぷら定食（並）1540円を実食。穴子やイカなど揚げたての天ぷらは衣の質が高く、チェーン店とは一線を画すクオリティ。塩や山椒など複数の調味料で味の変化も楽しめ、ランチタイムから利用できるのも便利。">
+<div class="chd" style="border-color:#c0392b;background:#fdeeec">
+<span class="cat" style="background:#c0392b">京都</span><span class="bnm">京都目線</span><span class="dt">2025/12/19</span>
+</div>
+<div class="crow"><img class="thumb" src="https://livedoor.blogimg.jp/hero3d-you/imgs/6/9/69e2bc3d.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>⛩️</div>'"><div class="name">烏丸御池 新風館の【天ぷら天寅】で「天ぷら定食（並）」を食べてきた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://livedoor.blogimg.jp/hero3d-you/imgs/6/9/69e2bc3d.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>烏丸御池・新風館の天ぷら専門店「天ぷら天寅」で天ぷら定食（並）1540円を実食。穴子やイカなど揚げたての天ぷらは衣の質が高く、チェーン店とは一線を画すクオリティ。塩や山椒など複数の調味料で味の変化も楽しめ、ランチタイムから利用できるのも便利。</p></div><div class="custw"><a class="cust" href="https://kyotoyoublog.jp/archives/47903897.html" target="_blank" rel="noopener">🔗 元記事を読む（京都目線）</a></div></div>
+</div></div><div class="sec">📅 2025年8月3日（日） <span class="n">1</span></div><div class="cards" data-date="2025-08-03"><div class="card" id="c141" data-c="car" data-txt="ジムニー専用のポップアップ式サンシェードを忖度無しの本音レビュー【セイワ ジムニー専用ポップアップサンシェード】 ジムニーfamilyドットコム 気温35度超えが続く8月の猛暑対策として、セイワのジムニー専用ポップアップサンシェードを実際に使って本音でレビュー（総合★4.5）。取付が簡単で専用設計のジャストサイズ、折りたたみ収納可がメリット。汎用品より割高で畳むのにコツが要る点は課題。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">ジムニーfamilyドットコム</span><span class="dt">2025/08/03</span>
+</div>
+<div class="crow"><img class="thumb" src="https://jimny-family.com/wp-content/uploads/2025/08/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-08-03-165456.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">ジムニー専用のポップアップ式サンシェードを忖度無しの本音レビュー【セイワ ジムニー専用ポップアップサンシェード】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://jimny-family.com/wp-content/uploads/2025/08/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-08-03-165456.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>気温35度超えが続く8月の猛暑対策として、セイワのジムニー専用ポップアップサンシェードを実際に使って本音でレビュー（総合★4.5）。取付が簡単で専用設計のジャストサイズ、折りたたみ収納可がメリット。汎用品より割高で畳むのにコツが要る点は課題。</p></div><div class="custw"><a class="cust" href="https://jimny-family.com/seiwa-pop-up-sunshade-review/" target="_blank" rel="noopener">🔗 元記事を読む（ジムニーfamilyドットコム）</a></div></div>
+</div></div><div class="sec">📅 2025年8月2日（土） <span class="n">1</span></div><div class="cards" data-date="2025-08-02"><div class="card" id="c142" data-c="car" data-txt="ジムニー専用の傘型サンシェードを忖度無しの本音レビュー【j-premis ジムニー専用 傘型サンシェード】 ジムニーfamilyドットコム j-premis製ジムニー専用傘型サンシェードを満点★5でレビュー。吸盤式でないため剥がれにくく、専用設計でジャストフィット。傘のように開閉でき収納もコンパクト。吸盤式汎用品の「使用中に外れる」不満を解消する一品として装着写真付きで紹介。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">ジムニーfamilyドットコム</span><span class="dt">2025/08/02</span>
+</div>
+<div class="crow"><img class="thumb" src="https://jimny-family.com/wp-content/uploads/2025/08/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-08-02-162220.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">ジムニー専用の傘型サンシェードを忖度無しの本音レビュー【J-PREMIS ジムニー専用 傘型サンシェード】</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://jimny-family.com/wp-content/uploads/2025/08/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-08-02-162220.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>J-PREMIS製ジムニー専用傘型サンシェードを満点★5でレビュー。吸盤式でないため剥がれにくく、専用設計でジャストフィット。傘のように開閉でき収納もコンパクト。吸盤式汎用品の「使用中に外れる」不満を解消する一品として装着写真付きで紹介。</p></div><div class="custw"><a class="cust" href="https://jimny-family.com/j-premis-umbrella-sunshade-review/" target="_blank" rel="noopener">🔗 元記事を読む（ジムニーfamilyドットコム）</a></div></div>
+</div></div><div class="sec">📅 2025年6月23日（月） <span class="n">1</span></div><div class="cards" data-date="2025-06-23"><div class="card" id="c143" data-c="car" data-txt="スズキ純正「ecstarボディコート」のメンテナンスキットを実際に使ってみた ジムニーfamilyドットコム 約79,310円のスズキ純正オプション・5年保証の「ecstarボディコート」を施工した黒のジムニーシエラjb74で、付属のメンテナンスキットを実際に使用。コンディショナーやクリーナー等での洗車・手入れの手順と、艶や水シミ除去の効果を紹介する。">
+<div class="chd" style="border-color:#2563eb;background:#e8f0fd">
+<span class="cat" style="background:#2563eb">ジムニー・車</span><span class="bnm">ジムニーfamilyドットコム</span><span class="dt">2025/06/23</span>
+</div>
+<div class="crow"><img class="thumb" src="https://jimny-family.com/wp-content/uploads/2025/06/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-06-23-065728.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=\'thumb ph\'>🚙</div>'"><div class="name">スズキ純正「ECSTARボディコート」のメンテナンスキットを実際に使ってみた</div><span class="arw">▶</span></div>
+<div class="cbody"><div class="prev"><img class="big" src="https://jimny-family.com/wp-content/uploads/2025/06/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88-2025-06-23-065728.jpg" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()"><p>約79,310円のスズキ純正オプション・5年保証の「ECSTARボディコート」を施工した黒のジムニーシエラJB74で、付属のメンテナンスキットを実際に使用。コンディショナーやクリーナー等での洗車・手入れの手順と、艶や水シミ除去の効果を紹介する。</p></div><div class="custw"><a class="cust" href="https://jimny-family.com/ecstar-body-coat/" target="_blank" rel="noopener">🔗 元記事を読む（ジムニーfamilyドットコム）</a></div></div>
+</div></div>
+<div id="none">該当する記事がありません</div>
+</div>
+<div id="ft">
+<details><summary>監視中のブログ一覧（15サイト）</summary><ul><li>グッチジャパンの京都最新グルメ</li><li>号外NET 伏見区</li><li>Kyotopi</li><li>京都目線</li><li>京都のお墨付き！</li><li>ラーメンマニアがおすすめの京都ラーメン</li><li>京都三昧、書き候</li><li>滋賀つーしん</li><li>48rider.com</li><li>ジムニーfamilyドットコム</li><li>gontaro blog</li><li>theoactoneのブログ</li><li>パタヤ千夜一夜</li><li>のりすけブログ</li><li>Yahoo!フォロー「鉄道事故」</li></ul></details>
+<p>記事をタップすると写真・要約・元記事リンクが開きます。要約は各ブログの公開記事を基に自動生成しています。写真は各記事より引用（リンク先に著作権あり）。</p>
+</div>
+<script>
+var q='';var cat='all';
+function apply(){
+  var shown=0;
+  document.querySelectorAll('.card').forEach(function(cd){
+    var ok=(cat==='all'||cd.dataset.c===cat)&&(!q||cd.dataset.txt.indexOf(q)>=0);
+    cd.style.display=ok?'':'none';if(ok)shown++;
+  });
+  document.querySelectorAll('.cards').forEach(function(g){
+    var any=Array.prototype.some.call(g.children,function(c){return c.style.display!=='none'});
+    g.style.display=any?'':'none';g.previousElementSibling.style.display=any?'':'none';
+  });
+  document.getElementById('none').style.display=shown?'none':'block';
+}
+document.querySelectorAll('.chip').forEach(function(ch){ch.addEventListener('click',function(){
+  document.querySelectorAll('.chip').forEach(function(c){c.classList.remove('on')});
+  ch.classList.add('on');cat=ch.dataset.c;apply();});});
+document.getElementById('q').addEventListener('input',function(e){q=e.target.value.trim().toLowerCase();apply();});
+document.querySelectorAll('.crow').forEach(function(r){r.addEventListener('click',function(){r.parentElement.classList.toggle('open')});});
+document.querySelectorAll('.ovt').forEach(function(b){b.addEventListener('click',function(){
+  var t=document.getElementById(b.dataset.target);if(!t)return;
+  if(cat!=='all'||q){cat='all';q='';document.getElementById('q').value='';
+    document.querySelectorAll('.chip').forEach(function(c){c.classList.toggle('on',c.dataset.c==='all')});apply();}
+  t.classList.add('open');t.scrollIntoView({behavior:'smooth',block:'center'});
+  t.classList.add('flash');setTimeout(function(){t.classList.remove('flash')},2200);});});
+</script>
+</body>
+</html>

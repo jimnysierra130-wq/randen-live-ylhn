@@ -1996,6 +1996,10 @@ document.querySelectorAll('.ovt').forEach(function(b){b.addEventListener('click'
   t.classList.add('open');t.scrollIntoView({behavior:'smooth',block:'center'});
   t.classList.add('flash');setTimeout(function(){t.classList.remove('flash')},2200);});});
 apply();
+/* 当日アップロード分を全てNEW表記(PC/iPhone共通・クライアント日付JST基準) 2026-07-22 */
+(function(){function _jt(){var d=new Date(Date.now()+324e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
+function _mkNew(){var td=_jt();document.querySelectorAll('.cards[data-date]').forEach(function(sec){var dd=sec.getAttribute('data-date');var isT=/^\d{4}-\d{2}-\d{2}$/.test(dd)&&dd===td;sec.querySelectorAll('.card').forEach(function(cd){var hd=cd.querySelector('.chd');if(!hd)return;var b=hd.querySelector('.st.new');if(isT){if(!b){b=document.createElement('span');b.className='st new';b.textContent='NEW';hd.appendChild(b);}}else{if(b&&b.parentNode)b.parentNode.removeChild(b);}});});}
+_mkNew();})();
 </script>
 </body>
 </html>

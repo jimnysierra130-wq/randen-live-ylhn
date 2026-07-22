@@ -2011,8 +2011,8 @@ var stl=document.createElement('style');stl.textContent='#subchips{display:flex;
 function build(c){window.subf='all';var items=null;if(c==='tabelog'){var pres={};document.querySelectorAll('.card[data-c="tabelog"]').forEach(function(cd){(cd.dataset.tcol||'').split('|').filter(Boolean).forEach(function(k){pres[k]=1;});});items=CATS.map(function(p){return p[0];}).filter(function(n){return pres[n];});}else if(c!=='all'&&c2b[c]&&Object.keys(c2b[c]).length>1){items=Object.keys(c2b[c]);}
  if(!items||!items.length){sub.innerHTML='';return;}
  var html='<span class="schip on" data-s="all">すべて</span>';items.forEach(function(n){html+='<span class="schip" data-s="'+n.replace(/"/g,'&quot;')+'">'+n+'</span>';});sub.innerHTML=html;
- sub.querySelectorAll('.schip').forEach(function(sc){sc.addEventListener('click',function(){sub.querySelectorAll('.schip').forEach(function(x){x.classList.remove('on')});sc.classList.add('on');window.subf=sc.getAttribute('data-s');if(typeof apply==='function')apply();});});}
-document.querySelectorAll('#chips .chip').forEach(function(ch){ch.addEventListener('click',function(){build(ch.dataset.c);if(typeof apply==='function')apply();});});
+ sub.querySelectorAll('.schip').forEach(function(sc){sc.addEventListener('click',function(){sub.querySelectorAll('.schip').forEach(function(x){x.classList.remove('on')});sc.classList.add('on');window.subf=sc.getAttribute('data-s');if(typeof apply==='function')apply();try{window.scrollTo(0,0);}catch(e){}});});}
+document.querySelectorAll('#chips .chip').forEach(function(ch){ch.addEventListener('click',function(){build(ch.dataset.c);if(typeof apply==='function')apply();try{window.scrollTo(0,0);}catch(e){}});});
 var onc=document.querySelector('#chips .chip.on');build(onc?onc.dataset.c:'all');if(typeof apply==='function')apply();
 })();
 </script>

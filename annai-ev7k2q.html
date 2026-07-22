@@ -198,9 +198,9 @@ function render(){
 }
 var chips=[['all','すべて'],['event','🎉 イベント'],['ticket','🎫 企画きっぷ'],['tenant','📋 テナント通信'],['hiei','🚠 鋼索線・比叡山'],['goods','🧸 グッズ'],['regular','🚋 常設・運賃'],['joho','📢 窓口共通'],['fin','⚪ 終了済み']];
 var ch=document.getElementById('chips');
-chips.forEach(function(c){var b=document.createElement('button');b.className='chip'+(c[0]==='all'?' on':'');b.textContent=c[1];b.onclick=function(){CUR=c[0];CURSUB='all';ch.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');buildSub();render();};ch.appendChild(b);});
+chips.forEach(function(c){var b=document.createElement('button');b.className='chip'+(c[0]==='all'?' on':'');b.textContent=c[1];b.onclick=function(){CUR=c[0];CURSUB='all';ch.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');buildSub();render();try{window.scrollTo(0,0);}catch(e){}};ch.appendChild(b);});
 document.getElementById('q').addEventListener('input',render);
-document.getElementById('subchips').addEventListener('click',function(e){var b=e.target.closest('.subchip');if(!b)return;CURSUB=b.getAttribute('data-s');this.querySelectorAll('.subchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');render();});
+document.getElementById('subchips').addEventListener('click',function(e){var b=e.target.closest('.subchip');if(!b)return;CURSUB=b.getAttribute('data-s');this.querySelectorAll('.subchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');render();try{window.scrollTo(0,0);}catch(e){}});
 document.getElementById('bd').addEventListener('click',function(ev){var b=ev.target.closest('.ovt');if(!b)return;var c=document.getElementById('c-'+b.getAttribute('data-jump'));if(!c)return;c.scrollIntoView({behavior:'smooth',block:'start'});c.classList.add('flash');setTimeout(function(){c.classList.remove('flash');},1600);});
 function setSP(){var hd=document.getElementById('hd');if(hd)document.documentElement.style.scrollPaddingTop=(hd.offsetHeight+6)+'px';}window.addEventListener('resize',setSP);setSP();setTimeout(setSP,200);
 render();

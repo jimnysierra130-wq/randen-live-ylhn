@@ -1964,7 +1964,7 @@ function inAll(c){return SEP.indexOf(c)<0}
 function apply(){
   var shown=0;
   document.querySelectorAll('.card').forEach(function(cd){
-    var ok=(cat==='all'?inAll(cd.dataset.c):cd.dataset.c===cat)&&(!q||cd.dataset.txt.indexOf(q)>=0);
+    var ok=(cat==='all'?inAll(cd.dataset.c):cd.dataset.c===cat)&&(!q||cd.dataset.txt.indexOf(q)>=0)&&(cd.dataset.c!=='tabelog'||!window.tcol||window.tcol==='all'||(cd.dataset.tcol&&('|'+cd.dataset.tcol+'|').indexOf('|'+window.tcol+'|')>=0));
     cd.style.display=ok?'':'none';if(ok)shown++;
   });
   document.querySelectorAll('.cards').forEach(function(g){
@@ -2000,6 +2000,17 @@ apply();
 (function(){function _jt(){var d=new Date(Date.now()+324e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
 function _mkNew(){var td=_jt();document.querySelectorAll('.cards[data-date]').forEach(function(sec){var dd=sec.getAttribute('data-date');var isT=/^\d{4}-\d{2}-\d{2}$/.test(dd)&&dd===td;sec.querySelectorAll('.card').forEach(function(cd){var hd=cd.querySelector('.chd');if(!hd)return;var b=hd.querySelector('.st.new');if(isT){if(!b){b=document.createElement('span');b.className='st new';b.textContent='NEW';hd.appendChild(b);}}else{if(b&&b.parentNode)b.parentNode.removeChild(b);}});});}
 _mkNew();})();
+/* 食べログ＝コレクション(ジャンル語)別サブフィルタ 2026-07-22 */
+(function(){if(typeof window.tcol==='undefined')window.tcol='all';
+var CATS=[['ラーメン',['ラーメン','つけ麺','油そば','まぜそば','担々麺']],['カレー',['カレー']],['うどん•蕎麦',['うどん','そば','蕎麦']],['中華',['中華','四川']],['洋食',['洋食','ハンバーグ','ステーキ','オムライス','ピザ','パスタ','バル']],['和食',['和食','日本料理','割烹','寿司','天ぷら','居酒屋','食堂','丼','うなぎ','鍋','とんかつ','焼肉','創作料理','豚料理','牛料理']],['カフェ',['カフェ','喫茶','スイーツ','甘味']]];
+var present={};
+document.querySelectorAll('.card[data-c="tabelog"]').forEach(function(cd){var p=cd.querySelector('.prev p');var g='';if(p){var t=p.textContent||'';if(t.indexOf('／')>=0)g=t.split('／')[1].split('。')[0];}var cols=[];CATS.forEach(function(pr){for(var i=0;i<pr[1].length;i++){if(g.indexOf(pr[1][i])>=0){cols.push(pr[0]);present[pr[0]]=1;break;}}});cd.setAttribute('data-tcol',cols.join('|'));});
+var sec=null;document.querySelectorAll('.sec').forEach(function(s){if(s.textContent.indexOf('食べログ')>=0)sec=s;});
+if(sec){var stl=document.createElement('style');stl.textContent='.tcolbar{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}.tchip{font-size:12px;padding:3px 10px;border-radius:99px;background:#f2e4d8;color:#7a4a1e;cursor:pointer;font-weight:700;user-select:none;-webkit-user-select:none}.tchip.on{background:#ea5a0c;color:#fff}';document.head.appendChild(stl);
+var html='<div class="tcolbar"><span class="tchip on" data-t="all">すべて</span>';CATS.forEach(function(pr){if(present[pr[0]])html+='<span class="tchip" data-t="'+pr[0]+'">'+pr[0]+'</span>';});html+='</div>';
+sec.insertAdjacentHTML('beforeend',html);
+sec.querySelectorAll('.tchip').forEach(function(ch){ch.addEventListener('click',function(e){e.stopPropagation();sec.querySelectorAll('.tchip').forEach(function(c){c.classList.remove('on')});ch.classList.add('on');window.tcol=ch.getAttribute('data-t');if(typeof apply==='function')apply();});});}
+})();
 </script>
 </body>
 </html>

@@ -5061,6 +5061,54 @@ window._subNew=function(){var sub=document.getElementById('subchips');if(!sub)re
    return c.dataset.blog===k;}));});};
 window._chipNew();window._subNew();
 })();
+
+/* チップ1行自動フィット（PC幅のみ・フォント自動縮小） 2026-07-26 */
+(function(){
+var chips=document.getElementById('chips');if(!chips)return;
+var MINW=1200;             /* これ未満(スマホ・狭いPC)は従来どおり折り返し＝1行化は1200px以上のPCのみ */
+var MAXF=11.5, MINF=8.0;   /* 探索するフォントサイズ範囲(px)＝8px未満は可読性が落ちるので縮めない */
+function clear(){chips.style.removeProperty('flex-wrap');chips.style.removeProperty('font-size');
+ chips.querySelectorAll('.chip').forEach(function(c){c.style.removeProperty('font-size');c.style.removeProperty('padding');});}
+function oneLine(){
+ /* 1行に収まっているか＝全チップのoffsetTopが同一（wrap状態で実測するのが唯一確実） */
+ var cs=chips.querySelectorAll('.chip');if(!cs.length)return true;
+ var t=cs[0].offsetTop;
+ for(var i=1;i<cs.length;i++){if(Math.abs(cs[i].offsetTop-t)>1)return false;}
+ return true;
+}
+function fitsAt(f){
+ /* wrapを掛けたまま実際の折り返しを判定＝サブピクセル丸めの取りこぼしを防ぐ */
+ setF(f);chips.style.flexWrap='wrap';
+ return oneLine();
+}
+function setF(f){
+ var pv=Math.max(2,Math.round(f*0.33*10)/10), ph=Math.max(5,Math.round(f*0.78*10)/10);
+ chips.querySelectorAll('.chip').forEach(function(c){c.style.fontSize=f+'px';c.style.padding=pv+'px '+ph+'px';});
+}
+function fit(){
+ clear();
+ if(window.innerWidth<MINW)return;            /* スマホ幅は現状維持＝折り返し */
+ if(fitsAt(MAXF)){clear();return;}            /* 既定サイズで既に1行なら何もしない */
+ /* 二分探索＝実際に1行になる最大サイズを求める */
+ var lo=MINF, hi=MAXF, best=0;
+ for(var i=0;i<16;i++){
+   var mid=Math.round((lo+hi)*50)/100;
+   if(fitsAt(mid)){best=mid;lo=mid;}else{hi=mid;}
+   if(hi-lo<0.05)break;
+ }
+ if(best){setF(best);chips.style.flexWrap='wrap';}
+ else{clear();}                               /* MINFでも無理＝従来どおり折り返し */
+}
+var tm=null;
+function q(){clearTimeout(tm);tm=setTimeout(fit,60);}
+fit();
+window.addEventListener('resize',q);
+window.addEventListener('orientationchange',q);
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(fit).catch(function(){});}
+setTimeout(fit,300);setTimeout(fit,900);
+window._chipFit=fit;
+})();
+
 /* 日付見出しをヘッダー直下に吸着させる：ヘッダー実高を--hdhへ 2026-07-26 */
 (function(){var hd=document.getElementById('hd');if(!hd)return;
 function up(){var h=hd.getBoundingClientRect().height;if(h>10){document.documentElement.style.setProperty('--hdh',Math.round(h-1)+'px');}
@@ -5068,7 +5116,8 @@ function up(){var h=hd.getBoundingClientRect().height;if(h>10){document.document
 up();window.addEventListener('resize',up);window.addEventListener('orientationchange',up);
 if(window.ResizeObserver){try{new ResizeObserver(up).observe(hd);}catch(e){}}
 document.querySelectorAll('#chips .chip').forEach(function(ch){ch.addEventListener('click',function(){setTimeout(up,0);});});
-setTimeout(up,300);})();
+setTimeout(up,300);setTimeout(up,950);
+window.addEventListener('resize',function(){setTimeout(up,120);});})();
 </script>
 </body>
 </html>

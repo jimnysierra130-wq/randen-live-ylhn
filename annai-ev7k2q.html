@@ -50,6 +50,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 .bar b{position:absolute;top:-2px;width:2px;height:12px;background:#25223d}
 .ovw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:10px 0 14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}
 @media(min-width:680px){.ovw{grid-template-columns:repeat(5,minmax(0,1fr))}}/* 俯瞰=PC5列・スマホ2列〔2026-07-26ユーザー指示で4→5列。スマホは2列のまま=件名の可読性を優先〕／minmax(0,1fr)=長い件名でも横溢れ防止 iPhone崩れ対策 2026-07-15 */
+@media(max-width:679px){.ovw{display:none}}/* ★スマホ(iPhone)では俯瞰グリッドを出さない〔2026-07-26ユーザー指示で廃止〕。理由=狭い画面では2列でも件名が省略されて一覧の意味が薄く、カード本体までのスクロールが伸びるだけだった。境界は列数切替と同じ680px＝iPhoneは全機種非表示／iPad横・PCは5列表示。★HTML側(.ovwのDOM)は生成したまま＝復活させたい時はこの1行を消すだけでよい。★`.ovt`のジャンプ機能自体は残っているのでPCでは従来どおり動く */
 .ovt{text-align:left;font-size:12.5px;padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:#fafafe;cursor:pointer;display:flex;gap:6px;align-items:center;font-family:inherit;color:var(--tx);min-width:0}
 .ovt span.tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
 .ovt .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}

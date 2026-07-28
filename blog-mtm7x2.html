@@ -5550,9 +5550,10 @@ document.querySelectorAll('.ovt').forEach(function(b){b.addEventListener('click'
   t.classList.add('open');t.scrollIntoView({behavior:'smooth',block:'center'});
   t.classList.add('flash');setTimeout(function(){t.classList.remove('flash')},2200);});});
 apply();
-/* 当日アップロード分を全てNEW表記(PC/iPhone共通・クライアント日付JST基準) 2026-07-22 */
+/* 当日+前日24時間分をNEW表記(PC/iPhone共通・クライアント日付JST基準) 2026-07-29拡張=0-3時のみだった窓を前日+当日へ */
 (function(){function _jt(){var d=new Date(Date.now()+324e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
-function _mkNew(){var td=_jt();document.querySelectorAll('.cards[data-date]').forEach(function(sec){var dd=sec.getAttribute('data-date');var isT=/^\d{4}-\d{2}-\d{2}$/.test(dd)&&dd===td;sec.querySelectorAll('.card').forEach(function(cd){var hd=cd.querySelector('.chd');if(!hd)return;var b=hd.querySelector('.st.new');if(isT){if(!b){b=document.createElement('span');b.className='st new';b.textContent='NEW';hd.appendChild(b);}}else{if(b&&b.parentNode)b.parentNode.removeChild(b);}});});}
+function _yt(){var d=new Date(Date.now()+324e5-864e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
+function _mkNew(){var td=_jt(),yd=_yt();document.querySelectorAll('.cards[data-date]').forEach(function(sec){var dd=sec.getAttribute('data-date');var isT=/^\d{4}-\d{2}-\d{2}$/.test(dd)&&(dd===td||dd===yd);sec.querySelectorAll('.card').forEach(function(cd){var hd=cd.querySelector('.chd');if(!hd)return;var b=hd.querySelector('.st.new');if(isT){if(!b){b=document.createElement('span');b.className='st new';b.textContent='NEW';hd.appendChild(b);}}else{if(b&&b.parentNode)b.parentNode.removeChild(b);}});});}
 _mkNew();})();
 /* サブチップ(ヘッダー固定#subchips)：食べログ=コレクション(ジャンル語)／他カテゴリ=ブログ別 2026-07-22 */
 (function(){window.subf='all';
@@ -5569,20 +5570,24 @@ function build(c){window.subf='all';var items=null;if(c==='tabelog'){var pres={}
 document.querySelectorAll('#chips .chip').forEach(function(ch){ch.addEventListener('click',function(){build(ch.dataset.c);if(typeof apply==='function')apply();try{window.scrollTo(0,0);}catch(e){}});});
 var onc=document.querySelector('#chips .chip.on');build(onc?onc.dataset.c:'all');if(typeof apply==='function')apply();
 })();
-/* チップ「New」表記＝JST当日の新着があるカテゴリ/ブログに付与 2026-07-26 */
+/* チップ「New」表記＝当日+前日24時間分の新着件数をカテゴリ/ブログに付与 2026-07-29(窓拡張＋件数表示化) */
 (function(){
 function _jt(){var d=new Date(Date.now()+324e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
-function _td(){var sec=document.querySelector('.cards[data-date="'+_jt()+'"]');return sec?[].slice.call(sec.querySelectorAll('.card')):[];}
-function _mk(el,on){var b=el.querySelector('.cn');if(on){if(!b){b=document.createElement('span');b.className='cn';b.textContent='New';el.appendChild(b);}}else if(b&&b.parentNode){b.parentNode.removeChild(b);}}
-window._chipNew=function(){var t=_td(),s={};t.forEach(function(c){s[c.dataset.c]=1;});
- var anyAll=Object.keys(s).some(function(c){return SEP.indexOf(c)<0;});
- var anyAd=Object.keys(s).some(function(c){return ADALL.indexOf(c)>=0;});
- document.querySelectorAll('#chips .chip').forEach(function(ch){var c=ch.dataset.c;_mk(ch,c==='all'?anyAll:(c==='adall'?anyAd:(c==='kyotoshiga'?!!(s['kyoto']||s['shiga']):!!s[c])));});};
+function _yt(){var d=new Date(Date.now()+324e5-864e5);return d.getUTCFullYear()+'-'+('0'+(d.getUTCMonth()+1)).slice(-2)+'-'+('0'+d.getUTCDate()).slice(-2);}
+function _td(){var out=[];[_jt(),_yt()].forEach(function(ds){var sec=document.querySelector('.cards[data-date="'+ds+'"]');if(sec)out=out.concat([].slice.call(sec.querySelectorAll('.card')));});return out;}
+function _mk(el,n){var b=el.querySelector('.cn');if(n>0){if(!b){b=document.createElement('span');b.className='cn';el.appendChild(b);}b.textContent='New '+n;}else if(b&&b.parentNode){b.parentNode.removeChild(b);}}
+window._chipNew=function(){var t=_td(),s={};t.forEach(function(c){s[c.dataset.c]=(s[c.dataset.c]||0)+1;});
+ function _sum(keys){return keys.reduce(function(a,k){return a+(s[k]||0);},0);}
+ var nAll=_sum(Object.keys(s).filter(function(c){return SEP.indexOf(c)<0;}));
+ var nAd=_sum(Object.keys(s).filter(function(c){return ADALL.indexOf(c)>=0;}));
+ var nKS=(s['kyoto']||0)+(s['shiga']||0);
+ document.querySelectorAll('#chips .chip').forEach(function(ch){var c=ch.dataset.c;_mk(ch,c==='all'?nAll:(c==='adall'?nAd:(c==='kyotoshiga'?nKS:(s[c]||0))));});};
 window._subNew=function(){var sub=document.getElementById('subchips');if(!sub)return;var t=_td();
  sub.querySelectorAll('.schip').forEach(function(sc){var k=sc.getAttribute('data-s');
-  _mk(sc,t.some(function(c){if(!catMatch(c.dataset.c))return false;if(k==='all')return true;
+  var n=t.filter(function(c){if(!catMatch(c.dataset.c))return false;if(k==='all')return true;
    if(cat==='tabelog')return c.dataset.tcol&&('|'+c.dataset.tcol+'|').indexOf('|'+k+'|')>=0;
-   return c.dataset.blog===k;}));});};
+   return c.dataset.blog===k;}).length;
+  _mk(sc,n);});};
 window._chipNew();window._subNew();
 })();
 

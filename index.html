@@ -10521,6 +10521,10 @@ window._rearCtx=function(dsArg){var ds=dsArg||jstDateStr();if(_cx&&_cx.ds===ds)r
  var c={ds:ds,R:R,day:day,hol:hol?1:0,gion:(R.gion&&R.gion[day])||null,okuribi:(R.okuribi&&R.okuribi[day])||null};
  if(!hol){c.asg=(R.wd&&R.wd[day])||{};}
  else{var e=(R.hd&&R.hd[day])||{};c.pat=e._pat||'1303';c.kita=e._kita?1:0;c.asg=e;
+  /* ★2026-07-29＝お盆等で「暦は平日だがダイヤは休日」の日は、平日ブック側にだけ常盤・ポの記載が残る。
+     休日分岐はhdしか見ないので、そのままだと**その日のポスター担当が黙って消える**（8/14 ポ=宇根田で実際に踏んだ）。
+     平日ブックの常盤・ポだけを拾ってパネル末尾に併記する（情報量を減らさない）。 */
+  var _w=(R.wd&&R.wd[day])||{},_ex={},_exn=0;['常盤','ポ'].forEach(function(k){if(_w[k]!==undefined){_ex[k]=_w[k];_exn++;}});if(_exn)c.wdx=_ex;
   if(c.pat!=='1303'&&R.cycles&&R.cycles[c.pat]){c.t2s={};R.cycles[c.pat].forEach(function(x){c.t2s[pd(x[0])]=x[1];});}
   if(c.kita&&R.cycles&&R.cycles.kita0946){c.k2s={};R.cycles.kita0946.forEach(function(x){c.k2s[pd(x[0])]=x[1];});}}
  if(!c.okuribi){var _ak=Object.keys(c.asg||{}).filter(function(k){return k.charAt(0)!=='_';});if(!_ak.length&&!c.gion){_cx={ds:ds,off:1};return _cx;}}
@@ -10578,7 +10582,8 @@ window._rearTick=function(f){try{
   L1.push('<div class="rsec">連結'+_ph+'</div>');L2.push('<div class="rsec">&nbsp;</div>');
   var _ob=(_KBOUT[c.pat]||{});['A','B','C','D'].forEach(function(L){var v=c.asg[L];if(v===undefined)return;var nm2=(''+(v||'')).split('@')[0],t2=(''+(v||'')).split('@')[1]||'';L1.push(_row(L,nm2||null,(wide&&t2)?(t2+(_ob[L]?('–'+_ob[L]):'-')):null,!nm2,_dm(t2,null)));});
   ['E','F','G','H'].forEach(function(L){var v=c.asg[L];if(v===undefined)return;var nm2=(''+(v||'')).split('@')[0],t2=(''+(v||'')).split('@')[1]||'';L2.push(_row(L,nm2||null,(wide&&t2)?(t2+(_ob[L]?('–'+_ob[L]):'-')):null,!nm2,_dm(t2,null)));});
-  if(c.kita){var _kr=[];['北1','北2','北3','北4','北5'].forEach(function(L){var v=c.asg[L];if(v!==undefined){var nm3=(''+(v||'')).split('@')[0];_kr.push(_row(L.replace('北',''),nm3||null,null,!nm3));}});if(_kr.length){L3.push('<div class="rsec">北野</div>');L3=L3.concat(_kr);}}/* 北野=3列目・記入なしなら列ごと非表示(2列のまま) 2026-07-15ユーザー指示 */
+  if(c.kita){var _kr=[];['北1','北2','北3','北4','北5'].forEach(function(L){var v=c.asg[L];if(v!==undefined){var nm3=(''+(v||'')).split('@')[0];_kr.push(_row(L.replace('北',''),nm3||null,null,!nm3));}});if(_kr.length){L3.push('<div class="rsec">北野</div>');L3=L3.concat(_kr);}}
+  if(c.wdx){var _xr=[];['常盤','ポ'].forEach(function(k){if(c.wdx[k]===undefined)return;var t3=T[k]||[];_xr.push(_row(k,c.wdx[k],wide?tm(k):null,!c.wdx[k],_dm(t3[0],t3[1])));});if(_xr.length){L3.push('<div class="rsec">その他</div>');L3=L3.concat(_xr);}}/* 2026-07-29 暦は平日/ダイヤは休日の日の常盤・ポ *//* 北野=3列目・記入なしなら列ごと非表示(2列のまま) 2026-07-15ユーザー指示 */
  }
  if(L3.length){el.classList.remove('c2');}else{el.classList.add('c2');}/* 2列時=3列目の余白分文字拡大 2026-07-15ユーザー指示 */
  h+='<div class="rcols"><div class="rcol">'+L1.join('')+'</div><div class="rcol">'+L2.join('')+'</div>'+(L3.length?('<div class="rcol">'+L3.join('')+'</div>'):'')+'</div>';if(_rfoot)h+='<div class="rfoot">※'+_rfoot+'</div>';

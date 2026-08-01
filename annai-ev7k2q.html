@@ -43,6 +43,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 .st{font-size:11.5px;padding:3px 10px;border-radius:99px;font-weight:700;flex:0 0 auto}
 .st.ok{background:var(--okbg);color:var(--ok)}.st.soon{background:var(--soonbg);color:var(--soon)}.st.fin{background:var(--endbg);color:var(--end)}.st.pend{background:var(--warnbg);color:var(--warn)}
 .nw{font-size:11px;font-weight:800;padding:2px 7px;border-radius:5px;background:#fcebeb;color:#a32d2d;flex:0 0 auto;letter-spacing:.4px}/* 2026-08-01 追加から7日間だけ出る＝閲覧時JS判定なので再生成なしで消える */
+.nwd{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;font-style:normal;padding:1px 4px;border-radius:4px;background:#e24b4a;color:#fff;letter-spacing:.3px;vertical-align:1px}/* 2026-08-01 チップ（ボタン）側のNEW＝そのカテゴリに新着があるときだけ出る。白地でも紫地でも読めるよう赤ベタ＋白文字 */
 .cbody{padding:8px 14px 0}
 .perw{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .per{font-size:12px;color:var(--sub);flex:0 0 auto}
@@ -124,6 +125,11 @@ function fmtdy(s){if(!s)return '';var p=s.split('-');return p[0]+'/'+(+p[1])+'/'
 function daysTo(s,today){var a=new Date(s+'T00:00:00'),b=new Date(today+'T00:00:00');return Math.round((a-b)/864e5);}
 function isNew(e,today){/* 2026-08-01 追加日から7日間だけ true（追加日=0日目〜6日目）。added が無い/nullなら出さない */
  if(!e.added)return false;var d=daysTo(today,e.added);return d>=0&&d<7;}
+function newCount(cat){/* 2026-08-01 そのカテゴリの新着件数＝チップ（ボタン）にNEWを出すかの判定。
+  ★カードと同じ条件で数える＝**終了済みは数えない**（押しても中に無い、が起きないように）。 */
+ if(cat==='fin')return 0;var t=jnow(),n=0;
+ EV.forEach(function(e){if(!isNew(e,t))return;if(stOf(e,t).k==='fin')return;if(cat==='all'||e.cat===cat)n++;});
+ return n;}
 function stOf(e,today){
  if(e.status_override==='pending')return{k:'pend',t:'⏳ 実施未定・資料待ち'};
  if(e.end&&today>e.end)return{k:'fin',t:fmtd(e.end)+' 終了'};
@@ -183,7 +189,7 @@ function card(e,st,today){
 }
 var CUR='all',CURSUB='all';
 var SUBORD={ticket:['1日・フリー','セット券','周遊パス','訪日・引換','その他'],regular:['運賃','IC・定期','団体・貸切','割引・シニア','設備・サービス'],hiei:['きっぷ・パス','割引・体験','グッズ','運行・ダイヤ'],event:['100周年','季節イベント','神社・寺院'],goods:['鉄印・御朱印','キャラクター・車両','定番グッズ'],joho:['取扱場所','払戻・手数料','誤案内注意'],tenant:['お知らせ','工事・設備','その他']};/* 2026-07-26 全カテゴリ対応(event/goods/joho/tenant を追加)。サブチップは data の sub が実在する分だけ出る＝空カテゴリは自動で非表示。★新項目を足すときは events_master.json に sub を必ず入れる＝入れないとそのカードは「すべて」でしか出なくなる */
-function buildSub(){var sc=document.getElementById('subchips');var ord=SUBORD[CUR];if(!ord||CUR==='all'||CUR==='fin'){sc.hidden=true;sc.innerHTML='';try{setSP();}catch(e){}return;}var present={},_td=jnow();EV.forEach(function(e){if(e.cat===CUR&&e.sub&&stOf(e,_td).k!=='fin')present[e.sub]=(present[e.sub]||0)+1;});/* ★件数は render() と同じ条件で数える＝終了済み(stOf=='fin')は除外。各カテゴリの一覧は act のみ表示するため、含めるとボタンの数字と中身が食い違う〔2026-07-26修正：グッズ「鉄印・御朱印·3」を押すと2件しか出ない不整合〕 */var subs=ord.filter(function(s){return present[s];});if(!subs.length){sc.hidden=true;sc.innerHTML='';try{setSP();}catch(e){}return;}var h='<button class="subchip'+(CURSUB==='all'?' on':'')+'" data-s="all">すべて</button>';subs.forEach(function(s){h+='<button class="subchip'+(CURSUB===s?' on':'')+'" data-s="'+esc(s)+'">'+esc(s)+'·'+present[s]+'</button>';});sc.innerHTML=h;sc.hidden=false;try{setSP();}catch(e){}}
+function buildSub(){var sc=document.getElementById('subchips');var ord=SUBORD[CUR];if(!ord||CUR==='all'||CUR==='fin'){sc.hidden=true;sc.innerHTML='';try{setSP();}catch(e){}return;}var present={},_pnew={},_td=jnow();EV.forEach(function(e){if(e.cat===CUR&&e.sub&&stOf(e,_td).k!=='fin'){present[e.sub]=(present[e.sub]||0)+1;if(isNew(e,_td))_pnew[e.sub]=1;}});/* 2026-08-01 _pnew=そのサブチップに新着があるか *//* ★件数は render() と同じ条件で数える＝終了済み(stOf=='fin')は除外。各カテゴリの一覧は act のみ表示するため、含めるとボタンの数字と中身が食い違う〔2026-07-26修正：グッズ「鉄印・御朱印·3」を押すと2件しか出ない不整合〕 */var subs=ord.filter(function(s){return present[s];});if(!subs.length){sc.hidden=true;sc.innerHTML='';try{setSP();}catch(e){}return;}var h='<button class="subchip'+(CURSUB==='all'?' on':'')+'" data-s="all">すべて</button>';subs.forEach(function(s){h+='<button class="subchip'+(CURSUB===s?' on':'')+'" data-s="'+esc(s)+'">'+esc(s)+'·'+present[s]+(_pnew[s]?'<i class="nwd">NEW</i>':'')+'</button>';});sc.innerHTML=h;sc.hidden=false;try{setSP();}catch(e){}}
 function render(){
  var today=jnow();document.getElementById('today').textContent=fmtdy(today);
  var q=(document.getElementById('q').value||'').trim().toLowerCase();
@@ -213,7 +219,7 @@ function render(){
 }
 var chips=[['all','すべて'],['event','🎉 イベント'],['ticket','🎫 企画きっぷ'],['tenant','📋 テナント通信'],['hiei','🚠 鋼索線・比叡山'],['goods','🧸 グッズ'],['regular','🚋 常設・運賃'],['joho','📢 窓口共通'],['fin','⚪ 終了済み']];
 var ch=document.getElementById('chips');
-chips.forEach(function(c){var b=document.createElement('button');b.className='chip'+(c[0]==='all'?' on':'');b.textContent=c[1];b.onclick=function(){CUR=c[0];CURSUB='all';ch.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');buildSub();render();try{window.scrollTo(0,0);}catch(e){}};ch.appendChild(b);});
+chips.forEach(function(c){var b=document.createElement('button');b.className='chip'+(c[0]==='all'?' on':'');var _n=newCount(c[0]);b.innerHTML=esc(c[1])+(_n?'<i class="nwd">NEW</i>':'');/* 2026-08-01 新着があるカテゴリのボタンにNEW */b.onclick=function(){CUR=c[0];CURSUB='all';ch.querySelectorAll('.chip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');buildSub();render();try{window.scrollTo(0,0);}catch(e){}};ch.appendChild(b);});
 document.getElementById('q').addEventListener('input',render);
 document.getElementById('subchips').addEventListener('click',function(e){var b=e.target.closest('.subchip');if(!b)return;CURSUB=b.getAttribute('data-s');this.querySelectorAll('.subchip').forEach(function(x){x.classList.remove('on');});b.classList.add('on');render();try{window.scrollTo(0,0);}catch(e){}});
 document.getElementById('bd').addEventListener('click',function(ev){var b=ev.target.closest('.ovt');if(!b)return;var c=document.getElementById('c-'+b.getAttribute('data-jump'));if(!c)return;c.scrollIntoView({behavior:'smooth',block:'start'});c.classList.add('flash');setTimeout(function(){c.classList.remove('flash');},1600);});

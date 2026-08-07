@@ -708,7 +708,7 @@ body.light .btnbar button.on{background:#2e6fd0;border-color:#2e6fd0;color:#fff}
 .stlbl.term{font-size:12.5px;font-weight:800}
 body.lowzoom .stlbl.minor{display:none}
 /* 列車チップ */
-.tchip{position:relative;display:flex;align-items:center;gap:6px;border-radius:8px;padding:3px 7px 4px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.55);line-height:1.15;cursor:pointer;white-space:nowrap;width:max-content}
+.tchip{position:relative;display:flex;align-items:center;gap:4px;border-radius:7px;padding:2px 5px 3px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.55);line-height:1.15;cursor:pointer;white-space:nowrap;width:max-content}
 .tchip.hako{background:linear-gradient(180deg,#e0730f,#b95605)}
 .tchip.chitose{background:linear-gradient(180deg,#2e6fd0,#1c4c9c)}
 .tchip.sassho{background:linear-gradient(180deg,#159a5d,#0d7040)}
@@ -723,7 +723,7 @@ body.lowzoom .stlbl.minor{display:none}
 .tchip.furano{background:linear-gradient(180deg,#d16ba5,#a84a80)}
 .tchip.hanasaki{background:linear-gradient(180deg,#c78a29,#996818)}
 .tchip.freight{background:linear-gradient(180deg,#5c6b78,#37424d)!important}
-.tchip .pill-sim{background:rgba(255,255,255,.28);color:#fff;font-size:9px;border-radius:4px;padding:0 4px;font-weight:700}
+.tchip .pill-sim{background:rgba(255,255,255,.28);color:#fff;font-size:8px;border-radius:4px;padding:0 3px;font-weight:700}
 .dimwrap{display:none}
 /* 選択エリア外は完全非表示（2026-08-07 ユーザー指定） */
 #panel.min .rows{display:none}
@@ -732,15 +732,15 @@ body.lowzoom .stlbl.minor{display:none}
 #locBtn{position:absolute;left:10px;bottom:14px;z-index:1000;width:48px;height:48px;border-radius:10px;border:2px solid rgba(0,0,0,.25);background:#fff;font-size:24px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;padding:0}
 body:not(.light) #locBtn{background:#243447;border-color:rgba(255,255,255,.3)}
 @media(max-width:700px){#locBtn{bottom:100px}}
-.tchip .r1{display:flex;align-items:center;gap:4px;font-size:10px}
+.tchip .r1{display:flex;align-items:center;gap:3px;font-size:9px}
 .tchip .pill-tp{background:#122;color:#ffd54d;border-radius:4px;padding:0 4px;font-weight:800}
 .tchip .pill-tp.tk{background:#8f1414;color:#fff}
-.tchip .arw{font-size:11px;font-weight:900}
-.tchip .r2{display:flex;align-items:center;gap:4px;font-size:15px;font-weight:800;margin-top:1px}
-.tchip .pill-ry{font-size:9px;border:1px solid rgba(255,255,255,.7);border-radius:4px;padding:0 3px;font-weight:600}
-.tchip .pill-late{background:#e5273e;color:#fff;font-size:10px;font-weight:800;border-radius:4px;padding:0 4px}
-.tchip .pill-stop{background:#f5a300;color:#241a00;font-size:10px;font-weight:800;border-radius:99px;padding:0 5px}
-.tchip .pill-sec{background:#f5a300;color:#241a00;font-size:10px;font-weight:700;border-radius:4px;padding:0 4px}
+.tchip .arw{font-size:10px;font-weight:900}
+.tchip .r2{display:flex;align-items:center;gap:3px;font-size:12px;font-weight:800;margin-top:1px}
+.tchip .pill-ry{font-size:8px;border:1px solid rgba(255,255,255,.7);border-radius:4px;padding:0 3px;font-weight:600}
+.tchip .pill-late{background:#e5273e;color:#fff;font-size:9px;font-weight:800;border-radius:4px;padding:0 3px}
+.tchip .pill-stop{background:#f5a300;color:#241a00;font-size:9px;font-weight:800;border-radius:99px;padding:0 4px}
+.tchip .pill-sec{background:#f5a300;color:#241a00;font-size:9px;font-weight:700;border-radius:4px;padding:0 3px}
 .ldr{position:absolute;height:1.5px;background:rgba(255,255,255,.5);transform-origin:0 0;pointer-events:none}
 .tanchor{width:9px;height:9px;border-radius:50%;background:#fff;border:2px solid #222;box-shadow:0 0 5px #000}
 /* パネル */
@@ -979,9 +979,11 @@ function photoOf(t){
 }
 /* ===== チップ ===== */
 const markers={};
-/* 進行方向の左側（左側通行）にチップを置くための距離・沿線ずらし列（重なり回避用） */
-const LSEQ=[[52,0],[52,72],[52,-72],[106,0],[106,72],[106,-72],[160,0],[160,36],[160,-36],[214,0]];
-function chipHtml(t,st,off,line,dir){
+/* 進行方向の左側（左側通行）にチップを置くための[段数,沿線ずらしpx]列（重なり回避用）
+   段数×(チップ高+10px)だけ路線から追加で離す（2026-08-07: ハイライト重なり修正） */
+const LSEQ=[[0,0],[0,80],[0,-80],[1,0],[1,80],[1,-80],[2,0],[2,40],[2,-40],[3,0]];
+const CHIP_GAP=12;  /* 路線とチップ近縁の最小隙間px */
+function chipBody(t,st,line,dir){
   const [cb,pb,ud,chien,type,dest,ryosu]=t;
   const tp=TYPE[type]||["?","?",0];
   let stopHtml="";
@@ -989,20 +991,73 @@ function chipHtml(t,st,off,line,dir){
     const rem=Math.max(0,st.dep-simT);
     stopHtml='<span class="pill-stop">停</span><span class="pill-sec">'+(rem>0?(Math.floor(rem/60)+"分"+String(rem%60).padStart(2,"0")+"秒"):"発車")+"</span>";
   }
-  /* リーダー線＝アンカー→チップ内部の点。内側はチップ本体（後描画）が隠すので
-     どの方向にチップを置いても端がずれない（2026-08-07修正） */
-  const ax=-off[0],ay=-off[1],ex=50,ey=17;
-  const dx=ex-ax,dy=ey-ay,len=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx);
-  const ldr='<div class="ldr" style="left:'+ax+'px;top:'+ay+'px;width:'+len.toFixed(0)+'px;transform:rotate('+ang.toFixed(3)+'rad)"></div>';
   const simPill=SIMSET.has(cb)?'<span class="pill-sim">ダイヤ</span>':"";
-  return ldr+'<div class="tchip '+line+(type===10?" freight":"")+'"><div class="tcol">'+
+  return '<div class="tchip '+line+(type===10?" freight":"")+'"><div class="tcol">'+
     '<div class="r1">'+stopHtml+'<span class="pill-tp'+(tp[2]?" tk":"")+'">'+tp[1]+'</span>'+simPill+'<span class="arw">'+(dir||arrow(st))+"</span></div>"+
     '<div class="r2">'+(EKI[dest]||dest)+'<span style="font-size:10px;font-weight:600">行</span>'+(ryosu>0?'<span class="pill-ry">'+ryosu+"両</span>":"")+
     (chien>0?'<span class="pill-late">＋'+chien+"分</span>":"")+"</div>"+
-    (DAIYA[cb]&&DAIYA[cb][0]!=="普通列車"?'<div style="font-size:9px;opacity:.9;margin-top:1px">'+DAIYA[cb][0]+"</div>":"")+
+    (DAIYA[cb]&&DAIYA[cb][0]!=="普通列車"?'<div style="font-size:8px;opacity:.9;margin-top:1px">'+DAIYA[cb][0]+"</div>":"")+
   "</div></div>";
 }
+/* チップ実寸のDOM計測（実機フォントの幅がそのまま出る＝推測しない）。内容毎にキャッシュ */
+const measEl=document.createElement("div");
+measEl.style.cssText="position:absolute;visibility:hidden;left:-9999px;top:-9999px;pointer-events:none";
+const dimCache=new Map();
+function chipDims(body){
+  let d=dimCache.get(body);
+  if(d)return d;
+  if(!measEl.parentNode)document.body.appendChild(measEl);
+  measEl.innerHTML=body;
+  const el=measEl.firstChild;
+  d=[el.offsetWidth||120,el.offsetHeight||30];
+  if(dimCache.size>800)dimCache.clear();
+  dimCache.set(body,d);
+  return d;
+}
+/* 路線セグメントの画面座標グリッド（チップ離隔の当たり判定用・ズーム変化時に再構築） */
+let SEGPX=null,SEGGRID=null,SEGZOOM=null;
+function buildSegGrid(){
+  SEGPX=new Array(SEGS.length);SEGGRID={};
+  for(let i=0;i<SEGS.length;i++){
+    const s=SEGS[i];
+    const a=map.latLngToLayerPoint([s[0],s[1]]),b=map.latLngToLayerPoint([s[2],s[3]]);
+    SEGPX[i]=[a.x,a.y,b.x,b.y];
+    const x0=Math.floor(Math.min(a.x,b.x)/128),x1=Math.floor(Math.max(a.x,b.x)/128);
+    const y0=Math.floor(Math.min(a.y,b.y)/128),y1=Math.floor(Math.max(a.y,b.y)/128);
+    for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++){
+      const k=gx+"_"+gy;(SEGGRID[k]=SEGGRID[k]||[]).push(i);
+    }
+  }
+}
+function segHitRect(x1,y1,x2,y2,l,t,r,b){
+  if((x1>=l&&x1<=r&&y1>=t&&y1<=b)||(x2>=l&&x2<=r&&y2>=t&&y2<=b))return true;
+  function x(ax,ay,bx,by,cx,cy,dx,dy){
+    const d1=(bx-ax)*(cy-ay)-(by-ay)*(cx-ax),d2=(bx-ax)*(dy-ay)-(by-ay)*(dx-ax);
+    const d3=(dx-cx)*(ay-cy)-(dy-cy)*(ax-cx),d4=(dx-cx)*(by-cy)-(dy-cy)*(bx-cx);
+    return ((d1>0)!==(d2>0))&&((d3>0)!==(d4>0));
+  }
+  return x(x1,y1,x2,y2,l,t,r,t)||x(x1,y1,x2,y2,l,b,r,b)||x(x1,y1,x2,y2,l,t,l,b)||x(x1,y1,x2,y2,r,t,r,b);
+}
+function rectHitsLine(l,t,r,b){
+  const x0=Math.floor(l/128),x1=Math.floor(r/128),y0=Math.floor(t/128),y1=Math.floor(b/128);
+  for(let gx=x0;gx<=x1;gx++)for(let gy=y0;gy<=y1;gy++){
+    const arr=SEGGRID[gx+"_"+gy];if(!arr)continue;
+    for(const i of arr){
+      const s=SEGPX[i];
+      if(segHitRect(s[0],s[1],s[2],s[3],l,t,r,b))return true;
+    }
+  }
+  return false;
+}
+/* リーダー線＝アンカー→チップ中心。内側はチップ本体（後描画）が隠すので
+   どの方向にチップを置いても端がずれない */
+function chipHtml(off,dims,body){
+  const ax=-off[0],ay=-off[1],ex=dims[0]/2,ey=dims[1]/2;
+  const dx=ex-ax,dy=ey-ay,len=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx);
+  return '<div class="ldr" style="left:'+ax+'px;top:'+ay+'px;width:'+len.toFixed(0)+'px;transform:rotate('+ang.toFixed(3)+'rad)"></div>'+body;
+}
 function render(){
+  if(SEGZOOM!==map.getZoom()){buildSegGrid();SEGZOOM=map.getZoom();}
   const items=[];const live=new Set();
   for(const t of SNAP){
     const cb=t[0];live.add(cb);
@@ -1042,17 +1097,37 @@ function render(){
     it.dir=(A&&B)?dir8(vx,vy):null;
     /* 左側通行＝進行方向の左手（画面座標で (vy,-vx)）。東行き→上側・北行き→西側 */
     const lx=vy,ly=-vx;
+    /* チップ実寸を測り、外形の垂直方向投影+CHIP_GAPだけ路線から離す＝どの向きでも重ならない */
+    const body=chipBody(it.t,st,it.g,it.dir);
+    const dims=chipDims(body);
+    const hw=dims[0]/2,hh=dims[1]/2;
     const pt=map.latLngToLayerPoint(it.p);
     const key=Math.round(pt.x/130)+"_"+Math.round(pt.y/60);
     const n=cell[key]=(cell[key]||0)+1;
     const ds=LSEQ[(n-1)%LSEQ.length];
-    const cx=lx*ds[0]+vx*ds[1], cy=ly*ds[0]+vy*ds[1];   /* チップ中心の位置 */
-    it.off=[Math.round(cx-75),Math.round(cy-17)];        /* チップ左上（幅150,高さ34想定） */
+    /* 基本距離＝隙間+チップ外形の垂直方向投影+重なり回避の段数分。
+       曲線区間で路線がチップ下へ回り込む場合は12px刻みで離す（最大16回）。
+       左側で回避不能なら右側も探索（左側通行優先・重なり回避を最優先） */
+    const base=CHIP_GAP+Math.abs(lx)*hw+Math.abs(ly)*hh+ds[0]*(dims[1]+10);
+    function seek(sx,sy){
+      let dist=base;
+      for(let k=0;k<16;k++){
+        const cx=sx*dist+vx*ds[1], cy=sy*dist+vy*ds[1];
+        if(!rectHitsLine(pt.x+cx-hw-4,pt.y+cy-hh-4,pt.x+cx+hw+4,pt.y+cy+hh+4))return {cx,cy,ok:true};
+        dist+=12;
+      }
+      return {cx:sx*base+vx*ds[1],cy:sy*base+vy*ds[1],ok:false};
+    }
+    let sol=seek(lx,ly);
+    if(!sol.ok){const alt=seek(-lx,-ly);if(alt.ok)sol=alt;}
+    const cx=sol.cx, cy=sol.cy;                          /* チップ中心の位置 */
+    it.off=[Math.round(cx-hw),Math.round(cy-hh)];        /* チップ左上（実寸基準） */
+    it.html=chipHtml(it.off,dims,body);
   }
   for(const it of items){
     const {t,st,p,g,off}=it;const cb=t[0];
     const dim=(AREA&&!inBox(p[0],p[1],AREA))||(LINEF&&g!==LINEF);
-    let html=chipHtml(t,st,off,g,it.dir);
+    let html=it.html;
     if(dim)html='<div class="dimwrap">'+html+"</div>";
     if(!markers[cb]){
       const a=L.marker(p,{icon:L.divIcon({className:"",html:'<div class="tanchor"></div>',iconSize:[9,9],iconAnchor:[4.5,4.5]}),zIndexOffset:400}).addTo(map);

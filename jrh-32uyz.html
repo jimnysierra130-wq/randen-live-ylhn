@@ -786,7 +786,7 @@ body:not(.light) #locBtn{background:#243447;border-color:rgba(255,255,255,.3)}
 <div id="bars">
 <div id="linebar" class="btnbar"></div>
 <div id="areabar" class="btnbar">
-  <button data-a="zen">全域</button><button data-a="sapporo">札幌近郊</button><button data-a="doo">道央</button><button data-a="donan">道南</button><button data-a="dohoku" class="on">道北</button><button data-a="doto">道東</button>
+  <button data-a="zen">全域</button><button data-a="sapporo">札幌近郊</button><button data-a="doo">道央</button><button data-a="donan">道南</button><button data-a="dohoku" class="on">道北</button><button data-a="doto">道東</button><button data-a="kamotsu">貨物</button>
 </div>
 </div>
 <div id="panel" class="min" onclick="this.classList.toggle('min')">
@@ -870,7 +870,7 @@ for(const [k,meta] of Object.entries(STMETA)){
   STM.push({cm,lb,xy});
 }
 /* ===== エリア/路線ハイライト（路線図と駅は常に全表示＝2026-08-07 ユーザー指定） ===== */
-let AREA=null,LINEF=null;
+let AREA=null,LINEF=null,KAMOF=false;
 function inBox(lat,lon,b){return lat>=b[0][0]&&lat<=b[1][0]&&lon>=b[0][1]&&lon<=b[1][1];}
 function applyArea(){render();}
 /* 各路線の範囲（路線ボタンのズーム用） */
@@ -1126,7 +1126,7 @@ function render(){
   }
   for(const it of items){
     const {t,st,p,g,off}=it;const cb=t[0];
-    const dim=(AREA&&!inBox(p[0],p[1],AREA))||(LINEF&&g!==LINEF);
+    const dim=(AREA&&!inBox(p[0],p[1],AREA))||(LINEF&&g!==LINEF)||(KAMOF&&t[4]!==10);
     let html=it.html;
     if(dim)html='<div class="dimwrap">'+html+"</div>";
     if(!markers[cb]){
@@ -1190,8 +1190,12 @@ const AREAS={
 function clearBarBtns(){document.querySelectorAll(".btnbar button").forEach(x=>x.classList.remove("on"));}
 document.querySelectorAll("#areabar button").forEach(bt=>{
   bt.onclick=()=>{clearBarBtns();bt.classList.add("on");
+    if(bt.dataset.a==="kamotsu"){ /* 貨物のみ表示（全域ズーム）＝2026-08-07追加 */
+      KAMOF=true;AREA=null;LINEF=null;
+      map.fitBounds(AREAS.zen.b,{padding:[20,20]});applyArea();return;
+    }
     const a=AREAS[bt.dataset.a];
-    AREA=a.hb||null;LINEF=null;
+    AREA=a.hb||null;LINEF=null;KAMOF=false;
     if(a.v)map.setView(a.v[0],a.v[1]);else map.fitBounds(a.b,{padding:[20,20]});
     applyArea();};
 });
@@ -1201,7 +1205,7 @@ const lb_el=document.getElementById("linebar");
 lb_el.innerHTML=LINES.map(([g,nm])=>'<button data-g="'+g+'" style="border-bottom-color:'+COLOR[g]+';flex-grow:'+(nm.length>2?1.45:1)+'">'+nm+"</button>").join("");
 document.querySelectorAll("#linebar button").forEach(bt=>{
   bt.onclick=()=>{clearBarBtns();bt.classList.add("on");
-    LINEF=bt.dataset.g;AREA=null;
+    LINEF=bt.dataset.g;AREA=null;KAMOF=false;
     const b=LBOUNDS[LINEF];if(b)map.fitBounds(b,{padding:[30,30]});
     render();};
 });

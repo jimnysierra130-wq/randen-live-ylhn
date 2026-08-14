@@ -90,8 +90,11 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
   <div class="numrow sub"><span class="nm">そのうち 6歳未満の障がい者（本人無賃・介護者は割引あり）</span>
     <button data-t="gHb" data-d="-1">−</button><input id="gHb" type="number" min="0" value="0"><button data-t="gHb" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub"><span class="nm">そのうち 介護者（大人・原則ご本人1人につき1人）</span>
+  <div class="numrow sub"><span class="nm">そのうち 介護者（大人）※原則ご本人1人につき1人</span>
     <button data-t="gKg" data-d="-1">−</button><input id="gKg" type="number" min="0" value="0"><button data-t="gKg" data-d="1">＋</button></div>
+  <div style="height:4px"></div>
+  <div class="numrow sub"><span class="nm">そのうち 介護者（小児）※係員が介護能力を認めた場合</span>
+    <button data-t="gKgc" data-d="-1">−</button><input id="gKgc" type="number" min="0" value="0"><button data-t="gKgc" data-d="1">＋</button></div>
 </div>
 </div>
 <div class="colR">
@@ -123,7 +126,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 <div class="card notes">
 <b>【お客様説明・年齢区分】</b>乳児（1歳未満）＝無賃（人数に含めない）。幼児（1歳以上6歳未満）＝団体では随伴でも「小児」として人数に含め、こども運賃を収受（社内マニュアル1-4）。小児（6歳以上12歳未満・12歳の小学生含む）＝小児運賃。<br>
-<b>【お客様説明・障がい者】</b>大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算。第1種（身体・療育）のご本人と介護者（原則1人）＝普通券 各5割引・10円未満切上げ（大人 片道130円/往復260円・小児 片道60円/往復120円）。ご本人が6歳未満＝無賃（介護者は割引あり）。割引は必ず介護者同伴が条件（嵐電線内は単独割引なし＝規程第4・5条）・第2種は嵐電線内の普通券割引なし。精神障がい者保健福祉手帳も対象（精神障害者旅客運賃割引規程による・旅客営業規則第44条）。ミライロIDでの手帳呈示可（身体障害者旅客運賃割引規程 2025-04-01改定 第8条）。<br>
+<b>【お客様説明・障がい者】</b>大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算。第1種（身体・療育）のご本人と介護者（原則1人）＝普通券 各5割引・10円未満切上げ（大人 片道130円/往復260円・小児 片道60円/往復120円）。ご本人が6歳未満＝無賃（介護者は割引あり）。割引は必ず介護者同伴が条件（嵐電線内は単独割引なし＝規程第4・5条）・第2種は嵐電線内の普通券割引なし。精神障がい者保健福祉手帳も対象（精神障害者旅客運賃割引規程による・旅客営業規則第44条）。ミライロIDでの手帳呈示可（身体障害者旅客運賃割引規程 2025-04-01改定 第8条）。<b>介護者が小児の場合</b>は小児の特割額（片道60円/往復120円）で計算＝介護者の乗車券は本人と<b>種類</b>が同一であればよく（各規程第3条2項）、大人・小児の別は介護者本人の年齢による（駅務マニュアル「普通券（身割・こども）60円 特割」）。介護能力の有無は係員が判断。<b>6歳未満のご本人は無賃</b>のため団体側の人数からも除外して計算。<br>
 <b>割引率</b>＝一般：25〜99名 1割／100〜299名 2割／300名以上 3割。学生：25〜99名 2割／100〜299名 3割／300名以上 4割（24名以下は適用なし）。<br>
 <b>無賃人員</b>＝25〜49名:1名／50〜99名:2名／100名以上:50名毎に+1名（大人から充当）。<br>
 ・運賃は全線均一（大人 片道250円/往復500円・小児 片道120円/往復240円）。合計は10円未満切上げ。1,500名以上は手計算。
@@ -223,17 +226,26 @@ function calcKashi(p){ // {ry, nn, kt:1-4, rc:0|2|3, gd, tb, on, hm, pm}
     f:parts.join(' ＋ ')+' ＝ '+YEN(sum)};
 }
 // ─ 特別割引（第1種＝本人・介護者 各5割引・10円未満切上げ／規程2025-04-01） ─
-function calcSpecial(p){ // {ha,hc,hb,kg,ow} hb=6歳未満本人(無賃)
-  var hb=p.hb||0;
+function calcSpecial(p){ // {ha,hc,hb,kg,kgc,ow} hb=6歳未満本人(無賃) / kg=大人介護者 kgc=小児介護者
+  var hb=p.hb||0, kgAd=p.kg||0, kgCh=p.kgc||0;
   var t=(p.ow===1?1:2);
   var ua=Math.ceil(250*0.5/10)*10*t, uc=Math.ceil(120*0.5/10)*10*t;
-  var hontai=p.ha+p.hc+hb;
-  var pair=Math.min(hontai,p.kg);
+  var hontai=p.ha+p.hc+hb, kgAll=kgAd+kgCh;
+  var pair=Math.min(hontai,kgAll);
+  // 本人側の内訳（大人→小児→6歳未満の順にペアを充当）
   var adD=Math.min(p.ha,pair), chD=Math.min(p.hc,pair-adD), hbD=pair-adD-chD;
-  var sub=(adD+pair)*ua+chD*uc;
-  var warn=(hontai>p.kg)?'介護者が不足：割引は同伴ペア分のみ＝介護者のいないご本人は割引なし（団体側で通常運賃として自動計算済み）':(p.kg>hontai?'介護者は原則ご本人1人につき1人＝超過分の介護者は団体側で通常運賃として自動計算済み':'');
-  var f=(pair===0)?'':'障がい者運賃（別精算）＝ 大人・介護者（'+(p.ow===1?'片道250円':'往復500円')+'→5割引 '+YEN(ua)+'）×'+(adD+pair)+'名'+(chD>0?' ＋ 小児（'+(p.ow===1?'片道120円':'往復240円')+'→5割引 '+YEN(uc)+'）×'+chD+'名':'')+(hbD>0?' ＋ 6歳未満'+hbD+'名（無賃）':'')+' ＝ '+YEN(sub)+'（10円未満切上げ）';
-  return {pair:pair,adD:adD,chD:chD,hbD:hbD,ua:ua,uc:uc,sub:sub,warn:warn,f:f};
+  // 介護者側の内訳（大人介護者から先に充当）
+  var kgAdU=Math.min(kgAd,pair), kgChU=pair-kgAdU;
+  var sub=adD*ua + chD*uc + kgAdU*ua + kgChU*uc; // 6歳未満本人は無賃
+  var warn=(hontai>kgAll)?'介護者が不足：割引は同伴ペア分のみ＝介護者のいないご本人は割引なし（団体側で通常運賃として自動計算済み）':(kgAll>hontai?'介護者は原則ご本人1人につき1人＝超過分の介護者は団体側で通常運賃として自動計算済み':'');
+  var ft=[];
+  if(adD>0)ft.push('ご本人 大人（'+(p.ow===1?'片道250円':'往復500円')+'→5割引 '+YEN(ua)+'）×'+adD+'名');
+  if(chD>0)ft.push('ご本人 小児（'+(p.ow===1?'片道120円':'往復240円')+'→5割引 '+YEN(uc)+'）×'+chD+'名');
+  if(hbD>0)ft.push('ご本人 6歳未満'+hbD+'名（無賃）');
+  if(kgAdU>0)ft.push('介護者 大人（5割引 '+YEN(ua)+'）×'+kgAdU+'名');
+  if(kgChU>0)ft.push('介護者 小児（5割引 '+YEN(uc)+'）×'+kgChU+'名');
+  var f=(pair===0)?'':'障がい者運賃（別精算）＝ '+ft.join(' ＋ ')+' ＝ '+YEN(sub)+'（10円未満切上げ）';
+  return {pair:pair,adD:adD,chD:chD,hbD:hbD,kgAdU:kgAdU,kgChU:kgChU,ua:ua,uc:uc,sub:sub,warn:warn,f:f,terms:ft};
 }
 if(typeof module!=='undefined')module.exports={calcGroup:calcGroup,calcKashi:calcKashi,calcSpecial:calcSpecial};
 
@@ -267,13 +279,13 @@ function sw(){
 function render(){
   if(st.mode==='g'){
     var ad=num('gAd'),ch=num('gCh');
-    var ha=num('gHa'),hc=num('gHc'),hb=num('gHb'),kg=num('gKg');
+    var ha=num('gHa'),hc=num('gHc'),hb=num('gHb'),kg=num('gKg'),kgc=num('gKgc');
     var box=document.getElementById('gRes');
     if(ad+ch<=0){box.style.display='none';return;}
-    var ivErr=(ha+kg>ad)||(hc>ch);
-    var sp=calcSpecial({ha:ha,hc:hc,hb:hb,kg:kg,ow:st.gOw});
-    var has=(ha+hc+hb+kg)>0;
-    var effAd=Math.max(0,ad-sp.adD-sp.pair),effCh=Math.max(0,ch-sp.chD);
+    var ivErr=(ha+kg>ad)||(hc+hb+kgc>ch);
+    var sp=calcSpecial({ha:ha,hc:hc,hb:hb,kg:kg,kgc:kgc,ow:st.gOw});
+    var has=(ha+hc+hb+kg+kgc)>0;
+    var effAd=Math.max(0,ad-sp.adD-sp.kgAdU),effCh=Math.max(0,ch-sp.chD-sp.hbD-sp.kgChU);
     var r=calcGroup({kind:st.gKind,ad:effAd,ch:effCh,ow:st.gOw});
     var rawA=r.adAmt, rawC=r.chAmt, T=r.sum, adj=T-rawA-rawC;
     box.style.display='block';
@@ -281,7 +293,7 @@ function render(){
     if(r.rate>0){db.className='disc on';db.textContent='✓ 団体割引 適用（'+(st.gKind==='ippan'?'一般':'学生')+'・'+r.rate+'割引・無賃'+r.muchin+'名）＝通常運賃より ▲'+YEN(r.save);}
     else{db.className='disc off';db.textContent='割引なし（25名未満＝通常運賃で計算）';}
     var utiwake=r.tot+'名（大人'+effAd+'・小児'+effCh+'）';
-    document.getElementById('gTot').textContent=has?('総数'+(ad+ch)+'名 − 同伴ペア'+(sp.adD+sp.chD+sp.pair)+'名 ＝ '+utiwake):utiwake;
+    document.getElementById('gTot').textContent=has?('総数'+(ad+ch)+'名 − 別精算'+(sp.adD+sp.chD+sp.hbD+sp.pair)+'名 ＝ '+utiwake):utiwake;
     document.getElementById('gMuchin').textContent=r.muchin+'名（大人から充当）';
     document.getElementById('gSumL').textContent=has?'小計（大人・小児）':'運賃 合計';
     document.getElementById('gRate').textContent=(r.rate===0?'適用なし':r.rate+'割引');
@@ -295,7 +307,7 @@ function render(){
     document.getElementById('gBreak').innerHTML='内訳（調整額含む）：'+bParts.join(' ＋ ')+' ＝ '+(has?'小計 ':'運賃合計 ')+YEN(r.sum)+(adj>0?'':'　※端数なし');
     document.getElementById('gSpRow').style.display=has?'':'none';
     document.getElementById('gTtRow').style.display=has?'':'none';
-    document.getElementById('gSp').textContent=(sp.pair>0?('大人・介護者'+(sp.adD+sp.pair)+'名×'+YEN(sp.ua)+(sp.chD>0?' ＋ 小児'+sp.chD+'名×'+YEN(sp.uc):'')+'＝'):'')+YEN(sp.sub);
+    document.getElementById('gSp').textContent=(sp.pair>0?('ご本人'+(sp.adD+sp.chD+sp.hbD)+'名 ＋ 介護者'+sp.pair+'名 ＝ '):'')+YEN(sp.sub);
     document.getElementById('gTt').textContent=YEN(r.sum+sp.sub);
     var m1=(r.tot>1499)?'1,500名以上＝手計算で行うこと':'';
     var m0=ivErr?'内訳エラー：障がい者・介護者の人数が大人/小児の総数を超えています　':'';
@@ -315,9 +327,13 @@ function render(){
       lines.push('＝ 運賃合計 '+YEN(r.sum)+'（端数なし）');
     }
     var spterms=[];
-    if(sp.pair>0){spterms.push('障がい者・介護者（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+(sp.adD+sp.pair)+'名＝'+YEN((sp.adD+sp.pair)*sp.ua));
-      if(sp.chD>0)spterms.push('障がい者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
-      if(sp.hbD>0)spterms.push('6歳未満'+sp.hbD+'名（無賃）');}
+    if(sp.pair>0){
+      if(sp.adD>0)spterms.push('ご本人 大人（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+sp.adD+'名＝'+YEN(sp.adD*sp.ua));
+      if(sp.chD>0)spterms.push('ご本人 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
+      if(sp.hbD>0)spterms.push('ご本人 6歳未満'+sp.hbD+'名（無賃）');
+      if(sp.kgAdU>0)spterms.push('介護者 大人（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+sp.kgAdU+'名＝'+YEN(sp.kgAdU*sp.ua));
+      if(sp.kgChU>0)spterms.push('介護者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.kgChU+'名＝'+YEN(sp.kgChU*sp.uc));
+    }
     if(spterms.length){lines.push('〈障がい者のお客様分（別精算）〉');spterms.forEach(function(t){lines.push('＋ '+t);});}
     var uniTotal='＝ '+YEN(r.sum+sp.sub)+'（'+(r.rate===0?'25名未満＝通常運賃':(st.gKind==='ippan'?'一般':'学生')+'団体・'+r.rate+'割引・無賃'+r.muchin+'名')+(sp.pair>0?'・障がい者5割引':'')+'）';
     document.getElementById('gF').innerHTML=lines.map(function(x){return '<div class="fln">'+x+'</div>';}).join('');
@@ -341,7 +357,7 @@ function render(){
     }
     var g5=document.getElementById('gR5');
     if(sp.sub>0&&r.adA>0&&r.chA>0){
-      var subA=(sp.adD+sp.pair)*sp.ua, subC=sp.chD*sp.uc;
+      var subA=(sp.adD+sp.kgAdU)*sp.ua, subC=(sp.chD+sp.kgChU)*sp.uc;
       g5.innerHTML='障がい者分 '+YEN(sp.sub)+' の分け方（上のどの方式とも組合せ可・お客様の指定）：'
         +'<br>・(a) 別領収書 ＝ 障がい者分 '+YEN(sp.sub)+' を別に1枚'
         +'<br>・(b) 大人の領収書へ合算 ＝ 大人側に ＋'+YEN(sp.sub)

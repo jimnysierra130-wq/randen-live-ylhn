@@ -837,8 +837,9 @@ setInterval(loadData,REFRESH_MS);
 const map=L.map("map",{zoomSnap:.25,zoomControl:false,minZoom:6.25,maxBounds:[[40.6,138.5],[46.3,147.2]],maxBoundsViscosity:.8}).setView([42.97,141.42],10.75);
 L.control.zoom({position:"bottomright"}).addTo(map);
 L.control.scale({position:"bottomright",imperial:false}).addTo(map);
-const darkTiles=L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap &copy; CARTO",maxZoom:18});
-const lightTiles=L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{attribution:"&copy; OpenStreetMap &copy; CARTO",maxZoom:18});
+document.head.insertAdjacentHTML("beforeend","<style>.tl-inv{filter:grayscale(1) invert(1) brightness(.85) contrast(.9);opacity:.7!important}.tl-gray{filter:grayscale(1);opacity:.6!important}.tl-inv img,.tl-gray img{filter:none!important}</style>");/* 2026-09-25 CARTOがAPIキー必須化→地理院タイル */
+const darkTiles=L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",{attribution:"地理院タイル",maxZoom:18,className:"tl-inv"});
+const lightTiles=L.tileLayer("https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png",{attribution:"地理院タイル",maxZoom:18,className:"tl-gray"});
 let lightMode=true;lightTiles.addTo(map);document.body.classList.add("light");
 document.getElementById("modeBtn").onclick=()=>{
   lightMode=!lightMode;document.body.classList.toggle("light",lightMode);

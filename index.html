@@ -10385,7 +10385,7 @@ function _updateSupNow(){
     if(arr)for(var i=0;i<12;i++){var c=arr[i]||'',b=_supBase(c),nm=_RS[i][1];if(b==='整')sei.push(nm);else if(b==='Ａ１')a1=nm;else if(b==='Ａ２')a2=nm;else if(b==='Ｂ１')b1=nm;else if(b==='Ｂ２')b2=nm;else if(b==='帷子'&&nm.indexOf('空')!==0)kab.push(nm);}
     /* 2026-10-30 ユーザー指示＝代務(年休・欠員の代わり)を反映し、休日出勤(法定休日・その他休日欄)の人は赤字。早出・居残りは名前だけ差し替え(黒) */
     var _SB=(typeof SUP_SUB!=='undefined'&&SUP_SUB[D])?SUP_SUB[D]:[];
-    function _hol(e){return e.cat==='法定'||e.cat==='他休';}
+    function _hol(e){return e.cat==='法定'||e.cat==='他休'||e.cat==='早居';}/* 2026-10-30 早出・居残りも赤字（ユーザー指示） */
     function _subs(SB,slot){var r=[];for(var z=0;z<SB.length;z++){var e=SB[z];if(e.slot===slot&&!e.empty&&e.name)r.push(e);}return r;}
     function _bnd(slot){if(slot==='帷子'&&dia==='休日')return _mnsup('12:45');if(slot==='整')return _mnsup('18:45');return _mnsup(SUP_HALFB[slot]||'12:00');}
     function _apply(list,SB,slot,orig,s0,e0){var ss=_subs(SB,slot),fu=null,sf=null,sl=null;for(var z=0;z<ss.length;z++){var e=ss[z];if(!e.half)fu=e;else if(e.half==='前')sf=e;else sl=e;}

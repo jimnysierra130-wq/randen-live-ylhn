@@ -48,6 +48,7 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 .mside .mtr{margin:0;}
 /* 2026-11-22 案A（ユーザー選択）：連結だと駅名の横では幅が足りず札からはみ出すため、停車中の札は駅名の下に全幅で出し、駅名を赤い帯で強調。長い列車番号等は札の中で折り返す */
 .mstn.hasstop{flex-wrap:wrap;}.mstn.hasstop .mside{flex:1 1 100%;margin-left:20px;}.mstn.hasstop .mlbl{color:#fff;background:#5a1f1f;border-radius:6px;padding:1px 8px;}
+/* 2026-11-22 上側の終点（本線＝四条大宮・北野線＝北野白梅町）に停車中は札を駅名の上（路線図の外側）に。嵐山・帷子ノ辻（北野線の下端）は従来どおり下（ユーザー指示） */.mstn.outtop .mside{order:-1;}
 .mtr .mtrn,.mtr .mcar,.mtr .mdep2,.mtr .mnm{max-width:100%;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box;}
 .mtr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border:1px solid #3f454d;border-radius:10px;padding:8px 9px;margin:4px 0 4px 18px;}
 .mtr .mdir{font-size:21px;font-weight:900;line-height:1;min-width:0.85em;text-align:center;}
@@ -309,7 +310,7 @@ function renderMap(){
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=bk[nmS]||[],sd='',bl='';
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
         if(_sp)sd+=chipHtml(c);else bl+=chipHtml(c);}
-      h+='<div class="mstn'+(sd?' hasstop':'')+'"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
+      h+='<div class="mstn'+(sd?' hasstop':'')+((sd&&(nmS==='四条大宮'||nmS==='北野白梅町'))?' outtop':'')+'"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
     return h+'</div>';}
   function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
   return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(waitList,'次 帷子発')+section(restList,'休憩')+section(botList,'25〜27勤務');

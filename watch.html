@@ -49,6 +49,9 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 /* 2026-11-22 案A（ユーザー選択）：連結だと駅名の横では幅が足りず札からはみ出すため、停車中の札は駅名の下に全幅で出し、駅名を赤い帯で強調。長い列車番号等は札の中で折り返す */
 .mstn.hasstop{flex-wrap:wrap;}.mstn.hasstop .mside{flex:1 1 100%;margin-left:20px;}.mstn.hasstop .mlbl{color:#fff;background:#5a1f1f;border-radius:6px;padding:1px 8px;}
 /* 2026-11-22 上側の終点（本線＝四条大宮・北野線＝北野白梅町）に停車中は札を駅名の上（路線図の外側）に。嵐山・帷子ノ辻（北野線の下端）は従来どおり下（ユーザー指示） */.mstn.outtop .mside{order:-1;}
+/* 2026-11-22 途中駅の停車札は駅名の右（ユーザー選択＝字を小さくして横に入れる）。入りきらない時だけ_fitStops()が駅名の下へ逃がす */
+.mstn.sidestop .mtr{padding:5px 5px;gap:3px 4px;}.mstn.sidestop .mtr .mcartop{gap:3px 4px;}.mstn.sidestop .mtr .mdir{font-size:16px;}.mstn.sidestop .mtr .mdir.st{font-size:14px;}.mstn.sidestop .mtr .mdir.st .mda{font-size:14px;}.mstn.sidestop .mtrn{font-size:13px;padding:1px 3px;}.mstn.sidestop .mtr .mcar{font-size:13px;padding:1px 4px;}.mstn.sidestop .mtr .msys{font-size:15px;padding:1px 5px;}.mstn.sidestop .mtr .mnm{font-size:17px;}
+.mstn.sidestop .mlbl{white-space:normal;line-height:1.15;}
 .mtr .mtrn,.mtr .mcar,.mtr .mdep2,.mtr .mnm{max-width:100%;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box;}
 .mtr{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border:1px solid #3f454d;border-radius:10px;padding:8px 9px;margin:4px 0 4px 18px;}
 .mtr .mdir{font-size:21px;font-weight:900;line-height:1;min-width:0.85em;text-align:center;}
@@ -306,16 +309,21 @@ function renderMap(){
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+t.tr+'列車</span>'):'');/* 2026-07-13 列車番号=車番の左 */
     return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>'):'';return (t.tr||t.car)?('<span class="mcartop">'+dind+trc+_ch+'</span>'):dind;})()+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(function(){var _ke=_rearEff(t);if(!_ke)return '';var _kn=_rearNm(_ke,t);return '<span class="mkbh">＋'+(_kn?(_ke+_kn):('後部'+_ke))+'</span>';})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+  /* 2026-11-22 40mm（幅162px）で途中駅の停車札を駅名の右に置くため、長い駅名は停車中だけ2行に分ける */
+  var _LBR={'西大路三条':'西大路<br>三条','嵐電天神川':'嵐電<br>天神川','御室仁和寺':'御室<br>仁和寺','太秦広隆寺':'太秦<br>広隆寺','帷子ノ辻':'帷子<br>ノ辻','撮影所前':'撮影<br>所前','車折神社':'車折<br>神社','嵐電嵯峨':'嵐電<br>嵯峨','北野白梅町':'北野<br>白梅町'};
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
     for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=(bk[nmS]||[]).slice().sort(function(x,y){return (x.tdep&&y.tdep)?(tmMin(x.tdep)-tmMin(y.tdep)):0;}),sd='',bl='';/* 2026-11-22 終点の札は発車の早い順 */
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
         if(_sp)sd+=chipHtml(c);else bl+=chipHtml(c);}
-      h+='<div class="mstn'+(sd?' hasstop':'')+((sd&&(nmS==='四条大宮'||nmS==='北野白梅町'))?' outtop':'')+'"><span class="mdot"></span><span class="mlbl">'+nmS+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
+      var _term=(cls==='h'&&(nmS==='四条大宮'||nmS==='嵐山'))||(cls==='k'&&(nmS==='北野白梅町'||nmS==='帷子ノ辻'));/* 2026-11-22 終点だけ札を駅名の外側（上端の終点は上・下端の終点は下）。途中駅の停車は駅名の右（ユーザー指示） */
+      h+='<div class="mstn'+(sd?(_term?' hasstop':' sidestop'):'')+((sd&&_term&&(nmS==='四条大宮'||nmS==='北野白梅町'))?' outtop':'')+'"><span class="mdot"></span><span class="mlbl">'+((sd&&!_term&&_LBR[nmS])?_LBR[nmS]:nmS)+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
     return h+'</div>';}
   function section(list,title){if(!list.length)return '';var _h='<div class="msec"><div class="msectitle">'+title+'</div>';for(var _q=0;_q<list.length;_q++)_h+=chipHtml(list[_q]);return _h+'</div>';}
   return note+ladder(ord.hon,honB,'h','本線')+ladder(ord.kit,kitB,'k','北野線')+section(waitList,'次 帷子発')+section(restList,'休憩')+section(botList,'25〜27勤務');
 }
 function ovOpen(){var p=document.getElementById('pick'),d=document.getElementById('detail');return (p&&p.style.display==='block')||(d&&d.style.display==='flex');}
+/* 2026-11-22 駅名の右に置いた停車札が幅不足ではみ出す時だけ、その駅は札を駅名の下へ回す（安全弁） */
+function _fitStops(){var rs=document.querySelectorAll('.mstn.sidestop');for(var i=0;i<rs.length;i++){var r=rs[i],ms=r.querySelectorAll('.mside .mtr'),bad=false;for(var a=0;a<ms.length&&!bad;a++){var cr=ms[a].getBoundingClientRect(),sp=ms[a].getElementsByTagName('span');for(var k=0;k<sp.length;k++){var q=sp[k].getBoundingClientRect();if(q.width>0&&(q.right>cr.right-1||q.left<cr.left-1)){bad=true;break;}}}if(bad){r.classList.remove('sidestop');r.classList.add('hasstop');var lb=r.querySelector('.mlbl');if(lb)lb.textContent=lb.textContent;}}}
 function render(){
   if(ovOpen())return;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes())+':'+pad(j.getSeconds());
@@ -328,11 +336,14 @@ function render(){
   if(scrolling&&!needScroll)return;
   lastSig=sig;
   var sc=document.scrollingElement||document.documentElement,sy=sc?sc.scrollTop:0;
-  document.getElementById('body').innerHTML=renderMap();
+  document.getElementById('body').innerHTML=renderMap();_fitStops();
+  try{_fitStops();}catch(e){}
   if(needScroll){if(sc)sc.scrollTop=0;}
   else if(sc){sc.scrollTop=sy;}
   needScroll=false;
 }
+/* 2026-11-22 途中駅の停車札は駅名の右。実機の字幅で札からはみ出す・札の中で列車番号や車番が2行に割れる時だけ、その駅は駅名の下へ逃がす（崩れ防止の保険） */
+function _fitStops(){try{var rs=document.querySelectorAll('.mstn.sidestop');for(var i=0;i<rs.length;i++){var r=rs[i],ms=r.querySelector('.mside');if(!ms)continue;var bad=false,ts=ms.querySelectorAll('.mtr');for(var k=0;k<ts.length&&!bad;k++){var tb=ts[k].getBoundingClientRect(),sp=ts[k].querySelectorAll('span');for(var q=0;q<sp.length;q++){var _b=sp[q].getBoundingClientRect();if(_b.right>tb.right-1){bad=true;break;}if(/\b(mtrn|mcar|mdep2|msys)\b/.test(sp[q].className)){var _cs=getComputedStyle(sp[q]),_fs=parseFloat(_cs.fontSize),_lh=parseFloat(_cs.lineHeight);if(!(_lh>0))_lh=_fs*1.3;if(_b.height-parseFloat(_cs.paddingTop||0)-parseFloat(_cs.paddingBottom||0)>_lh*1.5){bad=true;break;}}}}if(bad)r.className=r.className.replace('sidestop','hasstop');}}catch(e){}}
 function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
 function closeOv(id){document.getElementById(id).style.display='none';document.documentElement.classList.remove('ovopen');render();}
 function closeAll(){var ovs=document.querySelectorAll('.ov');for(var i=0;i<ovs.length;i++){ovs[i].style.display='none';ovs[i].scrollTop=0;}_showEl('hdr');_showEl('body');_showEl('ft');document.documentElement.classList.remove('ovopen');if(document.body)document.body.classList.remove('ovopen');needScroll=false;render();var e=_pageEl();if(e)e.scrollTop=_pgY;_syncHdr();}

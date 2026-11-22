@@ -380,7 +380,8 @@ function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){retu
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);
 _syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
 var _lastBeat=Date.now(),_beatIv=null,_renderIv=null;
-function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+':'+('0'+(_wr%60)).slice(-2);}}
+var _cdF={};
+function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd'),_cdNeed=0;for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<=0&&!_cdF[_wd]){_cdF[_wd]=1;_cdNeed=1;}if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+':'+('0'+(_wr%60)).slice(-2);}if(_cdNeed){lastSig='';try{render();}catch(e){}}/* 2026-11-22 カウントダウンが0になった瞬間に描き直して札を動かす（従来は分の変わり目＋最大20秒待ちだった） */}
 function _startTimers(){if(_beatIv)clearInterval(_beatIv);_beatIv=setInterval(_beat,1000);if(_renderIv)clearInterval(_renderIv);_renderIv=setInterval(function(){render();},20000);}
 /* スリープ復帰(腕上げ)で自動再開：クロック秒とマップを即再同期し、止まったタイマーを作り直す */
 function _wake(){try{_beat();render();}catch(e){}_startTimers();}

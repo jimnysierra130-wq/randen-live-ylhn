@@ -67,6 +67,7 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 .mtrn.s{font-size:14px;padding:2px 5px;}.mtr .mcartop{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:1px;}
 .mtr .mcar.split{background:#6d28d9;color:#fff;}
 .mtr .mtag{font-size:13px;color:#9aa4ac;font-weight:700;}
+.mtr .mdep2{font-size:18px;font-weight:800;color:#fff;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .mtr .mbin{flex-basis:100%;font-size:13px;color:#c8ced4;font-weight:700;}
 .mtr .mloc{font-size:14px;color:#9aa4ac;font-weight:700;}
 .mtr .mrt{flex-basis:100%;font-size:13px;color:#ffd60a;font-weight:700;}
@@ -281,7 +282,10 @@ function renderMap(){
     else if(p.st==='run'&&p.o){hn=(p.line==='北野');var nmz=hn?kitN:honN,fz=nmz.indexOf(p.o),tz=nmz.indexOf(p.d);ind=(tz>fz)?'▼':'▲';anchor=p.o;}
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(/ (?:休憩|出庫点検中)/)[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';shk=(p.st==='rest'&&p.shk)?1:0;}
     else continue;
-    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||'')};
+    /* 2026-11-22 終点（四条大宮・嵐山・北野白梅町）に着いたら「停」ではなく次の発車（向きの矢印・発車時刻・次の列車番号・車番）を出す（ユーザー指示） */
+    var tdep='';if(ind==='停'&&(anchor==='四条大宮'||anchor==='嵐山'||anchor==='北野白梅町')){var _rtL=ROUTE[d]&&ROUTE[d][s],_nl=null;if(_rtL&&_rtL.legs){for(var _q=0;_q<_rtL.legs.length;_q++){var _lq=_rtL.legs[_q],_oq=tmMin(_lq.ot);if(_lq.o===anchor&&_oq!=null&&_oq>=nm){_nl=_lq;break;}}}
+      if(_nl&&_nl.type!=='便乗'){tdep=_nl.ot;tr=_nl.tr;da=(_nl.dir==='上り')?'▲':'▼';typ=_nl.type||'営業';var _c2=car(_nl.tr);if(_c2)c=_c2;}}
+    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||''),tdep:tdep};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -294,7 +298,7 @@ function renderMap(){
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var isk=(t.typ==='回送'),run=(t.ind==='▲'||t.ind==='▼'),ic=run?(isk?'ks':(t.hn?'k':'h')):'st';
     var _rt='',_rl=(t.shk?'出庫点検中':'休憩');if(t.rtime){var _ee=(''+t.rtime).split('〜')[1];if(_ee){var _ep=_ee.split(':'),_em=(+_ep[0])*60+(+_ep[1]),_lf=_em-nm;_rt='<span class="mrt">'+_rl+' '+t.rtime+'（あと'+(_lf<=0?0:_lf)+'分）</span>';}else{_rt='<span class="mrt">'+_rl+' '+t.rtime+'</span>';}}
-    var dind=!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
+    var dind=t.tdep?('<span class="mdir '+(t.hn?'k':'h')+'">'+t.da+'</span><span class="mdep2">'+t.tdep+'発</span>'):!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+t.tr+'列車</span>'):'');/* 2026-07-13 列車番号=車番の左 */
     return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>'):'';return (t.tr||t.car)?('<span class="mcartop">'+dind+trc+_ch+'</span>'):dind;})()+'<span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span>'+tag+(function(){var _ke=_rearEff(t);if(!_ke)return '';var _kn=_rearNm(_ke,t);return '<span class="mkbh">＋'+(_kn?(_ke+_kn):('後部'+_ke))+'</span>';})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}

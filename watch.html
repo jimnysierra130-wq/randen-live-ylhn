@@ -275,9 +275,9 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
   for(var k=0;k<legs.length;k++){var lg=legs[k];if(!lg.sp||lg.sp.length<1)continue;if(lg.os==null||sec<lg.os||sec>lg.es+90)continue;
     var sp=lg.sp,ln=(lg.line==='北野線'?'北野':'本線');
     for(var j=0;j<sp.length;j++){var a=sp[j][1],dp=sp[j][2];
-      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {dps:dp,line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
+      if(a!=null&&dp!=null&&sec>=a&&sec<dp)return {dps:dp,line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
       if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}}
-    var _lz=sp[sp.length-1];if(_lz[1]!=null&&sec>=_lz[1])return {line:ln,at:_lz[0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
+    var _lz=sp[sp.length-1];if(_lz[1]!=null&&sec>=_lz[1]&&_lz[2]!=null&&sec>=_lz[2])continue;/* 2026-11-23 行路の切れ目（連1709→1709等）で発車秒を過ぎたら次の行路へ＝0秒で動かない原因の一つ */if(_lz[1]!=null&&sec>=_lz[1])return {dps:(_lz[2]!=null?_lz[2]:undefined),line:ln,at:_lz[0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
     return {line:ln,from:lg.o,to:lg.d,dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}
   return null;}
 function renderMap(){
@@ -381,7 +381,7 @@ loadCar();render();loadVeh();setInterval(loadVeh,3600000);
 _syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
 var _lastBeat=Date.now(),_beatIv=null,_renderIv=null;
 var _cdF={};
-function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd'),_cdNeed=0;for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<=0&&!_cdF[_wd]){_cdF[_wd]=1;_cdNeed=1;}if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+':'+('0'+(_wr%60)).slice(-2);}if(_cdNeed){lastSig='';try{render();}catch(e){}}/* 2026-11-22 カウントダウンが0になった瞬間に描き直して札を動かす（従来は分の変わり目＋最大20秒待ちだった） */}
+function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd'),_cdNeed=0;for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<=0&&(_cdF[_wd]||0)<5){_cdF[_wd]=(_cdF[_wd]||0)+1;_cdNeed=1;}if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+':'+('0'+(_wr%60)).slice(-2);}if(_cdNeed){lastSig='';try{render();}catch(e){}}/* 2026-11-22 カウントダウンが0になった瞬間に描き直して札を動かす（従来は分の変わり目＋最大20秒待ちだった）。2026-11-23 0秒ちょうどはまだ停車扱いだったため、停車は発車秒の手前まで（sec<dp）に変更し、0以降は最大5秒続けて描き直す */}
 function _startTimers(){if(_beatIv)clearInterval(_beatIv);_beatIv=setInterval(_beat,1000);if(_renderIv)clearInterval(_renderIv);_renderIv=setInterval(function(){render();},20000);}
 /* スリープ復帰(腕上げ)で自動再開：クロック秒とマップを即再同期し、止まったタイマーを作り直す */
 function _wake(){try{_beat();render();}catch(e){}_startTimers();}

@@ -120,6 +120,7 @@ html.ovopen,body.ovopen{overflow:hidden;}
 #ft{display:none;font-size:10px;color:#555;text-align:center;margin-top:8px;}
 .wbinj{background:#ffe0b2;color:#e65100;border-radius:4px;padding:0 4px;font-weight:800;}
 .wcd{font-variant-numeric:tabular-nums;}
+.mtr .wcd{flex-basis:100%;font-size:17px;font-weight:800;color:#7ee787;white-space:nowrap;}.mstn.fit1 .mtr .wcd{font-size:15px;}.mstn.fit2 .mtr .wcd{font-size:14px;}
 </style><style>@keyframes wtHb{from{opacity:.01}to{opacity:.02}}</style></head><body>
 <div id="hdr"><span id="dch"></span><span id="clk"></span></div>
 <div id="body"></div>
@@ -274,7 +275,7 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
   for(var k=0;k<legs.length;k++){var lg=legs[k];if(!lg.sp||lg.sp.length<1)continue;if(lg.os==null||sec<lg.os||sec>lg.es+90)continue;
     var sp=lg.sp,ln=(lg.line==='北野線'?'北野':'本線');
     for(var j=0;j<sp.length;j++){var a=sp[j][1],dp=sp[j][2];
-      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
+      if(a!=null&&dp!=null&&sec>=a&&sec<=dp)return {dps:dp,line:ln,at:sp[j][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
       if(dp!=null&&j+1<sp.length){var na=sp[j+1][1];if(sec>=dp&&(na==null||sec<na))return {line:ln,from:sp[j][0],to:sp[j+1][0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}}
     var _lz=sp[sp.length-1];if(_lz[1]!=null&&sec>=_lz[1])return {line:ln,at:_lz[0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
     return {line:ln,from:lg.o,to:lg.d,dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}
@@ -293,9 +294,12 @@ function renderMap(){
     else if(p.st==='stop'||p.st==='rest'){hn=(p.line==='北野');kb=p.kb||'';anchor=(p.st==='rest')?(''+p.text).split(/ (?:休憩|出庫点検中)/)[0]:p.text;ind=(p.st==='rest')?'休':'停';da=(p.dir==='上り')?'▲':'▼';rtime=(p.st==='rest')?(p.rtime||''):'';shk=(p.st==='rest'&&p.shk)?1:0;}
     else continue;
     /* 2026-11-22 終点（四条大宮・嵐山・北野白梅町）に着いたら「停」ではなく次の発車（向きの矢印・発車時刻・次の列車番号・車番）を出す（ユーザー指示） */
-    var tdep='';if(ind==='停'&&(anchor==='四条大宮'||anchor==='嵐山'||anchor==='北野白梅町')){var _rtL=ROUTE[d]&&ROUTE[d][s],_nl=null;if(_rtL&&_rtL.legs){for(var _q=0;_q<_rtL.legs.length;_q++){var _lq=_rtL.legs[_q],_oq=tmMin(_lq.ot);if(_lq.o===anchor&&_oq!=null&&_oq>=nm){_nl=_lq;break;}}}
-      if(_nl&&_nl.type!=='便乗'){tdep=_nl.ot;tr=_nl.tr;da=(_nl.dir==='上り')?'▲':'▼';typ=_nl.type||'営業';var _c2=car(_nl.tr);if(_c2)c=_c2;}}
-    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||''),tdep:tdep};
+    var tdep='',dps=null;if(seg&&seg.at&&seg.dps!=null)dps=seg.dps;
+    /* 2026-11-22 停車中は発車までの秒カウントダウン（ユーザー指示）。途中駅＝その駅の発車秒、行路の切れ目・終点＝次の行路の始発秒 */
+    if(ind==='停'){var _rtL=ROUTE[d]&&ROUTE[d][s],_nl=null;if(_rtL&&_rtL.legs){for(var _q=0;_q<_rtL.legs.length;_q++){var _lq=_rtL.legs[_q],_oq=tmMin(_lq.ot);if(_lq.o===anchor&&_oq!=null&&_oq>=nm){_nl=_lq;break;}}}
+      if(dps==null&&_nl)dps=(_nl.sp&&_nl.sp.length&&_nl.sp[0][2]!=null)?_nl.sp[0][2]:tmMin(_nl.ot)*60;
+      if((anchor==='四条大宮'||anchor==='嵐山'||anchor==='北野白梅町')&&_nl&&_nl.type!=='便乗'){tdep=_nl.ot;tr=_nl.tr;da=(_nl.dir==='上り')?'▲':'▼';typ=_nl.type||'営業';var _c2=car(_nl.tr);if(_c2)c=_c2;}}
+    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||''),tdep:tdep,dps:dps};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -311,11 +315,11 @@ function renderMap(){
     var dind=t.tdep?('<span class="mdir '+(t.hn?'k':'h')+'">'+t.da+'</span><span class="mdep2">'+t.tdep+'発</span>'):!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+(/^\d/.test(t.tr)?'<span class="trL">列</span>':'')+t.tr+'<span class="trS">列車</span></span>'):'');/* 2026-11-22 駅名の右の停車札だけ「列0711」（ユーザー指示）。それ以外は「0711列車」 *//* 2026-07-13 列車番号=車番の左 */
-    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>'):'';return (t.tr||t.car)?(t.tdep?('<span class="mcartop">'+dind+trc+'</span>'+_ch):('<span class="mcartop">'+dind+trc+_ch+'</span>')):dind;})()/* 2026-11-22 終点の発車表示は車番を1段目から外し、系統・名前と同じ行に並べる（ユーザー指示） */+'<span class="msn"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span></span>'+tag+(function(){var _ke=_rearEff(t);if(!_ke)return '';var _kn=_rearNm(_ke,t);return '<span class="mkbh">＋'+(_kn?(_ke+_kn):('後部'+_ke))+'</span>';})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>'):'';return (t.tr||t.car)?(t.tdep?('<span class="mcartop">'+dind+trc+'</span>'+_ch):('<span class="mcartop">'+dind+trc+_ch+'</span>')):dind;})()/* 2026-11-22 終点の発車表示は車番を1段目から外し、系統・名前と同じ行に並べる（ユーザー指示） */+'<span class="msn"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span></span>'+tag+(function(){var _ke=_rearEff(t);if(!_ke)return '';var _kn=_rearNm(_ke,t);return '<span class="mkbh">＋'+(_kn?(_ke+_kn):('後部'+_ke))+'</span>';})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+((t.ind==='停'&&t.dps!=null)?(function(){var _r=t.dps-_opSec();if(_r<0)_r=0;return '<span class="wcd" data-dep="'+t.dps+'">あと'+Math.floor(_r/60)+':'+('0'+(_r%60)).slice(-2)+'</span>';})():'')+'</div>';}
   /* 2026-11-22 停車札を駅名の右に置くため、長い駅名は停車中だけ2行に分ける */
   var _LBR={'四条大宮':'四条<br>大宮','西大路三条':'西大路<br>三条','嵐電天神川':'嵐電<br>天神川','御室仁和寺':'御室<br>仁和寺','太秦広隆寺':'太秦<br>広隆寺','帷子ノ辻':'帷子<br>ノ辻','撮影所前':'撮影<br>所前','車折神社':'車折<br>神社','嵐電嵯峨':'嵐電<br>嵯峨','北野白梅町':'北野<br>白梅町'};
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
-    for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var b=(bk[nmS]||[]).slice().sort(function(x,y){return (x.tdep&&y.tdep)?(tmMin(x.tdep)-tmMin(y.tdep)):0;}),sd='',bl='';/* 2026-11-22 終点の札は発車の早い順 */
+    for(var i=0;i<arr.length;i++){var nmS=NAME[arr[i]];var _dsc=(nmS==='四条大宮')?-1:1,b=(bk[nmS]||[]).slice().sort(function(x,y){return (x.tdep&&y.tdep)?_dsc*(tmMin(x.tdep)-tmMin(y.tdep)):0;}),sd='',bl='';/* 2026-11-22 終点の札：嵐山・北野白梅町は先に発車する方が上、四条大宮は先に発車する方が下（ユーザー指示） */
       for(var j=0;j<b.length;j++){var c=b[j],_sp=(c.ind==='停'||c.ind==='休');
         if(_sp)sd+=chipHtml(c);else bl+=chipHtml(c);}
       h+='<div class="mstn'+(sd?' sidestop':'')+'"><span class="mdot"></span><span class="mlbl">'+((sd&&_LBR[nmS])?_LBR[nmS]:nmS)+'</span>'+(sd?'<span class="mside">'+sd+'</span>':'')+'</div>'+bl;}
@@ -342,7 +346,7 @@ function render(){
   needScroll=false;
 }
 /* 2026-11-22 停車札（駅名の右）の収まり判定：札からはみ出す、または列車番号・車番・発車時刻・系統が札の中で2行に割れたら「入らない」 */
-function _fitBad(r){var ts=r.querySelectorAll('.mside .mtr');for(var k=0;k<ts.length;k++){var tb=ts[k].getBoundingClientRect(),sp=ts[k].querySelectorAll('span');for(var q=0;q<sp.length;q++){var _b=sp[q].getBoundingClientRect();if(_b.width>0&&_b.right>tb.right-1)return true;if(/\b(mtrn|mcar|mdep2|msys)\b/.test(sp[q].className)){var _cs=getComputedStyle(sp[q]),_fs=parseFloat(_cs.fontSize),_lh=parseFloat(_cs.lineHeight);if(!(_lh>0))_lh=_fs*1.3;if(_b.height-parseFloat(_cs.paddingTop||0)-parseFloat(_cs.paddingBottom||0)>_lh*1.5)return true;}}}return false;}
+function _fitBad(r){var ts=r.querySelectorAll('.mside .mtr');for(var k=0;k<ts.length;k++){var tb=ts[k].getBoundingClientRect(),sp=ts[k].querySelectorAll('span');for(var q=0;q<sp.length;q++){var _b=sp[q].getBoundingClientRect();if(_b.width>0&&_b.right>tb.right-1)return true;if(/\b(mtrn|mcar|mdep2|msys|wcd)\b/.test(sp[q].className)){var _cs=getComputedStyle(sp[q]),_fs=parseFloat(_cs.fontSize),_lh=parseFloat(_cs.lineHeight);if(!(_lh>0))_lh=_fs*1.3;if(_b.height-parseFloat(_cs.paddingTop||0)-parseFloat(_cs.paddingBottom||0)>_lh*1.5)return true;}}}return false;}
 /* 入らない駅だけ段階的に小さく（通常→.fit1→.fit2）、それでも無理なら駅名の下へ */
 function _fitStops(){try{var rs=document.querySelectorAll('.mstn.sidestop');for(var i=0;i<rs.length;i++){var r=rs[i];if(!_fitBad(r))continue;r.classList.add('fit1');if(!_fitBad(r))continue;r.classList.remove('fit1');r.classList.add('fit2');if(!_fitBad(r))continue;r.classList.remove('fit2');r.classList.remove('sidestop');r.classList.add('hasstop');}}catch(e){}}
 function setTab(t){curTab=t;needScroll=true;document.getElementById('tD').className=(t==='dep')?'on':'';document.getElementById('tS').className=(t==='sys')?'on':'';document.getElementById('tM').className=(t==='map')?'on':'';render();}
@@ -376,7 +380,7 @@ function loadCar(){fetch('carmap.json',{cache:'no-store'}).then(function(r){retu
 loadCar();render();loadVeh();setInterval(loadVeh,3600000);
 _syncHdr();setTimeout(_syncHdr,60);setTimeout(_syncHdr,300);window.addEventListener('resize',_syncHdr);
 var _lastBeat=Date.now(),_beatIv=null,_renderIv=null;
-function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+'分'+('0'+(_wr%60)).slice(-2)+'秒';}}
+function _beat(){_lastBeat=Date.now();var _cj=jstNow(),_ce=document.getElementById('clk');if(_ce)_ce.textContent=_cj.getHours()+':'+pad(_cj.getMinutes())+':'+pad(_cj.getSeconds());var _wc=document.querySelectorAll('.wcd');for(var _wi=0;_wi<_wc.length;_wi++){var _wd=+_wc[_wi].getAttribute('data-dep');var _wr=_wd-_opSec();if(_wr<0)_wr=0;_wc[_wi].textContent='あと'+Math.floor(_wr/60)+':'+('0'+(_wr%60)).slice(-2);}}
 function _startTimers(){if(_beatIv)clearInterval(_beatIv);_beatIv=setInterval(_beat,1000);if(_renderIv)clearInterval(_renderIv);_renderIv=setInterval(function(){render();},20000);}
 /* スリープ復帰(腕上げ)で自動再開：クロック秒とマップを即再同期し、止まったタイマーを作り直す */
 function _wake(){try{_beat();render();}catch(e){}_startTimers();}

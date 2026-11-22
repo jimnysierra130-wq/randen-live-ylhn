@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>GPSテスト</title>
+<style>body{background:#000;color:#eef2f5;font-family:-apple-system,sans-serif;margin:6px;font-size:16px}#r{font-size:17px;line-height:1.4;margin-top:8px}button{font-size:18px;width:100%;padding:12px;border-radius:12px;border:0;background:#0a84ff;color:#fff;font-weight:700}.ok{color:#7ee787}.ng{color:#ff6b6b}</style></head><body>
+<button onclick="go()">現在地を取得</button><div id="r">確認中…</div>
+<script>
+var ST=[["四条大宮", 35.003356, 135.748412], ["西院", 35.003503, 135.731888], ["西大路三条", 35.008058, 135.732113], ["山ノ内", 35.008286, 135.723128], ["嵐電天神川", 35.010219, 135.715048], ["蚕ノ社", 35.011866, 135.713012], ["太秦広隆寺", 35.013494, 135.708248], ["帷子ノ辻", 35.015113, 135.700185], ["有栖川", 35.015263, 135.694444], ["車折神社", 35.016793, 135.6891], ["鹿王院", 35.017035, 135.685561], ["嵐電嵯峨", 35.016476, 135.681353], ["嵐山", 35.015213, 135.677695], ["北野白梅町", 35.027409, 135.730846], ["等持院", 35.027828, 135.723797], ["龍安寺", 35.027839, 135.721136], ["妙心寺", 35.026648, 135.7185], ["御室仁和寺", 35.026528, 135.71385], ["宇多野", 35.027192, 135.709673], ["鳴滝", 35.023598, 135.705832], ["常盤", 35.020629, 135.704849], ["撮影所前", 35.01575, 135.702778]];
+function dist(a,b,c,d){var R=6371000,t=Math.PI/180,x=(d-b)*t*Math.cos((a+c)/2*t),y=(c-a)*t;return Math.sqrt(x*x+y*y)*R;}
+function show(s){document.getElementById('r').innerHTML=s;}
+function go(){
+ if(!navigator.geolocation){show('<span class="ng">位置情報の機能なし</span>');return;}
+ show('取得中…');
+ navigator.geolocation.getCurrentPosition(function(p){var la=p.coords.latitude,lo=p.coords.longitude,best=null;
+   for(var i=0;i<ST.length;i++){var dd=dist(la,lo,ST[i][1],ST[i][2]);if(!best||dd<best[1])best=[ST[i][0],dd];}
+   show('<span class="ok">取得できました</span><br>最寄り：'+best[0]+'<br>約'+Math.round(best[1])+'m<br>精度±'+Math.round(p.coords.accuracy)+'m');},
+  function(e){show('<span class="ng">取得できません</span><br>コード'+e.code+'<br>'+(e.code==1?'許可されていません':(e.code==2?'位置が分かりません':'時間切れ')));},
+  {enableHighAccuracy:true,timeout:15000,maximumAge:60000});}
+go();
+</script></body></html>

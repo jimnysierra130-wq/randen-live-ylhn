@@ -7377,6 +7377,8 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:'Hiragino Kaku Go
 <p>記事をタップすると写真・要約・元記事リンクが開きます。要約は各ブログの公開記事を基に自動生成しています。写真は各記事より引用（リンク先に著作権あり）。</p>
 </div>
 <script>
+/* 2026-11-23 同じ日の同じ作成者を連続表示（初出位置に寄せる・表示時のみ並替） */
+(function _grpSame(){document.querySelectorAll('.cards[data-date]').forEach(function(g){if(!/^\d{4}-\d{2}-\d{2}$/.test(g.getAttribute('data-date')))return;var ord=[],m={};[].slice.call(g.children).forEach(function(cd){var k='';if(cd.dataset.c==='pcolle'){var pm=(cd.dataset.txt||'').match(/販売者[:：]\s*([^・]+)/);k=pm?pm[1].trim():'';}if(!k){var b=cd.querySelector('.bnm');k=b?(b.textContent||'').trim():'';}if(!Object.prototype.hasOwnProperty.call(m,k)){m[k]=[];ord.push(k);}m[k].push(cd);});if(ord.length===g.children.length)return;ord.forEach(function(k){m[k].forEach(function(cd){g.appendChild(cd);});});});})();
 var q='';var cat='all';
 var SEP=['adimg','admov','pcolle','myfans','tabelog'];
 var ADALL=['adimg','admov','pcolle','myfans'];

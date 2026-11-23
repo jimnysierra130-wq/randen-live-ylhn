@@ -15,7 +15,7 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 #stabtn .ic{font-size:17px;}
 #sta{font-size:21px;font-weight:800;color:#fff;flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #stabtn .chg{font-size:12px;font-weight:800;color:#0a84ff;white-space:nowrap;}
-#dch{font-size:20px;font-weight:700;color:#eef2f5;white-space:nowrap;}
+#dch{font-size:20px;font-weight:700;color:#eef2f5;white-space:nowrap;}#diah{font-size:20px;font-weight:700;white-space:nowrap;}#diah.hol{color:#ff5a5a;}#diah.wd{color:#4da3ff;}.hdrr{display:inline-flex;align-items:baseline;gap:6px;white-space:nowrap;}
 #tabs{display:flex;gap:5px;margin:0 0 6px;}
 #tabs button{flex:1 1 0;font-size:15px;font-weight:800;padding:9px 0;border:0;border-radius:10px;background:var(--card);color:var(--sub);}
 #tabs button.on{background:var(--fg);color:#000;}
@@ -122,7 +122,7 @@ html.ovopen,body.ovopen{overflow:hidden;}
 .wcd{font-variant-numeric:tabular-nums;}
 .mtr .wcd{order:-1;flex-basis:100%;font-size:14px;font-weight:800;color:#7ee787;white-space:nowrap;}/* 2026-11-22 カウントダウンは札の一番上・字は小さめ14px（ユーザー指示） */.mstn.fit1 .mtr .wcd{font-size:13px;}.mstn.fit2 .mtr .wcd{font-size:12px;}
 </style><style>@keyframes wtHb{from{opacity:.01}to{opacity:.02}}</style></head><body>
-<div id="hdr"><span id="dch"></span><span id="clk"></span></div>
+<div id="hdr"><span id="diah"></span><span class="hdrr"><span id="dch"></span><span id="clk"></span></span></div>
 <div id="body"></div>
 <div id="ft"></div>
 <div id="detail" class="ov"><div id="detailbody"></div></div>
@@ -176,6 +176,7 @@ function pad(n){return (n<10?'0':'')+n;}
 function hm(s){var h=Math.floor(s/3600),m=Math.floor((s%3600)/60);h=h%24;return h+':'+pad(m);}
 function tmMin(s){if(s==null||(''+s).indexOf(':')<0)return null;var p=(''+s).split(':');return (+p[0])*60+(+p[1]);}
 function today(){return jstDateStr();}
+function _cp(c){return (''+c).replace(/(^|[^0-9])([0-9])(?![0-9])/g,'$10$2');}/* 2026-11-23 ユーザー指示＝1桁の車番は01・02…と表示（データ・車両情報の照合は元の番号のまま） */
 function dia(){return DIA_BY[today()]||'平日';}
 function duty(){return DUTY[today()]||{};}
 
@@ -221,7 +222,7 @@ function carSys(sys,d,nm){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)return
     if(lo>=0){var c1=car(legs[lo].tr);if(c1)return c1;}
     if(hi<legs.length){var c2=car(legs[hi].tr);if(c2)return c2;}}
   return '';}
-function carHtml(tr){var c=car(tr);if(!c)return '';return '<span class="car'+(c.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+c+'\')">'+c+'</span>';}
+function carHtml(tr){var c=car(tr);if(!c)return '';return '<span class="car'+(c.indexOf('+')>=0?' split':'')+'" onclick="event.stopPropagation();openVeh(\''+c+'\')">'+_cp(c)+'</span>';}
 
 function renderDep(){
   var now=_opSec(),list=deps(),past=[],up=[];
@@ -317,7 +318,7 @@ function renderMap(){
     var dind=t.tdep?('<span class="mdir '+(t.hn?'k':'h')+'">'+t.da+'</span><span class="mdep2">'+t.tdep+'発</span>'):!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+(/^\d/.test(t.tr)?'<span class="trL">列</span>':'')+t.tr+'<span class="trS">列車</span></span>'):'');/* 2026-11-22 駅名の右の停車札だけ「列0711」（ユーザー指示）。それ以外は「0711列車」 *//* 2026-07-13 列車番号=車番の左 */
-    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+t.car+'</span>'):'';return (t.tr||t.car)?(t.tdep?('<span class="mcartop">'+dind+trc+'</span>'+_ch):('<span class="mcartop">'+dind+trc+_ch+'</span>')):dind;})()/* 2026-11-22 終点の発車表示は車番を1段目から外し、系統・名前と同じ行に並べる（ユーザー指示） */+(function(){/* 2026-11-23 ユーザー指示＝後部要員も運転士と同じ形（記号バッジ＋名前・白字）にし、運転士の系統名前と後部の記号名前だけを囲み線でペア表示 */var _ms='<span class="msn"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span></span>';var _ke=_rearEff(t);if(!_ke)return _ms+tag;var _kn=_rearNm(_ke,t);return '<span class="mpair">'+_ms+'<span class="msn mrear"><span class="mrl">後部</span><span class="msys r">'+_ke+'</span><span class="mnm">'+(_kn||'')+'</span></span></span>'+tag;})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+((t.ind==='停'&&t.dps!=null)?(function(){var _r=t.dps-_opSec();if(_r<0)_r=0;return '<span class="wcd" data-dep="'+t.dps+'">あと'+Math.floor(_r/60)+':'+('0'+(_r%60)).slice(-2)+'</span>';})():'')+'</div>';}
+    return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+_cp(t.car)+'</span>'):'';return (t.tr||t.car)?(t.tdep?('<span class="mcartop">'+dind+trc+'</span>'+_ch):('<span class="mcartop">'+dind+trc+_ch+'</span>')):dind;})()/* 2026-11-22 終点の発車表示は車番を1段目から外し、系統・名前と同じ行に並べる（ユーザー指示） */+(function(){/* 2026-11-23 ユーザー指示＝後部要員も運転士と同じ形（記号バッジ＋名前・白字）にし、運転士の系統名前と後部の記号名前だけを囲み線でペア表示 */var _ms='<span class="msn"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span></span>';var _ke=_rearEff(t);if(!_ke)return _ms+tag;var _kn=_rearNm(_ke,t);return '<span class="mpair">'+_ms+'<span class="msn mrear"><span class="mrl">後部</span><span class="msys r">'+_ke+'</span><span class="mnm">'+(_kn||'')+'</span></span></span>'+tag;})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+((t.ind==='停'&&t.dps!=null)?(function(){var _r=t.dps-_opSec();if(_r<0)_r=0;return '<span class="wcd" data-dep="'+t.dps+'">あと'+Math.floor(_r/60)+':'+('0'+(_r%60)).slice(-2)+'</span>';})():'')+'</div>';}
   /* 2026-11-22 停車札を駅名の右に置くため、長い駅名は停車中だけ2行に分ける */
   var _LBR={'四条大宮':'四条<br>大宮','西大路三条':'西大路<br>三条','嵐電天神川':'嵐電<br>天神川','御室仁和寺':'御室<br>仁和寺','太秦広隆寺':'太秦<br>広隆寺','帷子ノ辻':'帷子<br>ノ辻','撮影所前':'撮影<br>所前','車折神社':'車折<br>神社','嵐電嵯峨':'嵐電<br>嵯峨','北野白梅町':'北野<br>白梅町'};
   function ladder(arr,bk,cls,title){var h='<div class="mtitle '+cls+'">'+title+'</div><div class="mlad '+cls+'">';
@@ -334,7 +335,7 @@ function render(){
   if(ovOpen())return;
   var j=jstNow();document.getElementById('clk').textContent=j.getHours()+':'+pad(j.getMinutes())+':'+pad(j.getSeconds());
   var ds=today(),dw=(DOW_BY[ds]||''),dd=parseInt(ds.slice(5,7),10)+'/'+parseInt(ds.slice(8,10),10);
-  document.getElementById('dch').textContent=dd+'（'+dw+'）'+dia()+'ダイヤ';
+  document.getElementById('dch').textContent=dd+'（'+dw+'）';var _dh=document.getElementById('diah');_dh.textContent=dia()+'ダイヤ';_dh.className=(dia()==='休日')?'hol':'wd';/* 2026-11-23 ユーザー指示＝ダイヤは左（休日=赤・平日=青）、日付と時刻は右 */
   var fdate=(MDATE&&MDATE===jstDateStr())?('車番 '+MDATE+' 反映'):'車番データ待ち';
   document.getElementById('ft').textContent=fdate+' / 生成 '+GEN_DATE;
   var sig=curTab+'|'+curSta+'|'+ds+'|'+Math.floor(_opSec()/60)+'|'+MDATE;

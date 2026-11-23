@@ -59,6 +59,7 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 .legend{font-size:11px;color:#607d8b;padding:6px 14px 12px;}
 .legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--red);border-radius:4px;vertical-align:-2px;margin-right:3px;}
 .legend s{display:inline-block;width:12px;height:12px;background:var(--grn);border-radius:4px;vertical-align:-2px;margin:0 3px 0 10px;text-decoration:none;}
+.nx{font-size:13px;color:#37474f;line-height:1.6;}.nx h3{margin:14px 0 6px;font-size:14px;padding:5px 10px;border-radius:6px;background:var(--grn);color:#fff;}.nx h3:first-child{margin-top:0;}.nx table{width:100%;border-collapse:collapse;margin:2px 0 4px;table-layout:fixed;}.nx th,.nx td{border:1px solid #cfd8dc;padding:5px 7px;vertical-align:top;text-align:left;word-break:break-word;}.nx th{background:#eceff1;font-weight:700;}.nx td.k{background:#f7f9fa;font-weight:700;width:40%;}.nx table.c th,.nx table.c td{text-align:center;}.nx ul{margin:4px 0;padding-left:1.2em;}.nx li{margin:2px 0;}.nx .y{color:#c62828;font-weight:800;}.nx .src{font-size:11px;color:#78909c;margin:2px 0 0;}
 </style>
 </head>
 <body>
@@ -103,16 +104,36 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
   </div>
 </div>
 
-<div class="card notes">
-<b>（注意）</b>払戻は通用期間内に限る。手数料は500円（自社都合のみ手数料なし）。<br>
-・開始後7日以内＝発売額－（経過乗車日数×往復普通運賃）－手数料500円（開始日を1日目と数える）。<br>
-・8日目以降＝発売額－（使用月数に応じた定期運賃）－手数料500円。1か月を1日でも超えれば翌月扱い（月単位の販売契約のため）。<br>
-　使用1か月=1か月運賃／2か月=1か月×2／3か月=3か月運賃／4か月=3か月+1か月／5か月=3か月+1か月×2　※1か月定期は8日目以降払戻なし。<br>
-・自社都合（発券ミス等）＝手数料500円のみ免除（払戻額の計算は通常どおり・全額払戻ではない）。精算書・実績一覧表を出力し、詳細を記入して報告すること。<br>
-・使用開始前＝未使用のため手数料500円のみ差引き。<br>
-・嵐電・阪急連絡定期券（磁気）は阪急電鉄のみの発行＝当社窓口の払戻対象外。<br>
-・重複購入・死亡による払戻は旬数計算（マニュアル1-3③）＝本ツール対象外（運輸課扱い）。応当日がない月末開始（1/31開始等）は月末満了として計算（券面表示の満了日が正）。<br>
-<b>運賃（現行・2023年4月1日改定）</b>：通勤 大人 8,500／24,230／45,900円・小児 4,250／12,120／22,950円、通学 大人 4,000／11,400／21,600円・小児 2,000／5,700／10,800円（1・3・6か月）。普通運賃 往復 大人500円・小児240円。
+<div class="card notes nx">
+<h3>① 払戻の基本</h3>
+<table><tr><td class="k">払戻できる期間</td><td>通用期間内に限る</td></tr>
+<tr><td class="k">払戻手数料</td><td><span class="y">500円</span>（自社都合のみ手数料なし）</td></tr></table>
+<h3>② 払戻額の計算（使用開始からの日数で分かれる）</h3>
+<table><tr><th style="width:30%">時期</th><th>払戻額</th></tr>
+<tr><td class="k">使用開始前</td><td>未使用のため<b>手数料500円のみ</b>差引き</td></tr>
+<tr><td class="k">開始後7日以内</td><td>発売額 －（経過乗車日数×往復普通運賃）－ 手数料500円<br>※開始日を1日目と数える</td></tr>
+<tr><td class="k">8日目以降</td><td>発売額 －（使用月数に応じた定期運賃）－ 手数料500円<br>※1か月を1日でも超えれば翌月扱い（月単位の販売契約のため）<br>※<span class="y">1か月定期は8日目以降払戻なし</span></td></tr></table>
+<h3>③ 使用月数に応じた定期運賃（8日目以降の差引額）</h3>
+<table class="c"><tr><th>使用月数</th><th>差し引く定期運賃</th></tr>
+<tr><td>1か月</td><td>1か月運賃</td></tr>
+<tr><td>2か月</td><td>1か月運賃×2</td></tr>
+<tr><td>3か月</td><td>3か月運賃</td></tr>
+<tr><td>4か月</td><td>3か月運賃＋1か月運賃</td></tr>
+<tr><td>5か月</td><td>3か月運賃＋1か月運賃×2</td></tr></table>
+<h3>④ 自社都合（発券ミス等）</h3>
+<ul><li><b>手数料500円のみ免除</b>（払戻額の計算は通常どおり・<span class="y">全額払戻ではない</span>）</li>
+<li>精算書・実績一覧表を出力し、詳細を記入して報告する</li></ul>
+<h3>⑤ 本ツールの対象外</h3>
+<table><tr><td class="k">嵐電・阪急連絡定期券（磁気）</td><td>阪急電鉄のみの発行＝当社窓口の払戻対象外</td></tr>
+<tr><td class="k">重複購入・死亡による払戻</td><td>旬数計算（マニュアル1-3③）＝運輸課扱い</td></tr>
+<tr><td class="k">応当日がない月末開始<br>（1/31開始等）</td><td>月末満了として計算（券面表示の満了日が正）</td></tr></table>
+<h3>⑥ 運賃（現行・2023年4月1日改定）</h3>
+<table class="c"><tr><th>種別</th><th>1か月</th><th>3か月</th><th>6か月</th></tr>
+<tr><td>通勤 大人</td><td>8,500</td><td>24,230</td><td>45,900</td></tr>
+<tr><td>通勤 小児</td><td>4,250</td><td>12,120</td><td>22,950</td></tr>
+<tr><td>通学 大人</td><td>4,000</td><td>11,400</td><td>21,600</td></tr>
+<tr><td>通学 小児</td><td>2,000</td><td>5,700</td><td>10,800</td></tr></table>
+<p class="src">単位＝円。普通運賃 往復＝大人500円・小児240円</p>
 </div>
 </div>
 

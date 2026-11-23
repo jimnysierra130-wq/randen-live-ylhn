@@ -41,6 +41,19 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 .setsumei .s2 .fln.ftot{margin-top:8px;padding-top:6px;border-top:2px solid #b3d4c9;}
 .notes{font-size:11.5px;color:#546e7a;line-height:1.8;}
 .notes b{color:#37474f;}
+.card.nx{font-size:13px;color:#37474f;line-height:1.6;}
+.nx h3{margin:14px 0 6px;font-size:14px;padding:5px 10px;border-radius:6px;background:var(--grn);color:#fff;}
+#pgK .nx h3{background:var(--org);}
+.nx h3:first-child{margin-top:0;}
+.nx table{width:100%;border-collapse:collapse;margin:2px 0 4px;table-layout:fixed;}
+.nx th,.nx td{border:1px solid #cfd8dc;padding:5px 7px;vertical-align:top;text-align:left;word-break:break-word;}
+.nx th{background:#eceff1;font-weight:700;}
+.nx td.k{background:#f7f9fa;font-weight:700;width:40%;}
+.nx table.c th,.nx table.c td{text-align:center;}
+.nx ul{margin:4px 0;padding-left:1.2em;}
+.nx li{margin:2px 0;}
+.nx .y{color:#c62828;font-weight:800;}
+.nx .src{font-size:11px;color:#78909c;margin:2px 0 0;}
 .cols{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;}
 .colL,.colR{flex:1 1 100%;min-width:0;}
 .wrap{max-width:1150px;}
@@ -124,12 +137,57 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 </div>
 </div>
-<div class="card notes">
-<b>【お客様説明・年齢区分】</b>乳児（1歳未満）＝無賃（人数に含めない）。幼児（1歳以上6歳未満）＝団体では随伴でも「小児」として人数に含め、こども運賃を収受（社内マニュアル1-4）。小児（6歳以上12歳未満・12歳の小学生含む）＝小児運賃。<br>
-<b>【お客様説明・障がい者】</b>大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算。第1種（身体・療育）のご本人と介護者（原則1人）＝普通券 各5割引・10円未満切上げ（大人 片道130円/往復260円・小児 片道60円/往復120円）。ご本人が6歳未満＝無賃（介護者は割引あり）。割引は必ず介護者同伴が条件（嵐電線内は単独割引なし＝規程第4・5条）・第2種は嵐電線内の普通券割引なし。精神障がい者保健福祉手帳も対象（精神障害者旅客運賃割引規程による・旅客営業規則第44条）。ミライロIDでの手帳呈示可（身体障害者旅客運賃割引規程 2025-04-01改定 第8条）。<b>介護者が小児の場合</b>は小児の特割額（片道60円/往復120円）で計算＝介護者の乗車券は本人と<b>種類</b>が同一であればよく（各規程第3条2項）、大人・小児の別は介護者本人の年齢による（駅務マニュアル「普通券（身割・こども）60円 特割」）。介護能力の有無は係員が判断。<b>6歳未満のご本人は無賃</b>のため団体側の人数からも除外して計算。<br>
-<b>割引率</b>＝一般：25〜99名 1割／100〜299名 2割／300名以上 3割。学生：25〜99名 2割／100〜299名 3割／300名以上 4割（24名以下は適用なし）。<br>
-<b>無賃人員</b>＝25〜49名:1名／50〜99名:2名／100名以上:50名毎に+1名（大人から充当）。<br>
-・運賃は全線均一（大人 片道250円/往復500円・小児 片道120円/往復240円）。合計は10円未満切上げ。1,500名以上は手計算。
+<div class="card notes nx">
+<h3>① 年齢区分（人数の数え方）</h3>
+<table>
+<tr><td class="k">乳児（1歳未満）</td><td><span class="y">無賃</span>・人数に含めない</td></tr>
+<tr><td class="k">幼児（1歳以上6歳未満）</td><td>団体では随伴でも<span class="y">「小児」として人数に含め</span>、こども運賃を収受</td></tr>
+<tr><td class="k">小児（6歳以上12歳未満・12歳の小学生含む）</td><td>小児運賃</td></tr>
+</table>
+<div class="src">根拠：社内マニュアル1-4</div>
+
+<h3>② 障がい者割引</h3>
+<ul><li><b>入力</b>：大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算</li></ul>
+<table>
+<tr><td class="k">第1種（身体・療育）ご本人＋介護者（原則1人）</td><td>普通券 <span class="y">各5割引</span>・10円未満切上げ</td></tr>
+<tr><td class="k">割引後の金額</td><td>大人 片道130円／往復260円<br>小児 片道60円／往復120円</td></tr>
+<tr><td class="k">ご本人が6歳未満</td><td>ご本人は<span class="y">無賃</span>（団体側の人数からも除外）・介護者は割引あり</td></tr>
+<tr><td class="k">介護者が小児</td><td>小児の特割額（片道60円／往復120円）</td></tr>
+<tr><td class="k">第2種</td><td>嵐電線内の普通券割引<span class="y">なし</span></td></tr>
+<tr><td class="k">精神障がい者保健福祉手帳</td><td>対象</td></tr>
+<tr><td class="k">ミライロID</td><td>手帳の呈示として可</td></tr>
+</table>
+<ul>
+<li>割引は<b>必ず介護者同伴が条件</b>（嵐電線内は単独割引なし）</li>
+<li>介護者の乗車券は本人と<b>種類</b>が同一であればよい。大人・小児の別は介護者本人の年齢による</li>
+<li>介護能力の有無は係員が判断</li>
+</ul>
+<div class="src">根拠：規程第4・5条／各規程第3条2項／精神障害者旅客運賃割引規程・旅客営業規則第44条／身体障害者旅客運賃割引規程（2025-04-01改定）第8条／駅務マニュアル「普通券（身割・こども）60円 特割」</div>
+
+<h3>③ 割引率</h3>
+<table class="c">
+<tr><th>人数</th><th>一般</th><th>学生</th></tr>
+<tr><td>24名以下</td><td colspan="2">適用なし</td></tr>
+<tr><td>25〜99名</td><td>1割</td><td>2割</td></tr>
+<tr><td>100〜299名</td><td>2割</td><td>3割</td></tr>
+<tr><td>300名以上</td><td>3割</td><td>4割</td></tr>
+</table>
+
+<h3>④ 無賃人員（大人から充当）</h3>
+<table class="c">
+<tr><th>人数</th><th>無賃人員</th></tr>
+<tr><td>25〜49名</td><td>1名</td></tr>
+<tr><td>50〜99名</td><td>2名</td></tr>
+<tr><td>100名以上</td><td>50名毎に+1名</td></tr>
+</table>
+
+<h3>⑤ 運賃（全線均一）</h3>
+<table class="c">
+<tr><th></th><th>片道</th><th>往復</th></tr>
+<tr><td>大人</td><td>250円</td><td>500円</td></tr>
+<tr><td>小児</td><td>120円</td><td>240円</td></tr>
+</table>
+<ul><li>合計は10円未満切上げ</li><li>1,500名以上は手計算</li></ul>
 </div>
 </div>
 
@@ -172,12 +230,61 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 </div>
 </div>
-<div class="card notes">
-<b>料金</b>＝<b>基本12,500円/両（片道1本につき）</b>。<b>片道・1.5往復は車両が起点に戻らないため回送料12,500円/両を加算</b>。→ 片道25,000円・往復25,000円・1.5往復50,000円・2往復50,000円（1両あたり）。＋運賃 片道130/往復260/1.5往復390/2往復520円×人数。留置＝30分まで無料/31〜60分6,000円/61〜90分12,000円（最大90分）。ガイド電車6,000円・テーブル/音響 各3,000円（音響はガイド電車なら不要）・ヘッドマーク25,000円・プレミアムトレイン35,000円。<br>
-・貸切は1日2件まで。受付不可時間帯＝平日 四条大宮14:50〜15:50頃／土日休日 12:50〜13:50頃。<br>
-・「1.5往復」「2往復」はお客様の要望時のみ。KYOTRAM・301号は貸切/プレミアム対象外。申込＝運輸課（075-801-2511/2512）。<br>
-<b>【お客様説明・年齢区分】</b>幼児（1歳以上6歳未満）も乗車人員1名として計算（マニュアル1-4の幼児取扱い）。乳児（1歳未満）は人数に含めない。<br>
-<b>【お客様説明・障がい者】</b>貸切料金（基本料金＋一律運賃）には障がい者割引の適用規定なし（マニュアル1-6は普通券・回数券・定期券が対象）。判断が必要な場合は運輸課へ。
+<div class="card notes nx">
+<h3>① 料金（1両あたり）</h3>
+<table class="c">
+<tr><th>行程</th><th>基本料金</th><th>運賃（1人）</th></tr>
+<tr><td>片道</td><td>25,000円<br><span class="src">基本12,500＋回送12,500</span></td><td>130円</td></tr>
+<tr><td>往復</td><td>25,000円</td><td>260円</td></tr>
+<tr><td>1.5往復</td><td>50,000円<br><span class="src">回送12,500円を含む</span></td><td>390円</td></tr>
+<tr><td>2往復</td><td>50,000円</td><td>520円</td></tr>
+</table>
+<ul>
+<li>基本は<b>12,500円/両（片道1本につき）</b></li>
+<li>片道・1.5往復は車両が起点に戻らないため<span class="y">回送料12,500円/両を加算</span></li>
+<li>運賃は上表×人数</li>
+</ul>
+
+<h3>② 留置料金（嵐山）</h3>
+<table class="c">
+<tr><th>留置時間</th><th>料金</th></tr>
+<tr><td>30分まで</td><td>無料</td></tr>
+<tr><td>31〜60分</td><td>6,000円</td></tr>
+<tr><td>61〜90分</td><td>12,000円</td></tr>
+</table>
+<div class="src">最大90分</div>
+
+<h3>③ オプション</h3>
+<table>
+<tr><td class="k">ガイド電車</td><td>6,000円</td></tr>
+<tr><td class="k">テーブル</td><td>3,000円</td></tr>
+<tr><td class="k">音響</td><td>3,000円（ガイド電車なら不要）</td></tr>
+<tr><td class="k">ヘッドマーク</td><td>25,000円</td></tr>
+<tr><td class="k">プレミアムトレイン</td><td>35,000円</td></tr>
+</table>
+
+<h3>④ 受付の条件</h3>
+<table>
+<tr><td class="k">件数</td><td>1日2件まで</td></tr>
+<tr><td class="k">受付不可の時間帯</td><td>平日 四条大宮14:50〜15:50頃<br>土日休日 12:50〜13:50頃</td></tr>
+<tr><td class="k">1.5往復・2往復</td><td>お客様の要望時のみ</td></tr>
+<tr><td class="k">対象外の車両</td><td>KYOTRAM・301号（貸切／プレミアムとも）</td></tr>
+<tr><td class="k">申込</td><td>運輸課（075-801-2511／2512）</td></tr>
+</table>
+
+<h3>⑤ 年齢区分（人数の数え方）</h3>
+<table>
+<tr><td class="k">幼児（1歳以上6歳未満）</td><td>乗車人員<span class="y">1名として計算</span></td></tr>
+<tr><td class="k">乳児（1歳未満）</td><td>人数に含めない</td></tr>
+</table>
+<div class="src">根拠：マニュアル1-4の幼児取扱い</div>
+
+<h3>⑥ 障がい者</h3>
+<table>
+<tr><td class="k">障がい者割引</td><td><span class="y">適用なし</span>（貸切料金＝基本料金＋一律運賃には適用規定なし）</td></tr>
+<tr><td class="k">判断に迷う時</td><td>運輸課へ</td></tr>
+</table>
+<div class="src">根拠：マニュアル1-6（対象は普通券・回数券・定期券）</div>
 </div>
 </div>
 </div>

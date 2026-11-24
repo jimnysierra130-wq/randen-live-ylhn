@@ -10586,8 +10586,9 @@ window._rearEff=function(p){var c=window._rearCtx();if(!c||c.off||!p)return (p&&
 window._rearNm=function(L,p){var c=window._rearCtx();if(!c||c.off||!L)return null;
  if(c.hol){var v=c.asg&&c.asg[L];if(!v)return null;return (''+v).split('@')[0]||null;}
  var hh=(p&&p.lot)?(+(''+p.lot).split(':')[0]):(jstNow().getHours());
- var ks=(/^[I-N]$/.test(L))?['昼'+L]:(hh<12)?['朝'+L]:(hh<17)?['昼'+L]:['夜'+L,'昼'+L];/* I〜N＝平日日中（昼I〜N）2026-11-24 */
+ var ks=(/^[I-N]$/.test(L)&&hh<17)?['昼'+L]:(hh<12)?['朝'+L]:(hh<17)?['昼'+L]:['夜'+L,'昼'+L];/* I〜N＝平日日中（昼I〜N）・17時以降は夜I〜L（祇園祭平日/月灯路対応）2026-11-24 */
  for(var i=0;i<ks.length;i++){var n=c.asg&&c.asg[ks[i]];if(n)return n;}
+ if(hh>=17&&c.gion&&c.gion[L]){var gv=(''+c.gion[L]).split('@')[0];if(gv)return gv;}/* 2026-11-24 平日ブックに無い夜系統は土日祝ブックの宵山列で補う（7/15 K=鎌田） */
  return null;};
 function _row(lbl,nm,tm,vac,dim){return '<div class="rrow'+(vac?' vac':'')+(dim?' tdim':'')+'"><span class="rl">'+lbl+'</span><span class="rn">'+(nm||'欠員')+'</span>'+(tm?('<span class="rt">'+tm+'</span>'):'')+'</div>';}/* tm=PCのみ・dim=勤務時間外は薄字(アルバイト式) 2026-07-15 */
 window._rearTick=function(f){try{

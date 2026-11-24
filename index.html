@@ -10565,6 +10565,7 @@ window._rearEff=function(p){var c=window._rearCtx();if(!c||c.off||!p)return (p&&
  if(!c.hol&&c.dc&&!p.koubu&&p.line==='本線'&&p.lot){try{var _IN=['I','J','K','L','M','N'],_MO=['G','C','D','E','F','B'],_AF=['A','B','C','D','E','F'];var _t=pd(p.lot),_cs=p.s||p.cs||'';
   if(p.dir==='下り'&&p.lo==='四条大宮'&&_t>=603&&_t<=893&&(_t-603)%10===0){var _k=(_t-603)/10;if(_k<6&&(_cs==='四条大宮'||_cs==='西大路三条'))return _MO[_k];return _IN[_k%6];}
   if(p.dir==='下り'&&p.lo==='西院'){var _tw=[_t-3,_t-4].filter(function(x){return x>=603&&x<=893&&(x-603)%10===0;})[0];if(_tw!=null)return _IN[((_tw-603)/10)%6];}/* 2026-11-24 西院で運転士が替わる続行レグ */
+  if(p.dir==='下り'&&p.lo==='西院'){var _tm=[_t-4,_t-3].filter(function(x){return x>=542&&x<=592&&(x-542)%10===0;})[0];if(_tm!=null)return _MO[(_tm-542)/10];}/* 2026-11-24 朝の四大9:02〜9:52発は西院から先も連結（西院乗車＝朝G,C,D,E,F,B）→10:03〜で西院降車 */
   if(p.dir==='上り'&&p.lo==='嵐山'&&_t>=573&&_t<=923&&(_t-573)%10===0){var _k2=(_t+30-603)/10;if(_k2<6)return _MO[_k2];if(_k2<30)return _IN[_k2%6];return (_cs==='西院'||_cs==='西大路三条'||_cs==='四条大宮')?_AF[_k2-30]:_IN[_k2%6];}
  }catch(_e0){}}
  if(!c.hol||c.pat==='1303')return p.koubu||null;

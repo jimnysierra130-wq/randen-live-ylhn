@@ -409,7 +409,7 @@ html.dark{
 .mapdnav .mdn{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:9px;padding:6px 15px;font-size:18px;line-height:1;font-weight:800;cursor:pointer;-webkit-appearance:none;}
 .mapdnav .mdt{color:#fff;font-weight:800;font-size:17px;white-space:nowrap;letter-spacing:.02em;cursor:pointer;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.5);border-radius:7px;padding:2px 8px;}.mdt:active{background:rgba(255,255,255,.34);}/* 2026-07-29 タップでカレンダーが出ると分かる見た目に（系統一覧の.popdateと同系） */
 .mapdnav .mdtd{background:#ffd23f;color:#3a2600;border:0;border-radius:9px;padding:6px 13px;font-size:14px;font-weight:800;line-height:1.1;cursor:pointer;-webkit-appearance:none;}
-.mapdnav .mdtd.dim{visibility:hidden;pointer-events:none;}/* 2026-11-25 今日ボタンが出入りして◀▶の位置がずれ、連打で今日を押してしまう→場所は常に確保 */
+.mapdnav .mdtd.dim{visibility:hidden;pointer-events:none;}.mapdnav .mdt{min-width:6.4em;text-align:center;font-variant-numeric:tabular-nums;box-sizing:border-box;}/* 日付の字幅で▶がずれない *//* 2026-11-25 今日ボタンが出入りして◀▶の位置がずれ、連打で今日を押してしまう→場所は常に確保 */
 @media(min-width:760px){.mapdnav .mdn{padding:7px 19px;font-size:21px;}.mapdnav .mdt{font-size:19px;}.mapdnav .mdtd{font-size:16px;padding:7px 15px;}}
 @media(max-width:759px){
   .mapbox .mhd{flex-wrap:wrap;row-gap:5px;padding:4px 10px 7px;}
@@ -10143,7 +10143,7 @@ window._dnavPreview=function(nd){try{var lb=(nd===jstDateStr())?'今日':(parseI
  var q=document.querySelectorAll('.htoday,.dtoday');for(var k=0;k<q.length;k++)q[k].classList.toggle('dim',isT);}catch(e){}};
 window._dnavQ=function(step,user){var base=(window._dnavPend||curDate);var nd=ymd(addDays(base,step));var first=DATES[0],last=DATES[DATES.length-1];if(nd<first)nd=first;if(nd>last)nd=last;if(DATES.indexOf(nd)<0&&!DUTY[nd])return;
  window._dnavPend=nd;window._dnavPreview(nd);if(window._dnavT)clearTimeout(window._dnavT);
- window._dnavT=setTimeout(function(){window._dnavT=null;var d=window._dnavPend;window._dnavPend=null;if(!d||d===curDate){window._dnavPreview(curDate);return;}if(user)window._userDate=true;setDate(d);if(user&&window._chkdate)window._chkdate();},300);};
+ window._dnavT=setTimeout(function(){window._dnavT=null;var d=window._dnavPend;window._dnavPend=null;if(!d||d===curDate){window._dnavPreview(curDate);return;}if(user)window._userDate=true;setDate(d);if(user&&window._chkdate)window._chkdate();},400);};
 window._dnavToday=function(){if(window._dnavT){clearTimeout(window._dnavT);window._dnavT=null;}window._dnavPend=null;setDate(jstDateStr());};
 /* 時刻表ヘッダー日付の◀▶＝前日/翌日へ。連続タップは崩れ防止のため120msデバウンスで日数を集約し1回だけ再描画。表示中の時刻は連打の起点で確定し維持。範囲は端でクランプ。 */
 var _navTimer=null,_navAccum=0,_navBase=null,_navKeep=null,_navClr=null;
@@ -10162,7 +10162,7 @@ document.addEventListener('click',function(e){var b=e.target.closest('.hnav');if
     if(_navClr) clearTimeout(_navClr);
     setTimeout(function(){var s=activeStation();if(s){var p=s.querySelector('.pane.on');if(p&&window._keepMin!=null)_scrollToMin(p,window._keepMin);}},520);  /* レイアウト確定後の安全再適用 */
     _navClr=setTimeout(function(){window._keepMin=null;},760);  /* 最終scroll(650ms)後に解除 */
-  },300);/* 2026-11-25 120→300ms＝iPhoneの連打間隔でも1回にまとめる */
+  },400);/* 2026-11-25 120→400ms＝iPhoneの連打間隔でも1回にまとめる */
 });
 /* ヘッダー日付をタップ＝カレンダー（メイン画面なので戻り先モーダルなし＝_calReturn=null）。 */
 document.addEventListener('click',function(e){var h=e.target.closest('.hdate');if(!h)return;e.stopPropagation();window._calReturn=null;if(typeof window.openCal==='function')window.openCal();});

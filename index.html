@@ -10558,21 +10558,21 @@ window._rearEff=function(p){var c=window._rearCtx();if(!c||c.off||!p)return (p&&
     下り四大発10:03〜14:53＝I→J→K→L→M→N の繰り返し（初回の10:03〜10:53は西院で朝の系統G,C,D,E,F,Bから交代＝西院の手前までは朝の系統）。
     上り嵐山発9:33〜10:23＝朝の系統（G,C,D,E,F,B）／10:33〜14:23＝I〜N／14:33〜15:23＝西院上りで昼A〜Fに交代（西院から先はA〜F）。15:03以降と朝9:52以前は行路表の後部系統のまま。 */
  if(!c.hol&&c.wp&&p.line==='本線'&&p.lot){try{var _f5=function(m){return Math.floor(m/60)+':'+('0'+(m%60)).slice(-2);};var _W=c.wp,_t5=pd(p.lot),_cs5=p.s||p.cs||'';
-  if(p.dir==='下り'&&_W.dn){var _k5=null,_af=0;if(p.lo==='四条大宮')_k5=_f5(_t5);else if(p.lo==='西院'){_af=1;_k5=_W.dn.hasOwnProperty(_f5(_t5-3))?_f5(_t5-3):_f5(_t5-4);}
+  if(p.dir==='下り'&&_W.dn){var _k5=null,_af=0;if(p.lo==='四条大宮')_k5=_f5(_t5);else if(p.lo==='西院'&&!p.binjo){_af=1;_k5=_W.dn.hasOwnProperty(_f5(_t5-3))?_f5(_t5-3):_f5(_t5-4);}
    if(_k5&&_W.dn.hasOwnProperty(_k5)){var _v5=_W.dn[_k5];return (!_af&&(_cs5==='四条大宮'||_cs5==='西大路三条'))?_v5[0]:_v5[1];}}
   if(p.dir==='上り'&&p.lo==='嵐山'&&_W.up&&_W.up.hasOwnProperty(_f5(_t5)))return _W.up[_f5(_t5)];
  }catch(_e5){}}
  if(!c.hol&&c.dc&&!p.koubu&&p.line==='本線'&&p.lot){try{var _IN=['I','J','K','L','M','N'],_MO=['G','C','D','E','F','B'],_AF=['A','B','C','D','E','F'];var _t=pd(p.lot),_cs=p.s||p.cs||'';
   if(p.dir==='下り'&&p.lo==='四条大宮'&&_t>=603&&_t<=893&&(_t-603)%10===0){var _k=(_t-603)/10;if(_k<6&&(_cs==='四条大宮'||_cs==='西大路三条'))return _MO[_k];return _IN[_k%6];}
-  if(p.dir==='下り'&&p.lo==='西院'){var _tw=[_t-3,_t-4].filter(function(x){return x>=603&&x<=893&&(x-603)%10===0;})[0];if(_tw!=null)return _IN[((_tw-603)/10)%6];}/* 2026-11-24 西院で運転士が替わる続行レグ */
-  if(p.dir==='下り'&&p.lo==='西院'){var _tm=[_t-4,_t-3].filter(function(x){return x>=542&&x<=592&&(x-542)%10===0;})[0];if(_tm!=null)return _MO[(_tm-542)/10];}/* 2026-11-24 朝の四大9:02〜9:52発は西院から先も連結（西院乗車＝朝G,C,D,E,F,B）→10:03〜で西院降車 */
+  if(p.dir==='下り'&&p.lo==='西院'&&!p.binjo){var _tw=[_t-3,_t-4].filter(function(x){return x>=603&&x<=893&&(x-603)%10===0;})[0];if(_tw!=null)return _IN[((_tw-603)/10)%6];}/* 2026-11-24 西院で運転士が替わる続行レグ */
+  if(p.dir==='下り'&&p.lo==='西院'&&!p.binjo){var _tm=[_t-4,_t-3].filter(function(x){return x>=542&&x<=592&&(x-542)%10===0;})[0];if(_tm!=null)return _MO[(_tm-542)/10];}/* 2026-11-24 朝の四大9:02〜9:52発は西院から先も連結（西院乗車＝朝G,C,D,E,F,B）→10:03〜で西院降車 */
   if(p.dir==='上り'&&p.lo==='嵐山'&&_t>=573&&_t<=923&&(_t-573)%10===0){var _k2=(_t+30-603)/10;if(_k2<6)return _MO[_k2];if(_k2<30)return _IN[_k2%6];return (_cs==='西院'||_cs==='西大路三条'||_cs==='四条大宮')?_AF[_k2-30]:_IN[_k2%6];}
  }catch(_e0){}}
  if(!c.hol||c.pat==='1303')return p.koubu||null;
  try{var _fk=function(m){return Math.floor(m/60)+':'+('0'+(m%60)).slice(-2);};
   if(p.line==='本線'&&c.pm&&p.lot){var _t3=pd(p.lot),_k3=_fk(_t3),_cs3=p.s||p.cs||'';
    if(p.dir==='下り'&&p.lo==='四条大宮'&&c.pm.dn&&c.pm.dn.hasOwnProperty(_k3)){var _v3=c.pm.dn[_k3];return (_cs3==='四条大宮'||_cs3==='西大路三条')?_v3[0]:_v3[1];}
-   if(p.dir==='下り'&&p.lo==='西院'&&c.pm.dn){var _k6=_fk(_t3-3),_k7=_fk(_t3-4);if(c.pm.dn.hasOwnProperty(_k6))return c.pm.dn[_k6][1];if(c.pm.dn.hasOwnProperty(_k7))return c.pm.dn[_k7][1];}/* 2026-11-24 西院続行レグ */
+   if(p.dir==='下り'&&p.lo==='西院'&&!p.binjo&&c.pm.dn){var _k6=_fk(_t3-3),_k7=_fk(_t3-4);if(c.pm.dn.hasOwnProperty(_k6))return c.pm.dn[_k6][1];if(c.pm.dn.hasOwnProperty(_k7))return c.pm.dn[_k7][1];}/* 2026-11-24 西院続行レグ */
    if(p.dir==='上り'&&p.lo==='嵐山'&&c.pm.up&&c.pm.up.hasOwnProperty(_k3))return c.pm.up[_k3];}
   if(p.line==='北野'&&c.pkt&&p.lot){var _t4=pd(p.lot),_k4=null;if(p.lo==='帷子ノ辻')_k4=_fk(_t4);else if(p.lo==='北野白梅町')_k4=_fk(_t4-17);if(_k4&&c.pkt.hasOwnProperty(_k4))return c.pkt[_k4];}
  }catch(_e9){}

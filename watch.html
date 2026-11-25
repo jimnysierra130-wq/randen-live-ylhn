@@ -62,6 +62,7 @@ body{padding:0 6px 18px;font-size:15px;line-height:1.25;}
 .mtr .mdir.st{font-size:16px;font-weight:900;color:#ff453a;white-space:nowrap;}
 .mtr .mdir.st.rest{color:#ffd60a;}
 .mtr .mdir.ks{color:#e24b4a;}
+.mtr .mdst{font-size:16px;font-weight:700;white-space:nowrap;margin-left:-3px;}.mtr .mdst.h{color:var(--hon);}.mtr .mdst.k{color:var(--kita);}.mtr .mdst.ks{color:#e24b4a;}.mstn.fit1 .mtr .mdst{font-size:15px;}.mstn.fit2 .mtr .mdst{font-size:13px;}
 .mtr .mdir.st .mda{font-size:17px;margin-right:2px;vertical-align:-1px;}
 .mtr .mdir.st .mda.h{color:var(--hon);}.mtr .mdir.st .mda.k{color:var(--kita);}
 .mtr .mtag.ks{color:#e24b4a;}
@@ -318,6 +319,8 @@ function trainSeg(sys,d,sec){var rt=ROUTE[d]&&ROUTE[d][sys];if(!rt||!rt.legs)ret
     var _lz=sp[sp.length-1];if(_lz[1]!=null&&sec>=_lz[1]&&_lz[2]!=null&&sec>=_lz[2])continue;/* 2026-11-23 行路の切れ目（連1709→1709等）で発車秒を過ぎたら次の行路へ＝0秒で動かない原因の一つ */if(_lz[1]!=null&&sec>=_lz[1])return {dps:(_lz[2]!=null?_lz[2]:undefined),line:ln,at:_lz[0],dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};
     return {line:ln,from:lg.o,to:lg.d,dir:lg.dir,type:lg.type,kb:(lg.cpl?lg.koubu:''),lo:lg.o,lot:lg.ot,host:(lg.type==='便乗'?(lg.host||''):''),rear:(lg.cpl?(lg.rear||''):'')};}
   return null;}
+/* 2026-11-25 行き先の略称（ユーザー指定：嵐山・四大・北白・帷子。その他は駅名のまま・長い名は「嵐電」を除き3文字まで） */
+function _dAbbr(n){if(!n)return '';var M={'嵐山':'嵐山','四条大宮':'四大','北野白梅町':'北白','帷子ノ辻':'帷子'};if(M[n])return M[n];n=(''+n).replace(/^嵐電/,'');return n.length>3?n.slice(0,3):n;}
 function renderMap(){
   var d=dia(),du=duty(),sec=_opSec(),nm=_opMin(),ord=_lineOrder();
   /* 2026-11-23 次の到着・発車の秒を覚え、その瞬間に描き直す（到着しても最大約1分カウントダウンが出なかった＝描き直しが分の変わり目＋20秒周期だったため） */
@@ -339,7 +342,8 @@ function renderMap(){
     if(ind==='停'){var _rtL=ROUTE[d]&&ROUTE[d][s],_nl=null;if(_rtL&&_rtL.legs){for(var _q=0;_q<_rtL.legs.length;_q++){var _lq=_rtL.legs[_q],_oq=tmMin(_lq.ot);if(_lq.o===anchor&&_oq!=null&&_oq>=nm){_nl=_lq;break;}}}
       if(dps==null&&_nl)dps=(_nl.sp&&_nl.sp.length&&_nl.sp[0][2]!=null)?_nl.sp[0][2]:tmMin(_nl.ot)*60;
       if((anchor==='四条大宮'||anchor==='嵐山'||anchor==='北野白梅町')&&_nl&&_nl.type!=='便乗'){tdep=_nl.ot;tr=_nl.tr;da=(_nl.dir==='上り')?'▲':'▼';typ=_nl.type||'営業';var _c2=car(_nl.tr);if(_c2)c=_c2;}}
-    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,lo:(seg?seg.lo:''),lot:(seg?seg.lot:''),dir:(seg?seg.dir:(p.dir||'')),sline:(seg?seg.line:(p.line||'')),at:(seg?(seg.at||''):''),from:(seg?(seg.from||''):''),host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||''),tdep:tdep,dps:dps};
+    var _dst='';try{var _LL=ROUTE[d][s].legs;for(var _li=0;_li<_LL.length;_li++){if(_LL[_li].tr===tr){_dst=_LL[_li].d||'';break;}}}catch(e){}/* 2026-11-25 行き先（三角の横に略称） */
+    var r={sys:s,tr:tr,car:c,name:_nm,hn:hn,anchor:anchor,ind:ind,typ:typ,kb:kb,lo:(seg?seg.lo:''),lot:(seg?seg.lot:''),dir:(seg?seg.dir:(p.dir||'')),sline:(seg?seg.line:(p.line||'')),at:(seg?(seg.at||''):''),from:(seg?(seg.from||''):''),host:host,rear:rear,riders:null,vac:_vac,da:da,rtime:rtime,shk:shk,depban:(p.depban||''),wait:(p.wait||0),deptime:(p.deptime||''),tdep:tdep,dps:dps,dest:_dst};
     recs.push(r);bySys[s]=r;}
   var merged={},_i;
   for(_i=0;_i<recs.length;_i++){var R=recs[_i];if(R.host&&bySys[R.host]){(bySys[R.host].riders=bySys[R.host].riders||[]).push({sys:R.sys,name:R.name});merged[R.sys]=1;}}
@@ -352,7 +356,8 @@ function renderMap(){
   var note=any?'':'<div class="empty" style="padding:8px 8px 2px;">現在、運行中の電車はありません（路線図のみ表示）</div>';
   function chipHtml(t){var isk=(t.typ==='回送'),run=(t.ind==='▲'||t.ind==='▼'),ic=run?(isk?'ks':(t.hn?'k':'h')):'st';
     var _rt='',_rl=(t.shk?'出庫点検中':'休憩');if(t.rtime){var _ee=(''+t.rtime).split('〜')[1];if(_ee){var _ep=_ee.split(':'),_em=(+_ep[0])*60+(+_ep[1]),_lf=_em-nm;_rt='<span class="mrt">'+_rl+' '+t.rtime+'（あと'+(_lf<=0?0:_lf)+'分）</span>';}else{_rt='<span class="mrt">'+_rl+' '+t.rtime+'</span>';}}
-    var dind=t.tdep?('<span class="mdir '+(t.hn?'k':'h')+'">'+t.da+'</span><span class="mdep2">'+t.tdep+'発</span>'):!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>'));
+    var _ds=_dAbbr(t.dest),_dsH=function(c){return _ds?'<span class="mdst '+c+'">'+_ds+'</span>':'';};/* 2026-11-25 三角の横に行き先・停車の赤い「停」は出さない（ユーザー指示） */
+    var dind=t.tdep?('<span class="mdir '+(t.hn?'k':'h')+'">'+t.da+'</span>'+_dsH(t.hn?'k':'h')+'<span class="mdep2">'+t.tdep+'発</span>'):!t.ind?'':(run?('<span class="mdir '+ic+'">'+t.ind+'</span>'+_dsH(ic)):((t.ind==='停'&&!t.shk)?((t.da?'<span class="mdir '+(isk?'ks':(t.hn?'k':'h'))+'">'+t.da+'</span>':'')+_dsH(isk?'ks':(t.hn?'k':'h'))):('<span class="mdir st'+(t.ind==='休'?' rest':'')+'">'+(t.da?'<span class="mda '+(t.hn?'k':'h')+'">'+t.da+'</span>':'')+(t.shk?'点':t.ind)+'</span>')));
     var tag=(t.typ&&t.typ!=='営業')?'<span class="mtag'+(isk?' ks':'')+'">('+t.typ+')</span>':'';
     var rid=(t.riders&&t.riders.length)?t.riders.map(function(r){return '<span class="mbin">＋便'+r.sys+' '+r.name+'</span>';}).join(''):'';var trc=(t.tr?('<span class="mtrn">'+(/^\d/.test(t.tr)?'<span class="trL">列</span>':'')+t.tr+'<span class="trS">列車</span></span>'):'');/* 2026-11-22 駅名の右の停車札だけ「列0711」（ユーザー指示）。それ以外は「0711列車」 *//* 2026-07-13 列車番号=車番の左 */
     return '<div class="mtr'+(t.vac?' vac':'')+(t.noTap?' notap':'')+'"'+(t.noTap?'':' onclick="popSys(\''+t.sys+'\')"')+'>'+(function(){/* 2026-11-22 1段目=矢印・列車番号・車番／2段目=系統・名前に固定（ユーザー指示） */var _ch=t.car?('<span class="mcar'+(t.car.indexOf('+')>=0?' split':'')+'"'+(t.noTap?'':' onclick="event.stopPropagation();openVeh(\''+t.car+'\')"')+'>'+_cp(t.car)+'</span>'):'';return (t.tr||t.car)?(t.tdep?('<span class="mcartop">'+dind+trc+'</span>'+_ch):('<span class="mcartop">'+dind+trc+_ch+'</span>')):dind;})()/* 2026-11-22 終点の発車表示は車番を1段目から外し、系統・名前と同じ行に並べる（ユーザー指示） */+(function(){/* 2026-11-23 ユーザー指示＝後部要員も運転士と同じ形（記号バッジ＋名前・白字）にし、運転士の系統名前と後部の記号名前だけを囲み線でペア表示 */var _ms='<span class="msn"><span class="msys '+(t.hn?'k':'h')+'">'+t.sys+'</span><span class="mnm'+(t.vac?' vac':'')+'">'+t.name+'</span></span>';var _ke=(t.ind==='休')?'':_rearEff(t);/* 2026-11-23 ユーザー指摘＝休憩は運転士だけ（後部要員は別時間）＝休憩中は後部を付けない */if(!_ke)return _ms+tag;var _kn=_rearNm(_ke,t);return '<span class="mpair">'+_ms+'<span class="msn mrear"><span class="mrl">＋</span><span class="msys r">'+(_kn?_ke:('後部'+_ke))+'</span><span class="mnm">'+(_kn||'')+'</span></span></span>'+tag;})()+(t.depban?'<span class="mdep">'+t.depban+'番線発</span>':'')+(t.wait&&t.deptime?'<span class="mwt2">'+t.deptime+'発</span>':'')+(t.showLoc&&t.anchor?'<span class="mloc">'+t.anchor+'</span>':'')+_rt+rid+((t.ind==='停'&&t.dps!=null)?(function(){var _r=t.dps-_opSec();if(_r<0)_r=0;return '<span class="wcd" data-dep="'+t.dps+'">あと'+Math.floor(_r/60)+':'+('0'+(_r%60)).slice(-2)+'</span>';})():'')+'</div>';}

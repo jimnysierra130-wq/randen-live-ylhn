@@ -10457,7 +10457,7 @@ function _buildSupBody(){
     var l=_xp(sM),w=_xp(eM)-l;if(w<3)w=3;
     var act=(actO===undefined)?(today&&nowM>=sM&&nowM<eM):(today&&actO);
     var me=(nm&&nm===_meName())?' me':'';
-    var ex='';if(act){var _rm=eM-nowM;if(_rm<0)_rm+=1440;var _h=Math.floor(_rm/60),_m=_rm%60;ex='・交代まで'+(_h?_h+'時間':'')+_m+'分';}
+    var ex='';/* 2026-11-28 ユーザー指示＝「交代まで○時間○分」は表示しない */
     return '<div class="tbar'+(act?' act':'')+'" style="left:'+l.toFixed(1)+'%;width:'+w.toFixed(1)+'%;"><span class="tNm'+me+'">'+nm+'</span><span class="tT">'+disp+(ex?'<span class="tex">'+ex+'</span>':'')+'</span></div>';
   }
   function barTm(nm,tm,actO){if(!nm)return '';var p=tm.split('〜');var sM=_mnp(p[0]),eM=_mnp(p[1]);if(eM<=sM)eM+=1440;return bar(nm,tm,sM,eM,actO);}

@@ -10050,7 +10050,7 @@ function refresh(){
     }
   });
 }
-function setTheadTop(){var t=document.querySelector('.topbar');if(!t)return;var off=t.offsetHeight;document.querySelectorAll('thead').forEach(function(th){var dr=th.querySelector('tr.dtr');if(dr){var dh=dr.offsetHeight;dr.querySelectorAll('th').forEach(function(c){c.style.top=off+'px';});th.querySelectorAll('tr:not(.dtr) th').forEach(function(c){c.style.top=(off+dh)+'px';});}else{th.querySelectorAll('th').forEach(function(c){c.style.top=off+'px';});}});var _as=(typeof activeStation==='function')?activeStation():null;var _th=_as?_as.querySelector('thead'):document.querySelector('thead');document.documentElement.style.setProperty('--nmtop',(off+(_th?_th.offsetHeight:60))+'px');}  /* 現在時刻バーの固定位置=トップバー+thead高さ(=固定ヘッダー直下) */
+function setTheadTop(){var t=document.querySelector('.topbar');if(!t)return;var off=t.offsetHeight;var _asT=(typeof activeStation==='function')?activeStation():null;(_asT?_asT.querySelectorAll('thead'):document.querySelectorAll('thead')).forEach(function(th){/* 2026-11-28 表示中の駅だけ（44駅分の書き換え＝日付選択で固まる一因） */var dr=th.querySelector('tr.dtr');if(dr){var dh=dr.offsetHeight;dr.querySelectorAll('th').forEach(function(c){c.style.top=off+'px';});th.querySelectorAll('tr:not(.dtr) th').forEach(function(c){c.style.top=(off+dh)+'px';});}else{th.querySelectorAll('th').forEach(function(c){c.style.top=off+'px';});}});var _as=(typeof activeStation==='function')?activeStation():null;var _th=_as?_as.querySelector('thead'):document.querySelector('thead');document.documentElement.style.setProperty('--nmtop',(off+(_th?_th.offsetHeight:60))+'px');}  /* 現在時刻バーの固定位置=トップバー+thead高さ(=固定ヘッダー直下) */
 function scrollNowDeferred(){ scrollNow(); if(window.requestAnimationFrame){requestAnimationFrame(function(){requestAnimationFrame(scrollNow);});} setTimeout(scrollNow,120); setTimeout(scrollNow,350); setTimeout(scrollNow,650); }
 /* 指定分(cm)以降の最初の便を、ヘッダー直下(先頭)に来るようスクロール。日付移動時の時刻維持・当日外の既定に使用。 */
 function _scrollToMin(p,cm){
@@ -10113,7 +10113,7 @@ function setDate(ds){
   if(!DUTY[ds]){ var i=DATES.indexOf(ds); if(i<0){ ds=DATES[DATES.length-1]; } }
   curDate=ds; curDia=DIA_BY[ds];
   if(window._updateShiftNext)window._updateShiftNext();
-  document.body.classList.toggle('dia-h', curDia==='休日');document.body.classList.toggle('dia-w', curDia!=='休日');
+  if(document.body.classList.contains('dia-h')!==(curDia==='休日')||!document.body.classList.contains(curDia==='休日'?'dia-h':'dia-w')){document.body.classList.toggle('dia-h', curDia==='休日');document.body.classList.toggle('dia-w', curDia!=='休日');}/* 2026-11-28 変わる時だけ（全画面の再計算を避ける） */
   var _td=jstDateStr();var _y=_td.slice(0,4),_m=parseInt(_td.slice(5,7),10),_d=parseInt(_td.slice(8,10),10);var _WDA=['日','月','火','水','木','金','土'];var _w=DOW_BY[_td]||_WDA[addDays(_td,0).getUTCDay()];var _hol=(typeof HOLIDAY!=='undefined'&&HOLIDAY[_td]);var _suf=_hol?('※祝（'+((typeof HOLNAME!=='undefined'&&HOLNAME[_td])||'祝日')+'）'):'';document.getElementById('rttl').textContent='運転士一覧';
   fillDrivers();
   var eki=(activeStation()&&activeStation().getAttribute('data-eki'))||lsGet(LSK)||firstEki();
@@ -10133,7 +10133,7 @@ function setDate(ds){
   if(typeof window.refreshSupBody==='function') window.refreshSupBody();
   if(typeof window._chkdate==='function') window._chkdate();
   if(window._arbTick)window._arbTick(1); if(window._rearTick)window._rearTick(1);/* 日付変更でマップ左上アルバイト/右上後部パネルも即連動 2026-07-21ユーザー指示 */
-  if(window._updateSupNow)window._updateSupNow(); if(window._updateBreakers)window._updateBreakers(); if(window._mapDNavUpd)window._mapDNavUpd();/* 2026-07-25 監督者/駅務員/休憩ボックス＋マップ緑バー日付ナビも日付連動 */
+  if(window._mapDNavUpd)window._mapDNavUpd();/* 2026-11-28 監督者/休憩ボックスは showStation→refresh で更新済み＝二重実行をやめた（日付選択で固まる対策） *//* 2026-07-25 監督者/駅務員/休憩ボックス＋マップ緑バー日付ナビも日付連動 */
 }
 /* ★2026-11-25 日付の◀▶を連打すると重くて固まる（ユーザー指摘）→ 押した瞬間は日付の表示だけ先に変え、押し終わって0.3秒たったら1回だけ画面を作り直す（全ての日付ナビ共通） */
 window._dnavPend=null;window._dnavT=null;
@@ -10304,12 +10304,12 @@ window._syncBot=function(){
   document.getElementById('calgrid').addEventListener('click',function(e){
     var el=e.target.closest('.cd.av'); if(!el) return;
     var d=el.getAttribute('data-d'); if(!d) return;
-    window._userDate=true; modal.classList.remove('on'); setDate(d);
+    window._userDate=true; modal.classList.remove('on'); if(window._dnavPreview)window._dnavPreview(d);/* 2026-11-28 ユーザー指摘＝日付を選ぶと固まる→先にカレンダーを閉じて日付表示だけ変え、重い作り直しは次の描画の後 */ setTimeout(function(){ setDate(d);
     if(window._calReturn==='roster'){ if(window._calReturnSheet)window._sheetNext=true; var _rb=document.getElementById('rbtn'); if(_rb)_rb.click(); }
     else if(window._calReturn==='pop' && window._popShown){ var _pp=document.getElementById('pop'); if(_pp){ _pp.classList.add('on'); if(window.refreshPopBody)window.refreshPopBody(); } }
     else if(window._calReturn==='shift'){ var _sp=document.getElementById('shiftpop'); if(_sp){ _sp.classList.add('on'); if(window.refreshShiftBody)window.refreshShiftBody(); } }
     else if(window._calReturn==='sup'){ var _su=document.getElementById('suppop'); if(_su){ _su.classList.add('on'); if(window.refreshSupBody)window.refreshSupBody(); } }
-    window._calReturn=null;
+    window._calReturn=null; },30);
   });
 })();
 ekiBtn.addEventListener('click',function(e){ e.stopPropagation(); var _op=ekiPanel.classList.contains('on'); ekiPanel.classList.remove('sheet'); var _bd=document.getElementById('ekibd'); if(_bd)_bd.classList.remove('on'); if(_op){ ekiPanel.classList.remove('on'); } else { if(window._closeOthers)window._closeOthers('eki'); ekiPanel.classList.add('on'); } });

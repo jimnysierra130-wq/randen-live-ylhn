@@ -10612,7 +10612,7 @@ window._rearTick=function(f){try{
  var ds0=jstDateStr();var ds=(typeof curDate!=='undefined'&&curDate)?curDate:ds0;var roff=(ds!==ds0)?1:0;
  var c=window._rearCtx(ds);
  var _jn=jstNow();var _mnk=_jn.getHours()*60+_jn.getMinutes();
- function _dm(s,e){if(roff)return 0;function p2(t){var q=(''+t).split(':');return (+q[0])*60+(+q[1]);}if(s&&_mnk<p2(s))return 1;if(e&&_mnk>p2(e))return 1;return 0;}
+ function _dm(s,e){if(roff)return 1;/* 2026-11-28 ユーザー指示＝今日以外の日は他の欄（監督者・アルバイト・休憩）と同じく全員薄字 */function p2(t){var q=(''+t).split(':');return (+q[0])*60+(+q[1]);}if(s&&_mnk<p2(s))return 1;if(e&&_mnk>p2(e))return 1;return 0;}
  var wide=(window.innerWidth>=760);var key=ds+':'+(c&&c.off?'off':'on')+':'+(wide?'w':'n')+':'+roff+':'+_mnk;if(!f&&el._rk===key)return;el._rk=key;
  var dwv=DOW_BY[ds]||['日','月','火','水','木','金','土'][new Date(+ds.slice(0,4),+ds.slice(5,7)-1,+ds.slice(8,10)).getDay()];
  var hdr='<div class="rhd"><div class="rhtop"><span class="rpttl">後部要員</span></div></div>';/* 2026-07-25 日付ナビはマップ緑バーへ集約（当パネル内の◀▶今日を撤去） */

@@ -187,6 +187,14 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .numrow.sub.hon .nm{color:#4a2a8a;}.numrow.sub.kai .nm{color:#00594f;}
 .numrow.sub .tg{font-style:normal;display:inline-block;font-size:10px;font-weight:800;color:#fff;border-radius:4px;padding:0 5px;margin-right:4px;}
 .numrow.sub.hon .tg{background:#7b4fc4;}.numrow.sub.kai .tg{background:#00897b;}
+/* テーブルは1行の±で選ぶ（2026-11-28） */
+.tbrow{display:flex;align-items:center;gap:6px;margin-top:4px;border:1px solid #b0bec5;border-radius:7px;padding:3px 8px;background:#fff;}
+.tbrow .tbl{font-size:13px;font-weight:700;color:#455a64;}
+.tbrow button{width:30px;height:26px;border:1px solid #b0bec5;border-radius:6px;background:#fff;font-size:16px;font-weight:800;color:#37474f;cursor:pointer;}
+.tbrow .tbv{min-width:40px;text-align:center;font-size:14px;font-weight:800;color:#455a64;}
+.tbrow .tbmax{margin-left:auto;font-size:11px;color:#78909c;font-weight:600;}
+.tbrow.on{background:var(--org);border-color:var(--org);}
+.tbrow.on .tbl,.tbrow.on .tbv,.tbrow.on .tbmax{color:#fff;}
 </style>
 </head>
 <body>
@@ -315,9 +323,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
     <div class="seg" data-v="gd">ガイド電車</div><div class="seg" data-v="on">音響</div>
     <div class="seg" data-v="hm">ヘッドマーク</div><div class="seg" data-v="pm">プレミアム<span style="font-size:11px;">【車両指定】</span></div>
   </div>
-  <div class="segs" id="kTbSeg" style="margin-top:6px;">
-    <div class="seg on" data-v="0">テーブルなし</div><div class="seg" data-v="1">テーブル1台</div><div class="seg" data-v="2">テーブル2台</div><div class="seg" data-v="3">テーブル3台</div><div class="seg" data-v="4">テーブル4台</div>
-  </div>
+  <div class="tbrow" id="kTbRow"><span class="tbl">テーブル</span><button type="button" data-tb="-1" aria-label="テーブルを減らす">−</button><span class="tbv" id="kTbV">なし</span><button type="button" data-tb="1" aria-label="テーブルを増やす">＋</button><span class="tbmax" id="kTbMax"></span></div>
   <input id="kTb" type="hidden" value="0">
 </div>
 </div>
@@ -364,7 +370,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 <h3>③ オプション</h3>
 <table>
 <tr><td class="k">ガイド電車</td><td>6,000円<br><span class="src">電車ガイドが沿線の見どころを約24分ご案内・マイクアンプ込・飲食物持込自由</span></td></tr>
-<tr><td class="k">テーブル</td><td>3,000円</td></tr>
+<tr><td class="k">テーブル</td><td>3,000円（1台）<br><span class="src">1両は最大4台・2両連結は最大8台</span></td></tr>
 <tr><td class="k">音響</td><td>3,000円（ガイド電車なら不要）</td></tr>
 <tr><td class="k">ヘッドマーク</td><td>25,000円</td></tr>
 <tr><td class="k">プレミアムトレイン</td><td>35,000円<br><span class="src">先頭オリジナルシート（600×300mm）・車内中吊りオリジナル・車両指定可（KYOTRAM・301号車は不可）</span></td></tr>
@@ -477,13 +483,15 @@ seg('gOw',function(v){st.gOw=+v;});
 seg('kRy',function(v){st.kRy=+v;});
 seg('kKt',function(v){st.kKt=+v;});
 seg('kRc',function(v){st.kRc=+v;});
-seg('kTbSeg',function(v){document.getElementById('kTb').value=v;});
+document.querySelectorAll('#kTbRow button').forEach(function(b){b.addEventListener('click',function(){
+  var mx=(st.kRy===2)?8:4, v=num('kTb')+(+b.dataset.tb); v=Math.max(0,Math.min(mx,v));
+  document.getElementById('kTb').value=v;render();});});
 document.getElementById('kOp').addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
   t.classList.toggle('on');st.kOp[t.dataset.v]=t.classList.contains('on')?1:0;render();});
 // ±ボタン：1回押し＝1つ／押し続け＝連続（0.4秒後に開始・2秒以上でさらに速く）
 function stepBtn(b){var el=document.getElementById(b.dataset.t);
   var v=num(b.dataset.t)+(+b.dataset.d);if(v<0)v=0;
-  if(b.dataset.t==='kTb'&&v>4)v=4;
+  if(b.dataset.t==='kTb'&&v>8)v=8;
   el.value=v;render();}
 document.querySelectorAll('.numrow button').forEach(function(b){
   var t1=null,t2=null,t0=0;
@@ -586,6 +594,10 @@ function render(){
     if(cats.length>1)nt.push('分けても合計は必ずお支払い総額 '+YEN(TT)+' と一致。');
     document.getElementById('gRN').innerHTML=nt.join('<br>');
   }else{
+    var tmx=(st.kRy===2)?8:4; if(num('kTb')>tmx)document.getElementById('kTb').value=tmx;
+    var tv=num('kTb'); document.getElementById('kTbV').textContent=tv>0?tv+'台':'なし';
+    document.getElementById('kTbRow').classList.toggle('on',tv>0);
+    document.getElementById('kTbMax').textContent=(tv>0?'3,000円×'+tv+'台＝'+(tv*3000).toLocaleString('ja-JP')+'円／':'')+'最大'+tmx+'台（'+st.kRy+'両）';
     var nn=num('kNn'),tb=num('kTb');
     var box2=document.getElementById('kRes');
     if(nn<=0){box2.style.display='none';return;}

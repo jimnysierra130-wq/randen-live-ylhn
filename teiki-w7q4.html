@@ -368,7 +368,7 @@ function render(){
       +Y(r.price)+' －（'+cl(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
     var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用開始日からの期間</th><th>払い戻し金額</th></tr>';
     for(var k=1;k<=rows;k++){
-      var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000), part=(b0>state.pb);
+      var e0=addMonths(state.st,k), b0=(e0.getDate()!==state.st.getDate())?e0:new Date(e0.getTime()-86400000), part=(b0>state.pb); /* 月末開始は月末満了（calcRefundと同じ） */
       var per=(k<=n)?md(state.st)+'〜'+md(part?state.pb:b0)+(part?'<br>（'+k+'か月目の途中）':''):'';
       var hit=(k===n);
       h+='<tr'+(hit?' class="hit"':(k<n?' class="used"':''))+'><td>'+k+'か月'+(hit?' ◀':'')+'</td><td>'+per+'</td><td>定期運賃 －（'+lab(k)+(r.fee>0?'＋手数料500円':'')+'）'

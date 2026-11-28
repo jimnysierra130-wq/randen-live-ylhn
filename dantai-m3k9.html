@@ -68,6 +68,37 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 .numrow.sub input{width:58px;height:28px;font-size:13px;background:#eceff1;color:#607d8b;border-color:#cfd8dc;}
 #gBreak{font-size:12px;color:#455a64;padding:2px 2px 8px;line-height:1.6;}
 @media(min-width:820px){#gR1,#gR2,#gR3,#gR4{white-space:nowrap;font-size:13px !important;}.setsumei{overflow-x:auto;}}
+/* 団体 結果パネル（2026-11-28 色分け：大人=青・小児=橙・障がい者=紫・総額=赤） */
+#pgG{--ad:#1565c0;--adBg:#e3f0fc;--adT:#0d47a1;--ch:#ef6c00;--chBg:#fff1e0;--chT:#b34700;--sp:#7b4fc4;--spBg:#f1ebfb;--spT:#4a2a8a;}
+.gsub{font-size:12px;color:#546e7a;margin:0 2px 8px;}
+.gtot{display:flex;justify-content:space-between;align-items:center;border:2px solid #c62828;border-radius:10px;padding:8px 14px;background:#fff5f5;}
+.gtot .k{font-size:17px;font-weight:800;}
+.gtot .v{font-size:34px;font-weight:800;color:#c62828;}
+.gbar{display:flex;height:20px;border-radius:6px;overflow:hidden;margin:10px 0 4px;}
+.gbar div{min-width:4px;}
+.gchips{font-size:12px;}
+.gc{display:inline-block;font-weight:700;padding:2px 8px;border-radius:6px;margin:2px 4px 2px 0;}
+.gc.ad{background:var(--adBg);color:var(--adT);}.gc.ch{background:var(--chBg);color:var(--chT);}.gc.sp{background:var(--spBg);color:var(--spT);}
+.gblk{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;border-radius:10px;padding:10px 12px;margin-top:10px;}
+.gblk .glab{color:#fff;font-weight:800;font-size:15px;text-align:center;border-radius:8px;padding:10px 0;}
+.gblk .gf{font-size:15px;font-weight:700;line-height:1.55;}
+.gblk .gf .s{font-size:12px;font-weight:600;}
+.gblk .gf .m{color:#546e7a;}
+.gblk .gamt{font-size:21px;font-weight:800;text-align:right;white-space:nowrap;}
+.gblk.ad{background:var(--adBg);color:var(--adT);}.gblk.ad .glab{background:var(--ad);}
+.gblk.ch{background:var(--chBg);color:var(--chT);}.gblk.ch .glab{background:var(--ch);}
+.gblk.sp{background:var(--spBg);color:var(--spT);}.gblk.sp .glab{background:var(--sp);font-size:13px;}
+.gblk.off{background:#f5f7f8;color:#b0bec5;}.gblk.off .glab{background:#cfd8dc;}
+.gsum{text-align:right;font-size:15px;font-weight:700;margin-top:8px;border-top:2px solid #263238;padding-top:6px;}
+.gsum b{font-size:19px;color:#c62828;}
+.grh{font-size:14px;font-weight:800;margin:16px 0 6px;color:#37474f;}
+.grc{display:flex;gap:8px;flex-wrap:wrap;}
+.grc .rc{flex:1 1 200px;min-width:0;border:1.5px solid #cfd8dc;border-radius:10px;padding:10px;}
+.grc .rt{font-size:13px;font-weight:700;color:#546e7a;}
+.grc .rv{font-size:22px;font-weight:800;color:#c62828;margin-top:4px;}
+.grc .rl{font-size:16px;font-weight:800;margin-top:4px;}
+.grc .rd{font-size:12px;color:#b0bec5;font-weight:600;margin-top:4px;}
+.gnote{font-size:11.5px;color:#607d8b;margin-top:6px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -112,28 +143,22 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 <div class="colR">
 <div class="card res" id="gRes" style="display:none;">
-  <div class="resL">
   <div class="disc" id="gDisc"></div>
-  <div class="rrow"><span>合計人数</span><b id="gTot"></b></div>
-  <div class="rrow"><span>無賃人員</span><b id="gMuchin"></b></div>
-  <div class="rrow"><span>割引率</span><b id="gRate"></b></div>
-  <div class="rrow"><span>大人（適用人数×割引運賃）</span><b id="gAdA"></b></div>
-  <div class="rrow"><span>小児（人数×割引運賃）</span><b id="gChA"></b></div>
-  <div class="big"><span class="k" id="gSumL">運賃 合計</span><span class="v" id="gSum"></span></div>
-  <div id="gBreak"></div>
-  <div class="rrow" id="gSpRow" style="display:none;"><span>＋ 障がい者のお客様の運賃（各5割引・別精算）</span><b id="gSp"></b></div>
-  <div class="big" id="gTtRow" style="display:none;"><span class="k">お支払い総額（障がい者分含む）</span><span class="v" id="gTt" style="color:#c00000;"></span></div>
+  <div class="gsub" id="gTot"></div>
+  <div class="gtot"><span class="k">お支払い総額</span><span class="v" id="gTt"></span></div>
   <div class="msg" id="gMsg"></div>
+  <div class="gbar" id="gBar"></div>
+  <div class="gchips" id="gChips"></div>
+  <div class="gblk ad" id="gBA"><div class="glab">大人</div><div class="gf" id="gFA"></div><div class="gamt" id="gAA"></div></div>
+  <div class="gblk ch" id="gBC"><div class="glab">小児</div><div class="gf" id="gFC"></div><div class="gamt" id="gAC"></div></div>
+  <div class="gblk sp" id="gBS"><div class="glab">障がい者</div><div class="gf" id="gFS"></div><div class="gamt" id="gAS"></div></div>
+  <div class="gsum" id="gSumLine"></div>
+  <div class="grh">領収書の書き方（お客様に選んでいただく）</div>
+  <div class="grc">
+    <div class="rc"><div class="rt">A　1枚にまとめる</div><div class="rv" id="gRA"></div></div>
+    <div class="rc"><div class="rt">B　分けて書く</div><div id="gRB"></div></div>
   </div>
-  <div class="setsumei"><div class="s1">お客様への説明（計算式）</div><div class="s2" id="gF"></div><div class="s2" id="gF2" style="display:none;"></div></div>
-  <div class="setsumei"><div class="s1">領収書の金額</div>
-    <div class="s2" style="font-size:14px;" id="gR1"></div>
-    <div class="s2" style="font-size:14px;" id="gR2"></div>
-    <div class="s2" style="font-size:14px;" id="gR3"></div>
-    <div class="s2" style="font-size:14px;" id="gR4"></div>
-    <div class="s2" style="font-size:13px;" id="gR5"></div>
-    <div style="font-size:11px;color:#78909c;margin-top:4px;">※領収書は「一括（1枚）＝総額」または「大人・小児で分割（<b>調整額は大人に上乗せ・小児はそのままの金額</b>）」の2通りで発行。分割の合計（障がい者分含む）は必ずお支払い総額と一致。障がい者分（10円単位＝端数なし）の分け方(a)〜(d)はお客様の指定による。〔当運用は小児をそのままの金額とし、端数の調整額は大人に上乗せする方式に統一〕</div>
-  </div>
+  <div class="gnote" id="gRN"></div>
 </div>
 </div>
 </div>
@@ -396,81 +421,66 @@ function render(){
     var r=calcGroup({kind:st.gKind,ad:effAd,ch:effCh,ow:st.gOw});
     var rawA=r.adAmt, rawC=r.chAmt, T=r.sum, adj=T-rawA-rawC;
     box.style.display='block';
+    var OW=(st.gOw===1?'片道':'往復'), bA=(st.gOw===1?250:500), bC=(st.gOw===1?120:240);
+    var KN=(st.gKind==='ippan'?'一般':'学生')+'団体';
     var db=document.getElementById('gDisc');
-    if(r.rate>0){db.className='disc on';db.textContent='✓ 団体割引 適用（'+(st.gKind==='ippan'?'一般':'学生')+'・'+r.rate+'割引・無賃'+r.muchin+'名）＝通常運賃より ▲'+YEN(r.save);}
+    if(r.rate>0){db.className='disc on';db.textContent='✓ '+KN+'・'+r.rate+'割引・無賃'+r.muchin+'名 ／ 通常運賃より '+YEN(r.save)+' お得';}
     else{db.className='disc off';db.textContent='割引なし（25名未満＝通常運賃で計算）';}
-    var utiwake=r.tot+'名（大人'+effAd+'・小児'+effCh+'）';
-    document.getElementById('gTot').textContent=has?('総数'+(ad+ch)+'名 − 別精算'+(sp.adD+sp.chD+sp.hbD+sp.pair)+'名 ＝ '+utiwake):utiwake;
-    document.getElementById('gMuchin').textContent=r.muchin+'名（大人から充当）';
-    document.getElementById('gSumL').textContent=has?'小計（大人・小児）':'運賃 合計';
-    document.getElementById('gRate').textContent=(r.rate===0?'適用なし':r.rate+'割引');
-    document.getElementById('gAdA').textContent=r.adA+'名×'+YEN(r.pa)+'＝'+YEN(r.adAmt);
-    document.getElementById('gChA').textContent=r.chA+'名×'+YEN(r.pc)+'＝'+YEN(r.chAmt);
-    document.getElementById('gSum').textContent=YEN(r.sum);
-    var bParts=[];
-    if(r.adA>0)bParts.push('大人 '+YEN(rawA));
-    if(r.chA>0)bParts.push('小児 '+YEN(rawC));
-    if(adj>0)bParts.push('<b style="color:#c55a11;">調整額 ＋'+YEN(adj)+'</b>（10円未満切上げ）');
-    document.getElementById('gBreak').innerHTML='内訳（調整額含む）：'+bParts.join(' ＋ ')+' ＝ '+(has?'小計 ':'運賃合計 ')+YEN(r.sum)+(adj>0?'':'　※端数なし');
-    document.getElementById('gSpRow').style.display=has?'':'none';
-    document.getElementById('gTtRow').style.display=has?'':'none';
-    document.getElementById('gSp').textContent=(sp.pair>0?('ご本人'+(sp.adD+sp.chD+sp.hbD)+'名 ＋ 介護者'+sp.pair+'名 ＝ '):'')+YEN(sp.sub);
-    document.getElementById('gTt').textContent=YEN(r.sum+sp.sub);
+    var spN=sp.adD+sp.chD+sp.hbD+sp.pair;
+    document.getElementById('gTot').textContent='計算人数 '+r.tot+'名（大人'+effAd+'・小児'+effCh+'）'+(spN>0?'＝ 総数'+(ad+ch)+'名 − 障がい者の別計算'+spN+'名':'');
+    var aA=rawA+(r.adA>0?adj:0), aC=rawC+(r.adA>0?0:adj), aS=sp.sub, TT=r.sum+sp.sub;
+    document.getElementById('gTt').textContent=YEN(TT);
     var m1=(r.tot>1499)?'1,500名以上＝手計算で行うこと':'';
-    var m0=ivErr?'内訳エラー：障がい者・介護者の人数が大人/小児の総数を超えています　':'';
-    var m2=has?'※同伴ペア分だけを総数から除いて5割引で別計算し合算しています（割引は介護者同伴が条件・単独は割引なし）':'';
-    document.getElementById('gMsg').innerHTML=[m0,m1,has?sp.warn:''].filter(Boolean).join('　')+(m2?'<div style="color:#1565c0;font-weight:600;font-size:12px;margin-top:2px;">'+m2+'</div>':'');
-    var base=(st.gOw===1);
-    var gt=[];
-    if(r.adA>0)gt.push('大人（'+(base?'片道250円':'往復500円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pa))+'）×'+r.adA+'名＝'+YEN(r.adAmt));
-    if(r.chA>0)gt.push('小児（'+(base?'片道120円':'往復240円')+(r.rate===0?'':' → '+r.rate+'割引 '+YEN(r.pc))+'）×'+r.chA+'名＝'+YEN(r.chAmt));
-    var lines=[];
-    gt.forEach(function(t,i){lines.push((i>0?'＋ ':'')+t);});
-    if(adj>0){
-      if(gt.length>1)lines.push('＝ 小計 '+YEN(rawA+rawC));
-      lines.push('＋ 調整額（10円未満切上げ）'+YEN(adj));
-      lines.push('＝ 運賃合計 '+YEN(r.sum));
-    }else{
-      lines.push('＝ 運賃合計 '+YEN(r.sum)+'（端数なし）');
+    var m0=ivErr?'内訳エラー：障がい者・介護者の人数が大人/小児の総数を超えています':'';
+    document.getElementById('gMsg').innerHTML=[m0,m1,has?sp.warn:''].filter(Boolean).join('<br>');
+    var unit=function(p,b){return r.rate===0?YEN(b)+'（'+OW+'）':YEN(p)+'（'+OW+YEN(b)+'の'+r.rate+'割引）';};
+    var adjS=function(raw){return '<br><span class="s">＝'+YEN(raw)+' ＋ 端数の調整 '+YEN(adj)+'（10円未満切上げ）</span>';};
+    var freeA=effAd-r.adA, freeC=effCh-r.chA;
+    var fA=(effAd===0)?'該当なし':(r.adA>0?unit(r.pa,bA)+' × '+r.adA+'名'+(adj>0?adjS(rawA):''):'全員無賃');
+    if(freeA>0&&r.adA>0)fA+='<br><span class="s m">大人'+effAd+'名のうち '+freeA+'名は無賃</span>';
+    var fC=(effCh===0)?'該当なし':(r.chA>0?unit(r.pc,bC)+' × '+r.chA+'名'+(adj>0&&r.adA===0?adjS(rawC):''):'全員無賃');
+    if(freeC>0&&r.chA>0)fC+='<br><span class="s m">小児'+effCh+'名のうち '+freeC+'名は無賃（大人の無賃枠を超えた分）</span>';
+    document.getElementById('gFA').innerHTML=fA;document.getElementById('gAA').textContent=YEN(aA);
+    document.getElementById('gFC').innerHTML=fC;document.getElementById('gAC').textContent=YEN(aC);
+    document.getElementById('gBA').classList.toggle('off',effAd===0);
+    document.getElementById('gBC').classList.toggle('off',effCh===0);
+    var bs=document.getElementById('gBS');bs.style.display=has?'':'none';
+    if(has){
+      var sl=[];
+      if(sp.adD>0)sl.push('ご本人 大人 '+YEN(sp.ua)+' × '+sp.adD+'名');
+      if(sp.chD>0)sl.push('ご本人 小児 '+YEN(sp.uc)+' × '+sp.chD+'名');
+      if(sp.hbD>0)sl.push('ご本人 6歳未満 '+sp.hbD+'名（無賃）');
+      if(sp.kgAdU>0)sl.push('介護者 大人 '+YEN(sp.ua)+' × '+sp.kgAdU+'名');
+      if(sp.kgChU>0)sl.push('介護者 小児 '+YEN(sp.uc)+' × '+sp.kgChU+'名');
+      document.getElementById('gFS').innerHTML=sp.pair>0
+        ?sl.join('<br>')+'<br><span class="s">（'+OW+YEN(bA)+'・'+YEN(bC)+'の5割引・10円未満切上げ／介護者同伴のペア分だけ団体とは別計算）</span>'
+        :'介護者の同伴がないため割引なし<br><span class="s">（団体の人数に含めて計算済み）</span>';
+      document.getElementById('gAS').textContent=YEN(aS);
     }
-    var spterms=[];
-    if(sp.pair>0){
-      if(sp.adD>0)spterms.push('ご本人 大人（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+sp.adD+'名＝'+YEN(sp.adD*sp.ua));
-      if(sp.chD>0)spterms.push('ご本人 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.chD+'名＝'+YEN(sp.chD*sp.uc));
-      if(sp.hbD>0)spterms.push('ご本人 6歳未満'+sp.hbD+'名（無賃）');
-      if(sp.kgAdU>0)spterms.push('介護者 大人（'+(base?'片道250円':'往復500円')+' → 5割引 '+YEN(sp.ua)+'）×'+sp.kgAdU+'名＝'+YEN(sp.kgAdU*sp.ua));
-      if(sp.kgChU>0)spterms.push('介護者 小児（'+(base?'片道120円':'往復240円')+' → 5割引 '+YEN(sp.uc)+'）×'+sp.kgChU+'名＝'+YEN(sp.kgChU*sp.uc));
-    }
-    if(spterms.length){lines.push('〈障がい者のお客様分（別精算）〉');spterms.forEach(function(t){lines.push('＋ '+t);});}
-    var uniTotal='＝ '+YEN(r.sum+sp.sub)+'（'+(r.rate===0?'25名未満＝通常運賃':(st.gKind==='ippan'?'一般':'学生')+'団体・'+r.rate+'割引・無賃'+r.muchin+'名')+(sp.pair>0?'・障がい者5割引':'')+'）';
-    document.getElementById('gF').innerHTML=lines.map(function(x){return '<div class="fln">'+x+'</div>';}).join('');
-    var f2=document.getElementById('gF2');f2.style.display='';f2.innerHTML='<div class="fln ftot">'+uniTotal+'</div>';
-    var cUp=Math.ceil(rawC/10)*10, cDn=Math.floor(rawC/10)*10;
-    var g1=document.getElementById('gR1'),g2=document.getElementById('gR2'),g3=document.getElementById('gR3'),g4=document.getElementById('gR4');
-    g1.textContent='一括（1枚）＝ お支払い総額 '+YEN(T+sp.sub)+(sp.sub>0?'（障がい者分含む）':'');
-    g2.style.cssText=g3.style.cssText=g4.style.cssText='font-size:14px;';
-    var spR=sp.sub>0?' と 障がい者分 '+YEN(sp.sub):'';
-    var spT=sp.sub>0?' ＝ 総額 '+YEN(T+sp.sub):' ＝ '+YEN(T);
-    if(r.adA===0||r.chA===0){
-      g2.style.cssText='font-size:12px;color:#b0bec5;font-weight:600;';
-      g2.textContent='大人・小児で分ける場合＝ '+(r.chA===0?'小児':'大人')+'のお客様がいないため該当なし';
-      g3.textContent='';g4.textContent='';
-    }else if(adj===0&&rawC===cDn){
-      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA)+' ／ 小児 '+YEN(rawC)+'（端数なし・調整不要）'+(sp.sub>0?spR+' ＝ 総額 '+YEN(T+sp.sub):'');
-      g3.textContent='';g4.textContent='';
-    }else{
-      g2.textContent='大人・小児で分ける場合＝ 大人 '+YEN(rawA+adj)+'（調整額'+adj+'円を上乗せ） ／ 小児 '+YEN(rawC)+'（そのままの金額）'+spR+spT;
-      g3.textContent='';g4.textContent='';
-    }
-    var g5=document.getElementById('gR5');
-    if(sp.sub>0&&r.adA>0&&r.chA>0){
+    var cats=[];
+    if(aA>0)cats.push({k:'ad',n:'大人',v:aA});
+    if(aC>0)cats.push({k:'ch',n:'小児',v:aC});
+    if(aS>0)cats.push({k:'sp',n:'障がい者',v:aS});
+    document.getElementById('gBar').innerHTML=cats.map(function(c){return '<div style="flex:'+c.v+';background:var(--'+c.k+');"></div>';}).join('');
+    document.getElementById('gChips').innerHTML=cats.map(function(c){return '<span class="gc '+c.k+'">'+c.n+' '+YEN(c.v)+'</span>';}).join('');
+    document.getElementById('gSumLine').innerHTML=cats.length>1
+      ?cats.map(function(c){return '<span style="color:var(--'+c.k+'T)">'+c.v.toLocaleString('ja-JP')+'</span>';}).join(' ＋ ')+' ＝ <b>'+YEN(TT)+'</b>':'';
+    document.getElementById('gRA').textContent=YEN(TT);
+    document.getElementById('gRB').innerHTML=cats.length>1
+      ?cats.map(function(c){return '<div class="rl"><span class="gc '+c.k+'">'+c.n+'</span>'+YEN(c.v)+'</div>';}).join('')
+      :'<div class="rd">1種類のみのため A と同じ金額</div>';
+    var nt=[];
+    if(adj>0&&aA>0&&aC>0)nt.push('端数の調整 '+YEN(adj)+' は大人に含めています（小児はそのままの金額）。');
+    if(aS>0&&(aA>0||aC>0)){
+      var op=['別の1枚にする'];
+      if(aA>0)op.push('大人に足す（大人 '+YEN(aA+aS)+'）');
+      if(aC>0)op.push('小児に足す（小児 '+YEN(aC+aS)+'）');
       var subA=(sp.adD+sp.kgAdU)*sp.ua, subC=(sp.chD+sp.kgChU)*sp.uc;
-      g5.innerHTML='障がい者分 '+YEN(sp.sub)+' の分け方（上のどの方式とも組合せ可・お客様の指定）：'
-        +'<br>・(a) 別領収書 ＝ 障がい者分 '+YEN(sp.sub)+' を別に1枚'
-        +'<br>・(b) 大人の領収書へ合算 ＝ 大人側に ＋'+YEN(sp.sub)
-        +'<br>・(c) 小児の領収書へ合算 ＝ 小児側に ＋'+YEN(sp.sub)
-        +(subC>0?'<br>・(d) 内訳どおり振り分け ＝ 大人の障がい者・介護者分 ＋'+YEN(subA)+' は大人へ ／ 小児の障がい者分 ＋'+YEN(subC)+' は小児へ':'');
-    }else{g5.innerHTML='';}
+      if(subA>0&&subC>0&&aA>0&&aC>0)op.push('大人へ '+YEN(subA)+'・小児へ '+YEN(subC)+' に振り分ける');
+      nt.push('障がい者分 '+YEN(aS)+' は「'+op.join('」「')+'」のどれでも可（お客様の指定）。');
+    }
+    if(cats.length>1)nt.push('分けても合計は必ずお支払い総額 '+YEN(TT)+' と一致。');
+    document.getElementById('gRN').innerHTML=nt.join('<br>');
   }else{
     var nn=num('kNn'),tb=num('kTb');
     var box2=document.getElementById('kRes');

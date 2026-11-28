@@ -180,6 +180,13 @@ h1{font-size:16px;margin:4px 2px 8px;}
 #kOp .seg[data-v="pm"]{flex:1.5;white-space:nowrap;}
 @media(max-width:520px){#kOp .seg[data-v="pm"]{flex:1 1 100%;}}
 .gkp .kx{display:block;font-size:11px;font-weight:800;color:#b34700;}
+/* 障がい者本人（紫）と介護者（青緑）を色分け（2026-11-28） */
+.numrow.sub.hon,.numrow.sub.kai{border-radius:6px;padding:2px 4px 2px 6px;}
+.numrow.sub.hon{background:#f1ebfb;border-left:4px solid #7b4fc4;}
+.numrow.sub.kai{background:#e0f2f1;border-left:4px solid #00897b;}
+.numrow.sub.hon .nm{color:#4a2a8a;}.numrow.sub.kai .nm{color:#00594f;}
+.numrow.sub .tg{font-style:normal;display:inline-block;font-size:10px;font-weight:800;color:#fff;border-radius:4px;padding:0 5px;margin-right:4px;}
+.numrow.sub.hon .tg{background:#7b4fc4;}.numrow.sub.kai .tg{background:#00897b;}
 </style>
 </head>
 <body>
@@ -205,19 +212,19 @@ h1{font-size:16px;margin:4px 2px 8px;}
   <div class="lbl">片道・往復</div>
   <div class="segs" id="gOw"><div class="seg on" data-v="1">片道</div><div class="seg" data-v="2">往復</div></div>
   <div class="sublbl">そのうち 障がい者のお客様（内訳を記入）※割引は<b>介護者同伴が条件</b>＝同伴ペア分のみ5割引で別計算・単独の方は割引なし（団体側で通常運賃として自動計算）</div>
-  <div class="numrow sub"><span class="nm">そのうち 大人の障がい者</span>
+  <div class="numrow sub hon"><span class="nm"><i class="tg">本人</i>そのうち 大人の障がい者</span>
     <button data-t="gHa" data-d="-1">−</button><input id="gHa" type="number" min="0" value="0"><button data-t="gHa" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub"><span class="nm">そのうち 小児の障がい者（6〜12歳未満）</span>
+  <div class="numrow sub hon"><span class="nm"><i class="tg">本人</i>そのうち 小児の障がい者（6〜12歳未満）</span>
     <button data-t="gHc" data-d="-1">−</button><input id="gHc" type="number" min="0" value="0"><button data-t="gHc" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub"><span class="nm">そのうち 6歳未満の障がい者（本人無賃・介護者は割引あり）</span>
+  <div class="numrow sub hon"><span class="nm"><i class="tg">本人</i>そのうち 6歳未満の障がい者（本人無賃・介護者は割引あり）</span>
     <button data-t="gHb" data-d="-1">−</button><input id="gHb" type="number" min="0" value="0"><button data-t="gHb" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub"><span class="nm">そのうち 介護者（大人）※原則ご本人1人につき1人</span>
+  <div class="numrow sub kai"><span class="nm"><i class="tg">介護者</i>そのうち 介護者（大人）※原則ご本人1人につき1人</span>
     <button data-t="gKg" data-d="-1">−</button><input id="gKg" type="number" min="0" value="0"><button data-t="gKg" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub"><span class="nm">そのうち 介護者（小児）※係員が介護能力を認めた場合</span>
+  <div class="numrow sub kai"><span class="nm"><i class="tg">介護者</i>そのうち 介護者（小児）※係員が介護能力を認めた場合</span>
     <button data-t="gKgc" data-d="-1">−</button><input id="gKgc" type="number" min="0" value="0"><button data-t="gKgc" data-d="1">＋</button></div>
 </div>
 </div>

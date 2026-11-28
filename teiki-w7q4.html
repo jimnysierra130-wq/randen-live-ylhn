@@ -429,9 +429,9 @@ function render(){
   }
   var r0=r; r={refund:SUM('refund'),ded:SUM('ded'),fee:SUM('fee'),price:SUM('price')};
   var bars=[];
-  if(!out){if(r.refund>0)bars.push({k:'tr',n:'払戻',v:r.refund,c:'#c62828'});
-    if(r.ded>0)bars.push({k:'td',n:'差引',v:Math.min(r.ded,r.price),c:'var(--td)'});
-    if(r.fee>0&&r.refund+r.ded<r.price+r.fee)bars.push({k:'tf',n:'手数料',v:Math.max(0,Math.min(r.fee,r.price-Math.min(r.ded,r.price))),c:'var(--tf)'});}
+  if(!out){var bR=0,bD=0,bF=0; /* 1枚ごとに「払戻＋差引＋手数料＝発売額」に収めてから合算（片方だけ0円の時もずれない） */
+    T.forEach(function(t){var q=t.r,d=Math.min(q.ded,q.price),fe=Math.min(q.fee,q.price-d);bR+=q.refund;bD+=d;bF+=fe;});
+    bars.push({k:'tr',n:'払戻',v:bR,c:'#c62828'});bars.push({k:'td',n:'差引',v:bD,c:'var(--td)'});bars.push({k:'tf',n:'手数料',v:bF,c:'var(--tf)'});}
   bars=bars.filter(function(b){return b.v>0;});
   document.getElementById('rBar').innerHTML=bars.map(function(b){return '<div style="flex:'+b.v+';background:'+b.c+';"></div>';}).join('');
   document.getElementById('rChips').innerHTML=out?'':'発売額 '+YEN(r.price)+' のうち '+bars.map(function(b){return '<span class="gc '+b.k+'">'+b.n+' '+YEN(b.v)+'</span>';}).join('');

@@ -212,8 +212,7 @@ body{font-size:14px;}
 <ul><li><b>手数料500円のみ免除</b>（払戻額の計算は通常どおり・<span class="y">全額払戻ではない</span>）</li>
 <li>精算書・実績一覧表を出力し、詳細を記入して報告する</li></ul>
 <h3>⑤ 本ツールの対象外</h3>
-<table><tr><td class="k">嵐電・阪急連絡定期券（磁気）</td><td>阪急電鉄のみの発行＝当社窓口の払戻対象外</td></tr>
-<tr><td class="k">重複購入・死亡による払戻</td><td>旬数計算（マニュアル1-3③）＝運輸課扱い</td></tr>
+<table><tr><td class="k">重複購入・死亡による払戻</td><td>旬数計算（マニュアル1-3③）＝運輸課扱い</td></tr>
 <tr><td class="k">応当日がない月末開始<br>（1/31開始等）</td><td>月末満了として計算（券面表示の満了日が正）</td></tr></table>
 <h3>⑥ 運賃（現行・2023年4月1日改定）</h3>
 <table class="c"><tr><th>種別</th><th>1か月</th><th>3か月</th><th>6か月</th></tr>
@@ -354,6 +353,7 @@ document.getElementById('dSt').onclick=function(){openCal('st');};
 document.getElementById('dPb').onclick=function(){openCal('pb');};
 
 function render(){
+  document.getElementById('dHint').style.display=state.dis?'':'none';
   var vs=document.querySelector('#dSt .v'),vp=document.querySelector('#dPb .v');
   vs.textContent=state.st?fmt(state.st):'タップして選択';vs.className='v'+(state.st?'':' empty');
   vp.textContent=state.pb?fmt(state.pb):'タップして選択';vp.className='v'+(state.pb?'':' empty');
@@ -362,7 +362,7 @@ function render(){
   var box=document.getElementById('result');
   if(!state.st||!state.pb){box.style.display='none';return;}
   var DH=function(a){return Math.ceil(a*0.5/10)*10;};
-  var dis=!!state.dis; document.getElementById('dHint').style.display=dis?'':'none';
+  var dis=!!state.dis;
   var T=[];
   if(!dis){T.push({nm:'',f:FARES[state.kind][state.age],rt:RT[state.age],lb:(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人':'小児')});}
   else{var bf=FARES[state.kind][state.age];

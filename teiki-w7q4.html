@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
 <meta name="robots" content="noindex,nofollow">
 <meta name="author" content="横田 尚也">
 <title>定期券払戻計算</title>
@@ -152,6 +152,10 @@ body{font-size:14px;}
 .nx .src{font-size:10.5px;}
 /* iPhoneの文字の自動拡大を止める（2026-11-28：iPhoneで説明文だけ極端に大きく表示されていた） */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+/* iPhone対策（2026-11-28）：はみ出しで画面全体が縮小表示→長い説明文だけ自動拡大、を防ぐ */
+html,body{overflow-x:hidden;max-width:100%;}
+body{-webkit-text-size-adjust:100%;}
+.lbl,.sublbl,.dhint,.notes,.gnote,.msg{max-height:999999px;}
 </style>
 </head>
 <body>

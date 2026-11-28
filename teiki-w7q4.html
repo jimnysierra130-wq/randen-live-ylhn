@@ -136,6 +136,15 @@ body{font-size:14px;}
 .dtot td:first-child,.dtot th:first-child{text-align:left;}
 .dtot tr.tt td{background:#fff5f5;font-weight:800;}
 .dtot tr.tt b{color:#c62828;}
+/* 特割切替は「入力」札の右に小さく（2026-11-28） */
+.card.inp::before{content:none;}
+.ihd{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+.itag{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--grn);border-radius:5px;padding:1px 8px;}
+#sDis{display:inline-flex;gap:0;margin:0;flex-wrap:nowrap;}
+#sDis .seg{flex:none;min-width:0;font-size:10.5px;padding:1px 7px;border:1px solid #dfe4e7;border-radius:0;background:#fff;color:#b0bec5;font-weight:600;}
+#sDis .seg:first-child{border-radius:5px 0 0 5px;}#sDis .seg:last-child{border-radius:0 5px 5px 0;border-left:none;}
+#sDis .seg.on[data-v="0"]{background:#eceff1;color:#78909c;border-color:#dfe4e7;}
+#sDis .seg.on[data-v="1"]{background:#7b4fc4;border-color:#7b4fc4;color:#fff;}
 </style>
 </head>
 <body>
@@ -143,6 +152,8 @@ body{font-size:14px;}
 <div class="cols">
 <div class="colL">
 <div class="card inp">
+  <div class="ihd"><span class="itag">入力</span><span class="segs" id="sDis"><span class="seg on" data-v="0">通常の定期</span><span class="seg" data-v="1">障がい者割引（特割）</span></span></div>
+  <div class="dhint" id="dHint" style="display:none;">券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div>
   <div class="lbl">券　種</div>
   <div class="segs" id="sKind">
     <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
@@ -159,8 +170,6 @@ body{font-size:14px;}
   <div class="segs" id="sHow">
     <div class="seg on" data-v="cust">お客様都合</div><div class="seg" data-v="corp">自社都合（発券ミス等）</div>
   </div>
-  <div class="disbox" id="disBox"><div class="segs" id="sDis"><div class="seg on" data-v="0">通常の定期</div><div class="seg" data-v="1">障がい者割引（特割）の定期</div></div>
-  <div class="dhint" id="dHint" style="display:none;">券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div></div>
   <div class="lbl">日付（タップでカレンダー）</div>
   <div class="dates">
     <div class="dbox" id="dSt"><div class="t">使用開始日</div><div class="v empty">タップして選択</div></div>

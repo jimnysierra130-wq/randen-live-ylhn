@@ -121,6 +121,12 @@ body{font-size:14px;}
 .tnote{font-size:10.5px;color:#607d8b;margin-top:3px;}
 .z0{border:1.5px solid #c62828;background:#fdecea;color:#c62828;border-radius:6px;padding:4px 9px;margin-top:4px;font-size:13px;font-weight:800;}
 .z0 span{font-size:12px;font-weight:700;color:#7f1d1d;}
+/* 障がい者割引（特割）定期（2026-11-28） */
+.dhint{font-size:11px;color:#4a2a8a;background:#f1ebfb;border-left:4px solid #7b4fc4;padding:3px 8px;margin:-2px 0 4px;line-height:1.5;}
+#sDis .seg.on[data-v="1"]{background:#7b4fc4;border-color:#7b4fc4;}
+.pn{display:inline-block;font-size:11px;font-weight:800;color:#fff;border-radius:4px;padding:0 6px;margin-right:4px;}
+.pn.hon{background:#7b4fc4;}.pn.kai{background:#00897b;}
+.tsum{margin-top:3px;border-top:1px solid #a5d6a7;padding-top:2px;}
 </style>
 </head>
 <body>
@@ -128,6 +134,9 @@ body{font-size:14px;}
 <div class="cols">
 <div class="colL">
 <div class="card inp">
+  <div class="lbl">障がい者割引（特割）</div>
+  <div class="segs" id="sDis"><div class="seg on" data-v="0">なし（通常）</div><div class="seg" data-v="1">あり（本人＋介護者）</div></div>
+  <div class="dhint" id="dHint" style="display:none;">券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div>
   <div class="lbl">券　種</div>
   <div class="segs" id="sKind">
     <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
@@ -168,7 +177,8 @@ body{font-size:14px;}
 <div class="card notes nx">
 <h3>① 払戻の基本</h3>
 <table><tr><td class="k">払戻できる期間</td><td>通用期間内に限る</td></tr>
-<tr><td class="k">払戻手数料</td><td><span class="y">500円</span>（自社都合のみ手数料なし）</td></tr></table>
+<tr><td class="k">払戻手数料</td><td><span class="y">500円</span>／1枚（自社都合のみ手数料なし）</td></tr>
+<tr><td class="k">障がい者割引（特割）の定期</td><td>本人分と介護者分を<b>同時に</b>払戻（各割引規程9条）。運賃は5割・10円未満切上げ（小児定期は割引なし）。7日以内の往復運賃は割引後（大人260円）</td></tr></table>
 <h3>② 払戻額の計算（使用開始からの日数で分かれる）</h3>
 <table><tr><th style="width:30%">時期</th><th>払戻額</th></tr>
 <tr><td class="k">使用開始前</td><td>未使用のため<b>手数料500円のみ</b>差引き</td></tr>
@@ -227,7 +237,7 @@ function sameD(a,b){return a&&b&&a.getFullYear()===b.getFullYear()&&a.getMonth()
 
 // ─ 計算本体（xlsx v5と同一ロジック） ─
 function calcRefund(p){ // {kind,age,per,st,pb,how}
-  var idx={1:0,3:1,6:2}[p.per], f=FARES[p.kind][p.age];
+  var idx={1:0,3:1,6:2}[p.per], f=p.fares||FARES[p.kind][p.age]; /* p.fares/p.rt＝障がい者割引（特割）用の差し替え */
   var price=f[idx], p1=f[0], p3=f[1];
   var e0=addMonths(p.st,p.per);
   var end=(e0.getDate()!==p.st.getDate())?e0:new Date(e0.getTime()-86400000);
@@ -244,7 +254,7 @@ function calcRefund(p){ // {kind,age,per,st,pb,how}
   r.days=Math.round((p.pb-p.st)/86400000)+1;
   r.months=datedifM(p.st,p.pb)+1;
   if(r.days<=7){
-    var rt=RT[p.age];r.ded=r.days*rt;
+    var rt=p.rt||RT[p.age];r.ded=r.days*rt;
     r.hantei='開始後7日以内＝日数計算'+SUF;
     r.refund=Math.max(0,price-r.ded-FEE);
     r.f1='定期運賃 －（往復運賃×経過日数'+FT1+'）';
@@ -268,13 +278,13 @@ if(typeof module!=='undefined')module.exports={calcRefund:calcRefund,addMonths:a
 
 // ─ UI ─
 if(typeof document!=='undefined'){(function(){
-var state={kind:'tsukin',age:'adult',per:6,how:'cust',st:null,pb:new Date()};
+var state={dis:0,kind:'tsukin',age:'adult',per:6,how:'cust',st:null,pb:new Date()};
 state.pb.setHours(0,0,0,0);
 function seg(id,key,parse){var el=document.getElementById(id);
   el.addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
     el.querySelectorAll('.seg').forEach(function(x){x.classList.remove('on');});
     t.classList.add('on');state[key]=parse?parse(t.dataset.v):t.dataset.v;render();});}
-seg('sKind','kind');seg('sAge','age');seg('sPer','per',function(v){return +v;});seg('sHow','how');
+seg('sDis','dis',function(v){return +v;});seg('sKind','kind');seg('sAge','age');seg('sPer','per',function(v){return +v;});seg('sHow','how');
 
 var calTarget=null,calBase=null;
 var today=new Date();today.setHours(0,0,0,0);
@@ -334,21 +344,29 @@ function render(){
   document.getElementById('dPb').classList.toggle('sel',!!state.pb);
   var box=document.getElementById('result');
   if(!state.st||!state.pb){box.style.display='none';return;}
-  var r=calcRefund({kind:state.kind,age:state.age,per:state.per,how:state.how,st:state.st,pb:state.pb});
+  var DH=function(a){return Math.ceil(a*0.5/10)*10;};
+  var dis=!!state.dis; document.getElementById('dHint').style.display=dis?'':'none';
+  var T=[];
+  if(!dis){T.push({nm:'',f:FARES[state.kind][state.age],rt:RT[state.age],lb:(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人':'小児')});}
+  else{var bf=FARES[state.kind][state.age];
+    T.push({nm:'本人',f:state.age==='adult'?bf.map(DH):bf,rt:state.age==='adult'?260:RT.child,lb:(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人【特割】':'小児（割引なし）')});
+    T.push({nm:'介護者',f:FARES.tsukin.adult.map(DH),rt:260,lb:'通勤・大人【特割】'});}
+  T.forEach(function(t){t.r=calcRefund({kind:state.kind,age:state.age,per:state.per,how:state.how,st:state.st,pb:state.pb,fares:t.f,rt:t.rt});});
+  var r=T[0].r, SUM=function(k){return T.reduce(function(a,t){return a+t.r[k];},0);};
   box.style.display='block';
-  var f=FARES[state.kind][state.age], p1=f[0], p3=f[1], rt=RT[state.age];
+  var f=T[0].f, p1=f[0], p3=f[1], rt=T[0].rt;
   var KL=(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人':'小児')+'・'+state.per+'か月';
   var out=(r.hantei.indexOf('通用期間外')===0), pre=(r.hantei.indexOf('使用開始前')===0);
   var hj=r.hantei.replace('（自社都合＝手数料なし）','');
   var md2=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
   var rest=Math.round((r.end-state.pb)/86400000);
-  var kp=[['① 定期券',KL,'発売額 '+YEN(r.price)],
+  var kp=[['① 定期券',dis?'本人＋介護者 2枚':KL,dis?(state.per+'か月・発売額 '+T.map(function(t){return YEN(t.r.price);}).join('＋')):'発売額 '+YEN(r.price)],
     ['② 通用期間',md2(state.st)+'〜'+md2(r.end),out?'期間外':(pre?'まだ使用開始前':'満了まであと'+rest+'日')],
     ['③ 使った期間',pre?'未使用':(out?'—':r.days+'日（'+(r.days<=7?'7日以内':r.months+'か月目')+'）'),pre||out?'':md2(state.st)+'〜'+md2(state.pb)],
     ['④ 判定',hj,out?'':(r.fee>0?'手数料500円':'手数料なし（自社都合）')]];
   var kpe=document.getElementById('rKp');kpe.className='tkp'+(out?' ng':'');
   kpe.innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');
-  document.getElementById('rRefund').textContent=YEN(r.refund);
+  document.getElementById('rRefund').textContent=YEN(SUM('refund'))+(dis?'（2枚合計）':'');
   document.getElementById('rMsg').textContent=r.msg;
   var Y=function(n){return n.toLocaleString('ja-JP')+'円';};
   var md=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
@@ -357,34 +375,39 @@ function render(){
   var amt=function(n){return n<=2?n*p1:p3+(n-3)*p1;};
   var cl=function(n){return n===1?'1か月運賃 '+Y(p1):n===2?'1か月運賃 '+Y(p1)+'×2＝'+Y(2*p1):n===3?'3か月運賃 '+Y(p3):'3か月運賃 '+Y(p3)+'＋1か月運賃 '+Y(p1)+(n>4?'×'+(n-3):'')+'＝'+Y(amt(n));};
   var amtT=function(n){return n===1?Y(p1):n===2?Y(p1)+'×2＝'+Y(2*p1):n===3?Y(p3):Y(p3)+'＋'+Y(p1)+(n>4?'×'+(n-3):'')+'＝'+Y(amt(n));};
-  var tail=' ＝ <b>'+Y(r.refund)+'</b> を払い戻し'+(r.refund===0&&r.price-r.ded-r.fee<0?'（マイナスのため0円）':'');
+  var CL=function(n,f){var a=f[0],b=f[1],m=(n<=2?n*a:b+(n-3)*a);return n===1?'1か月運賃 '+Y(a):n===2?'1か月運賃 '+Y(a)+'×2＝'+Y(2*a):n===3?'3か月運賃 '+Y(b):'3か月運賃 '+Y(b)+'＋1か月運賃 '+Y(a)+(n>4?'×'+(n-3):'')+'＝'+Y(m);};
+  var AM=function(n,f){return n<=2?n*f[0]:f[1]+(n-3)*f[0];};
+  var TL=function(t){var q=t.r;return ' ＝ <b>'+Y(q.refund)+'</b>'+(q.refund===0&&q.price-q.ded-q.fee<0?'（マイナスのため0円）':'');};
+  var NM=function(t){return t.nm?'<span class="pn '+(t.nm==='本人'?'hon':'kai')+'">'+t.nm+'</span>'+t.lb+'：':'';};
+  var END=dis?'<div class="tsum">2枚合計 ＝ <b>'+Y(SUM('refund'))+'</b> を払い戻し</div>':'';
   if(out){cE.innerHTML='通用期間（'+fmt(state.st)+'〜'+fmt(r.end)+'）を過ぎているため払い戻しできません';tE.innerHTML='';}
-  else if(pre){cE.innerHTML='<div class="ct">使用開始前（未使用）</div>'+Y(r.price)+(r.fee>0?' － 手数料500円':'（自社都合＝手数料なし）')+tail;tE.innerHTML='';}
+  else if(pre){cE.innerHTML='<div class="ct">使用開始前（未使用）</div>'+T.map(function(t){return '<div>'+NM(t)+Y(t.r.price)+(t.r.fee>0?' － 手数料500円':'（自社都合＝手数料なし）')+TL(t)+(dis?'':' を払い戻し')+'</div>';}).join('')+END;tE.innerHTML='';}
   else if(r.days<=7){
     cE.innerHTML='<div class="ct">使用開始後'+r.days+'日目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'）</div>'
-      +Y(r.price)+' －（'+Y(rt/2)+'×往復2＝'+Y(rt)+' × '+r.days+'日＝'+Y(r.ded)+'）'+(r.fee>0?' － 手数料500円':'')+tail;
+      +T.map(function(t){return '<div>'+NM(t)+Y(t.r.price)+' －（'+Y(t.rt/2)+'×往復2＝'+Y(t.rt)+' × '+r.days+'日＝'+Y(t.r.ded)+'）'+(t.r.fee>0?' － 手数料500円':'')+TL(t)+(dis?'':' を払い戻し')+'</div>';}).join('')+END;
     tE.innerHTML='';
   }else{
     var n=r.months;
     cE.innerHTML='<div class="ct">使用'+n+'か月目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'・'+r.days+'日目）</div>'
-      +Y(r.price)+' －（'+cl(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
+      +T.map(function(t){return '<div>'+NM(t)+Y(t.r.price)+' －（'+CL(n,t.f)+(t.r.fee>0?' ＋ 手数料500円':'')+'）'+TL(t)+(dis?'':' を払い戻し')+'</div>';}).join('')+END;
     var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用開始日からの期間</th><th>払い戻し金額</th></tr>';
     for(var k=1;k<=rows;k++){
       var e0=addMonths(state.st,k), b0=(e0.getDate()!==state.st.getDate())?e0:new Date(e0.getTime()-86400000), part=(b0>state.pb); /* 月末開始は月末満了（calcRefundと同じ） */
       var per=(k<=n)?md(state.st)+'〜'+md(part?state.pb:b0)+(part?'<br>（'+k+'か月目の途中）':''):'';
       var hit=(k===n);
       h+='<tr'+(hit?' class="hit"':(k<n?' class="used"':''))+'><td>'+k+'か月'+(hit?' ◀':'')+'</td><td>'+per+'</td><td>定期運賃 －（'+lab(k)+(r.fee>0?'＋手数料500円':'')+'）'
-        +(hit?'<br><b>＝'+Y(r.price)+'－'+Y(amt(k)+r.fee)+'＝'+Y(r.refund)+'</b>':'')+'</td></tr>';}
+        +(hit?T.map(function(t){return '<br><b>'+(t.nm?t.nm+' ':'')+'＝'+Y(t.r.price)+'－'+Y(AM(k,t.f)+t.r.fee)+'＝'+Y(t.r.refund)+'</b>';}).join(''):'')+'</td></tr>';}
     h+='</table><div class="tnote">定期券は月単位の発売＝使用月数は1日でも1か月に切上げ'+(state.per===1?'／<b>1か月定期は8日目以降払い戻し不可</b>':'')+'</div>';
     tE.innerHTML=h;
   }
-  if(!out&&!pre&&r.refund===0){
+  if(!out&&!pre&&SUM('refund')===0){
     var why0=(r.days<=7)?('往復運賃×'+r.days+'日（'+Y(r.ded)+'）'+(r.fee>0?'＋手数料500円':''))
       :('使用'+r.months+'か月目のため '+cl(r.months)+(r.fee>0?' ＋ 手数料500円':''));
     document.getElementById('rMsg').innerHTML='<div class="z0">⚠ 払い戻しできる金額はありません（0円）<br><span>'+why0+' が、発売額 '+Y(r.price)+' 以上になるためです。'
       +((state.per===1&&r.days>7)?'<br>※1か月定期は8日目以降は払い戻しできません。':'')
       +((r.days>7&&r.months>=state.per&&state.per>1)?'<br>※'+state.per+'か月定期は'+state.per+'か月目に入ると払い戻し額がなくなります。':'')+'</span></div>';
   }
+  var r0=r; r={refund:SUM('refund'),ded:SUM('ded'),fee:SUM('fee'),price:SUM('price')};
   var bars=[];
   if(!out){if(r.refund>0)bars.push({k:'tr',n:'払戻',v:r.refund,c:'#c62828'});
     if(r.ded>0)bars.push({k:'td',n:'差引',v:Math.min(r.ded,r.price),c:'var(--td)'});

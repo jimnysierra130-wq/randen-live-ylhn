@@ -351,6 +351,7 @@ function render(){
   var feeT=(r.fee>0?'手数料500円':''), cE=document.getElementById('rCalc'), tE=document.getElementById('rTbl');
   var lab=function(n){return n===1?'1か月運賃':n===2?'1か月運賃×2':n===3?'3か月運賃':n===4?'3か月運賃＋1か月運賃':'3か月運賃＋1か月運賃×'+(n-3);};
   var amt=function(n){return n<=2?n*p1:p3+(n-3)*p1;};
+  var cl=function(n){return n===1?'1か月運賃 '+Y(p1):n===2?'1か月運賃 '+Y(p1)+'×2＝'+Y(2*p1):n===3?'3か月運賃 '+Y(p3):'3か月運賃 '+Y(p3)+'＋1か月運賃 '+Y(p1)+(n>4?'×'+(n-3):'')+'＝'+Y(amt(n));};
   var amtT=function(n){return n===1?Y(p1):n===2?Y(p1)+'×2＝'+Y(2*p1):n===3?Y(p3):Y(p3)+'＋'+Y(p1)+(n>4?'×'+(n-3):'')+'＝'+Y(amt(n));};
   var tail=' ＝ <b>'+Y(r.refund)+'</b> を払い戻し'+(r.refund===0&&r.price-r.ded-r.fee<0?'（マイナスのため0円）':'');
   if(out){cE.innerHTML='通用期間（'+fmt(state.st)+'〜'+fmt(r.end)+'）を過ぎているため払い戻しできません';tE.innerHTML='';}
@@ -362,7 +363,7 @@ function render(){
   }else{
     var n=r.months;
     cE.innerHTML='<div class="ct">使用'+n+'か月目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'・'+r.days+'日目）</div>'
-      +Y(r.price)+' －（'+lab(n)+' '+amtT(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
+      +Y(r.price)+' －（'+cl(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
     var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用した期間</th><th>払い戻し金額</th></tr>';
     for(var k=1;k<=rows;k++){
       var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000), part=(b0>state.pb);

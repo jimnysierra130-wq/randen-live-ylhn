@@ -60,13 +60,60 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 .legend i{display:inline-block;width:12px;height:12px;border:2px solid var(--red);border-radius:4px;vertical-align:-2px;margin-right:3px;}
 .legend s{display:inline-block;width:12px;height:12px;background:var(--grn);border-radius:4px;vertical-align:-2px;margin:0 3px 0 10px;text-decoration:none;}
 .nx{font-size:13px;color:#37474f;line-height:1.6;}.nx h3{margin:14px 0 6px;font-size:14px;padding:5px 10px;border-radius:6px;background:var(--grn);color:#fff;}.nx h3:first-child{margin-top:0;}.nx table{width:100%;border-collapse:collapse;margin:2px 0 4px;table-layout:fixed;}.nx th,.nx td{border:1px solid #cfd8dc;padding:5px 7px;vertical-align:top;text-align:left;word-break:break-word;}.nx th{background:#eceff1;font-weight:700;}.nx td.k{background:#f7f9fa;font-weight:700;width:40%;}.nx table.c th,.nx table.c td{text-align:center;}.nx ul{margin:4px 0;padding-left:1.2em;}.nx li{margin:2px 0;}.nx .y{color:#c62828;font-weight:800;}.nx .src{font-size:11px;color:#78909c;margin:2px 0 0;}
+/* 2026-11-28 団体・貸切と同じ考え方に統一（2列・入力枠・色分け・参考欄灰色・コンパクト） */
+:root{--tp:#1565c0;--tpBg:#e3f0fc;--tpT:#0d47a1;--td:#ef6c00;--tdBg:#fff1e0;--tdT:#b34700;--tf:#607d8b;--tfBg:#eceff1;--tfT:#37474f;--tr:#c62828;}
+body{font-size:14px;}
+.wrap{max-width:1150px;padding:8px 10px 30px;}
+.cols{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;}
+.colL,.colR{flex:1 1 100%;min-width:0;}
+@media(min-width:1000px){.colL{flex:1 1 380px;}.colR{flex:1 1 420px;}.card.notes{max-width:50%;}}
+.card{padding:9px 10px;margin-bottom:8px;border-radius:10px;}
+.card.inp{border:2px solid var(--grn);}
+.card.inp::before{content:"入力";display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--grn);border-radius:5px;padding:1px 8px;margin-bottom:2px;}
+.lbl{font-size:11.5px;margin:4px 0 3px;}
+.segs{gap:4px;margin-bottom:4px;}
+.seg{padding:5px 3px;font-size:13px;min-width:52px;border-radius:7px;border-width:1px;}
+.dates{gap:6px;}
+.dbox{padding:4px 8px;border-radius:7px;border-width:1px;}
+.dbox .v{font-size:14px;min-height:18px;}
+.msg{font-size:12px;}
+.tkp{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.6fr;gap:4px;margin-bottom:5px;}
+.tkp>div{background:#e3f4ec;border:1px solid #b3d4c9;border-radius:7px;padding:3px 4px;text-align:center;line-height:1.25;}
+.tkp .kl{display:block;font-size:10.5px;font-weight:700;color:#4f7d70;}
+.tkp .kv{display:block;font-size:14px;font-weight:800;color:#0f5249;}
+.tkp .ks{display:block;font-size:9.5px;font-weight:600;color:#607d8b;}
+.tkp.ng>div{background:#fdecea;border-color:#f5c2c0;}.tkp.ng .kv{color:#c62828;}
+@media(max-width:520px){.tkp{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.gtot{display:flex;justify-content:space-between;align-items:center;border:1.5px solid #c62828;border-radius:8px;padding:2px 10px;background:#fff5f5;}
+.gtot .k{font-size:13.5px;font-weight:800;}
+.gtot .v{font-size:21px;font-weight:800;color:#c62828;}
+.gbar{display:flex;height:7px;border-radius:5px;overflow:hidden;margin:5px 0 2px;}
+.gbar div{min-width:3px;}
+.gchips{font-size:11px;}
+.gc{display:inline-block;font-weight:700;padding:0 5px;border-radius:5px;margin:1px 2px 1px 0;}
+.gc.tr{background:#fdecea;color:#c62828;}.gc.td{background:var(--tdBg);color:var(--tdT);}.gc.tf{background:var(--tfBg);color:var(--tfT);}
+.gblk{display:grid;grid-template-columns:48px 1fr auto;gap:6px;align-items:center;border-radius:7px;padding:3px 8px;margin-top:3px;}
+.gblk .glab{color:#fff;font-weight:800;font-size:11.5px;text-align:center;border-radius:5px;padding:3px 0;}
+.gblk .gf{font-size:12px;font-weight:700;line-height:1.4;}
+.gblk .gf .s{font-size:10.5px;font-weight:600;}
+.gblk .gamt{font-size:14.5px;font-weight:800;text-align:right;white-space:nowrap;}
+.gblk.tp{background:var(--tpBg);color:var(--tpT);}.gblk.tp .glab{background:var(--tp);}
+.gblk.td{background:var(--tdBg);color:var(--tdT);}.gblk.td .glab{background:var(--td);}
+.gblk.tf{background:var(--tfBg);color:var(--tfT);}.gblk.tf .glab{background:var(--tf);}
+.gblk.off{background:#f5f7f8;color:#b0bec5;}.gblk.off .glab{background:#cfd8dc;}
+.gsum{text-align:right;font-size:12px;font-weight:700;margin-top:4px;border-top:1.5px solid #263238;padding-top:2px;}
+.gsum b{font-size:14px;color:#c62828;}
+.card.notes.nx{background:#f4f6f7;border:1px solid #dde3e6;box-shadow:none;color:#455a64;}
+.card.notes.nx::before{content:"参考（払戻のルール）";display:inline-block;font-size:11px;font-weight:800;color:#546e7a;background:#e3e8eb;border-radius:5px;padding:1px 8px;margin-bottom:6px;}
+.nx h3{background:#e3e8eb;color:#37474f;border-left:4px solid #90a4ae;border-radius:0 6px 6px 0;}
+.nx table{background:#fff;}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>定期券払戻計算</h1>
-
-<div class="card">
+<div class="cols">
+<div class="colL">
+<div class="card inp">
   <div class="lbl">券　種</div>
   <div class="segs" id="sKind">
     <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
@@ -90,18 +137,20 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
   </div>
 </div>
 
+</div>
+<div class="colR">
 <div class="card res" id="result" style="display:none;">
-  <div class="hantei" id="rHantei"></div>
-  <div class="rrow"><span>発売額（定期運賃）</span><b id="rPrice"></b></div>
-  <div class="rrow"><span>通用期間</span><b id="rPeriod"></b></div>
-  <div class="rrow"><span>経過日数／使用月数</span><b id="rElapsed"></b></div>
-  <div class="rrow"><span>差引額（運賃相当）</span><b id="rDed"></b></div>
-  <div class="rrow"><span>払戻手数料</span><b id="rFee"></b></div>
-  <div class="big"><span class="k">払　戻　額</span><span class="v" id="rRefund"></span></div>
+  <div class="tkp" id="rKp"></div>
+  <div class="gtot"><span class="k">払戻額</span><span class="v" id="rRefund"></span></div>
   <div class="msg" id="rMsg"></div>
-  <div class="setsumei"><div class="lbl">お客様への説明（計算式）</div>
-    <div class="s1" id="rF1"></div><div class="s2" id="rF2"></div>
-  </div>
+  <div class="gbar" id="rBar"></div>
+  <div class="gchips" id="rChips"></div>
+  <div class="gblk tp"><div class="glab">発売額</div><div class="gf" id="rFP"></div><div class="gamt" id="rAP"></div></div>
+  <div class="gblk td" id="rBD"><div class="glab">差引額</div><div class="gf" id="rFD"></div><div class="gamt" id="rAD"></div></div>
+  <div class="gblk tf" id="rBF"><div class="glab">手数料</div><div class="gf" id="rFF"></div><div class="gamt" id="rAF"></div></div>
+  <div class="gsum" id="rSum"></div>
+</div>
+</div>
 </div>
 
 <div class="card notes nx">
@@ -275,16 +324,45 @@ function render(){
   if(!state.st||!state.pb){box.style.display='none';return;}
   var r=calcRefund({kind:state.kind,age:state.age,per:state.per,how:state.how,st:state.st,pb:state.pb});
   box.style.display='block';
-  document.getElementById('rHantei').textContent='判定：'+r.hantei;
-  document.getElementById('rPrice').textContent=YEN(r.price);
-  document.getElementById('rPeriod').textContent=fmt(state.st)+' 〜 '+fmt(r.end);
-  document.getElementById('rElapsed').textContent=r.days+'日／'+r.months+'か月';
-  document.getElementById('rDed').textContent=YEN(r.ded);
-  document.getElementById('rFee').textContent=YEN(r.fee);
+  var f=FARES[state.kind][state.age], p1=f[0], p3=f[1], rt=RT[state.age];
+  var KL=(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人':'小児')+'・'+state.per+'か月';
+  var out=(r.hantei.indexOf('通用期間外')===0), pre=(r.hantei.indexOf('使用開始前')===0);
+  var hj=r.hantei.replace('（自社都合＝手数料なし）','');
+  var kp=[['判定',hj,state.how==='corp'?'自社都合＝手数料なし':'お客様都合'],
+    ['経過日数',pre||out?'—':r.days+'日',pre?'開始前':(out?'':'開始日＝1日目')],
+    ['使用月数',(pre||out||r.days<=7)?'—':r.months+'か月',(!pre&&!out&&r.days>7)?'1日でも超えたら翌月':((!pre&&!out)?'7日以内は日数で計算':'')],
+    ['通用期間',fmt(state.st).slice(5)+'〜'+fmt(r.end).slice(5),KL]];
+  var kpe=document.getElementById('rKp');kpe.className='tkp'+(out?' ng':'');
+  kpe.innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');
   document.getElementById('rRefund').textContent=YEN(r.refund);
   document.getElementById('rMsg').textContent=r.msg;
-  document.getElementById('rF1').textContent=r.f1;
-  document.getElementById('rF2').textContent=r.f2;
+  document.getElementById('rFP').innerHTML=KL+' 定期運賃';
+  document.getElementById('rAP').textContent=YEN(r.price);
+  var fd;
+  if(out||pre){fd=pre?'未使用のため差引なし':'—';}
+  else if(r.days<=7){fd='往復運賃 '+YEN(rt)+' × '+r.days+'日<br><span class="s">（開始後7日以内＝日数で計算）</span>';}
+  else{var n=r.months;
+    fd=(n===1?'1か月運賃 '+YEN(p1):n===2?'1か月運賃 '+YEN(p1)+' × 2':n===3?'3か月運賃 '+YEN(p3):'3か月運賃 '+YEN(p3)+' ＋ 1か月運賃 '+YEN(p1)+(n>4?' × '+(n-3):''))
+      +'<br><span class="s">（8日目以降＝使用'+n+'か月分の定期運賃）</span>';}
+  document.getElementById('rFD').innerHTML=fd;
+  document.getElementById('rAD').textContent='－'+YEN(r.ded);
+  document.getElementById('rBD').classList.toggle('off',r.ded===0);
+  document.getElementById('rFF').innerHTML=r.fee>0?'払戻手数料':'自社都合（発券ミス等）のため免除';
+  document.getElementById('rAF').textContent='－'+YEN(r.fee);
+  document.getElementById('rBF').classList.toggle('off',r.fee===0);
+  document.getElementById('rBD').style.display=out?'none':'';document.getElementById('rBF').style.display=out?'none':'';
+  var bars=[];
+  if(!out){if(r.refund>0)bars.push({k:'tr',n:'払戻',v:r.refund,c:'#c62828'});
+    if(r.ded>0)bars.push({k:'td',n:'差引',v:Math.min(r.ded,r.price),c:'var(--td)'});
+    if(r.fee>0&&r.refund+r.ded<r.price+r.fee)bars.push({k:'tf',n:'手数料',v:Math.max(0,Math.min(r.fee,r.price-Math.min(r.ded,r.price))),c:'var(--tf)'});}
+  bars=bars.filter(function(b){return b.v>0;});
+  document.getElementById('rBar').innerHTML=bars.map(function(b){return '<div style="flex:'+b.v+';background:'+b.c+';"></div>';}).join('');
+  document.getElementById('rChips').innerHTML=out?'':'発売額 '+YEN(r.price)+' のうち '+bars.map(function(b){return '<span class="gc '+b.k+'">'+b.n+' '+YEN(b.v)+'</span>';}).join('');
+  document.getElementById('rSum').innerHTML=out?'通用期間外のため払戻できません':
+    '<span style="color:var(--tpT)">'+r.price.toLocaleString('ja-JP')+'</span>'
+    +(r.ded>0?' － <span style="color:var(--tdT)">'+r.ded.toLocaleString('ja-JP')+'</span>':'')
+    +(r.fee>0?' － <span style="color:var(--tfT)">'+r.fee.toLocaleString('ja-JP')+'</span>':'')
+    +' ＝ <b>'+YEN(r.refund)+'</b>'+(r.refund===0&&r.price-r.ded-r.fee<0?'（マイナスのため0円）':'');
 }
 render();
 })();}

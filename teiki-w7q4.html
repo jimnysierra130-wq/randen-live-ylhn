@@ -156,6 +156,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 html,body{overflow-x:hidden;max-width:100%;}
 body{-webkit-text-size-adjust:100%;}
 .lbl,.sublbl,.dhint,.notes,.gnote,.msg{max-height:999999px;}
+/* レイアウト最適化（2026-11-28）：マス内の不自然な折返し・合計表の金額の折返しを防ぐ */
+.tkp .kv,.tkp .ks{text-wrap:balance;}
+.tkp .ks{font-size:10px;}
+.dtot td,.dtot th{white-space:nowrap;}
+@media(max-width:520px){.dtot{font-size:11px;}.dtot td,.dtot th{padding:2px 3px;}.tcalc{font-size:12px;}}
 </style>
 </head>
 <body>

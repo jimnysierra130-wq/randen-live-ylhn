@@ -206,6 +206,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 html,body{overflow-x:hidden;max-width:100%;}
 body{-webkit-text-size-adjust:100%;}
 .lbl,.sublbl,.dhint,.notes,.gnote,.msg{max-height:999999px;}
+/* レイアウト最適化（2026-11-28）：マス内の1〜2文字だけの折返しを防ぐ */
+.gkp .kv,.gkp .ks,.gkp .kx{text-wrap:balance;}
+.gkp .ks{font-size:10px;}
+@media(max-width:640px){.gkp{grid-template-columns:repeat(3,minmax(0,1fr));}}
 </style>
 </head>
 <body>

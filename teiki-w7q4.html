@@ -107,6 +107,18 @@ body{font-size:14px;}
 .card.notes.nx::before{content:"参考（払戻のルール）";display:inline-block;font-size:11px;font-weight:800;color:#546e7a;background:#e3e8eb;border-radius:5px;padding:1px 8px;margin-bottom:6px;}
 .nx h3{background:#e3e8eb;color:#37474f;border-left:4px solid #90a4ae;border-radius:0 6px 6px 0;}
 .nx table{background:#fff;}
+/* 2026-11-28 マニュアルの表形式で説明 */
+.tcalc{border:1.5px solid #2e7d32;background:#f1f8e9;border-radius:6px;padding:4px 9px;margin-top:6px;font-size:13px;font-weight:700;color:#263238;line-height:1.55;}
+.tcalc .ct{color:#2e7d32;font-size:13px;font-weight:800;}
+.tcalc b{color:#c62828;font-size:14px;}
+.ttbl{width:100%;border-collapse:collapse;margin-top:6px;font-size:12px;table-layout:fixed;}
+.ttbl th{background:#d6e0f0;color:#263238;font-weight:700;text-align:left;padding:3px 6px;border:1px solid #b0bec5;}
+.ttbl th:nth-child(1){width:20%;}.ttbl th:nth-child(2){width:28%;}
+.ttbl td{padding:3px 6px;border:1px solid #cfd8dc;vertical-align:top;color:#90a4ae;}
+.ttbl tr.used td{color:#455a64;}
+.ttbl tr.hit td{background:#fff1e0;color:#b34700;font-weight:800;border-color:#f5c48f;}
+.ttbl tr.hit b{color:#c62828;}
+.tnote{font-size:10.5px;color:#607d8b;margin-top:3px;}
 </style>
 </head>
 <body>
@@ -145,10 +157,8 @@ body{font-size:14px;}
   <div class="msg" id="rMsg"></div>
   <div class="gbar" id="rBar"></div>
   <div class="gchips" id="rChips"></div>
-  <div class="gblk tp"><div class="glab">発売額</div><div class="gf" id="rFP"></div><div class="gamt" id="rAP"></div></div>
-  <div class="gblk td" id="rBD"><div class="glab">差引額</div><div class="gf" id="rFD"></div><div class="gamt" id="rAD"></div></div>
-  <div class="gblk tf" id="rBF"><div class="glab">手数料</div><div class="gf" id="rFF"></div><div class="gamt" id="rAF"></div></div>
-  <div class="gsum" id="rSum"></div>
+  <div class="tcalc" id="rCalc"></div>
+  <div id="rTbl"></div>
 </div>
 </div>
 </div>
@@ -336,31 +346,33 @@ function render(){
   kpe.innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');
   document.getElementById('rRefund').textContent=YEN(r.refund);
   document.getElementById('rMsg').textContent=r.msg;
-  document.getElementById('rFP').innerHTML=KL+' 定期運賃';
-  document.getElementById('rAP').textContent=YEN(r.price);
-  var fd;
-  if(out||pre){fd=pre?'未使用のため差引なし':'—';}
-  else{
-    var MD=function(d){return (d.getMonth()+1)+'月'+d.getDate()+'日';}, md=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
-    var used=MD(state.st)+'〜'+MD(state.pb)+'に使用（'+r.days+'日間）';
-    if(r.days<=7){
-      fd='<b>'+used+' → '+r.days+'日分</b><br><span class="s">往復運賃 '+YEN(rt)+' × '+r.days+'日（開始後7日以内は日数で計算）</span>';
-    }else{var n=r.months, segs=[];
-      for(var k=1;k<=n;k++){var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000);
-        var part=(b0>state.pb); if(part)b0=state.pb;
-        segs.push(k+'か月目 '+md(a0)+'〜'+md(b0)+(part?'（途中）':''));}
-      var pt=(segs[n-1].indexOf('途中')>=0);
-      var why=!pt?('ちょうど'+n+'か月使ったので'+n+'か月分'):(n===1?'1か月以内なので1か月分':((n-1)+'か月を1日でも超えたので'+n+'か月分'));
-      var nm=(n===1?'1か月運賃 '+YEN(p1):n===2?'1か月運賃 '+YEN(p1)+' × 2':n===3?'3か月運賃 '+YEN(p3):'3か月運賃 '+YEN(p3)+' ＋ 1か月運賃 '+YEN(p1)+(n>4?' × '+(n-3):''));
-      fd='<b>'+used+' → '+why+'</b><br><span class="s">'+segs.join('｜')+'</span><br><span class="s">差し引く運賃：'+nm+'</span>';}
+  var Y=function(n){return n.toLocaleString('ja-JP')+'円';};
+  var md=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
+  var feeT=(r.fee>0?'手数料500円':''), cE=document.getElementById('rCalc'), tE=document.getElementById('rTbl');
+  var lab=function(n){return n===1?'1か月運賃':n===2?'1か月運賃×2':n===3?'3か月運賃':n===4?'3か月運賃＋1か月運賃':'3か月運賃＋1か月運賃×'+(n-3);};
+  var amt=function(n){return n<=2?n*p1:p3+(n-3)*p1;};
+  var amtT=function(n){return n===1?Y(p1):n===2?Y(p1)+'×2＝'+Y(2*p1):n===3?Y(p3):Y(p3)+'＋'+Y(p1)+(n>4?'×'+(n-3):'')+'＝'+Y(amt(n));};
+  var tail=' ＝ <b>'+Y(r.refund)+'</b> を払い戻し'+(r.refund===0&&r.price-r.ded-r.fee<0?'（マイナスのため0円）':'');
+  if(out){cE.innerHTML='通用期間（'+fmt(state.st)+'〜'+fmt(r.end)+'）を過ぎているため払い戻しできません';tE.innerHTML='';}
+  else if(pre){cE.innerHTML='<div class="ct">使用開始前（未使用）</div>'+Y(r.price)+(r.fee>0?' － 手数料500円':'（自社都合＝手数料なし）')+tail;tE.innerHTML='';}
+  else if(r.days<=7){
+    cE.innerHTML='<div class="ct">使用開始後'+r.days+'日目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'）</div>'
+      +Y(r.price)+' －（'+Y(rt/2)+'×往復2＝'+Y(rt)+' × '+r.days+'日＝'+Y(r.ded)+'）'+(r.fee>0?' － 手数料500円':'')+tail;
+    tE.innerHTML='';
+  }else{
+    var n=r.months;
+    cE.innerHTML='<div class="ct">使用'+n+'か月目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'・'+r.days+'日目）</div>'
+      +Y(r.price)+' －（'+lab(n)+' '+amtT(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
+    var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用した期間</th><th>払い戻し金額</th></tr>';
+    for(var k=1;k<=rows;k++){
+      var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000), part=(b0>state.pb);
+      var per=(k<=n)?md(a0)+'〜'+md(part?state.pb:b0)+(part?'（途中）':''):'';
+      var hit=(k===n);
+      h+='<tr'+(hit?' class="hit"':(k<n?' class="used"':''))+'><td>'+k+'か月'+(hit?' ◀':'')+'</td><td>'+per+'</td><td>定期運賃 －（'+lab(k)+(r.fee>0?'＋手数料500円':'')+'）'
+        +(hit?'<br><b>＝'+Y(r.price)+'－'+Y(amt(k)+r.fee)+'＝'+Y(r.refund)+'</b>':'')+'</td></tr>';}
+    h+='</table><div class="tnote">定期券は月単位の発売＝使用月数は1日でも1か月に切上げ'+(state.per===1?'／<b>1か月定期は8日目以降払い戻し不可</b>':'')+'</div>';
+    tE.innerHTML=h;
   }
-  document.getElementById('rFD').innerHTML=fd;
-  document.getElementById('rAD').textContent='－'+YEN(r.ded);
-  document.getElementById('rBD').classList.toggle('off',r.ded===0);
-  document.getElementById('rFF').innerHTML=r.fee>0?'払戻手数料':'自社都合（発券ミス等）のため免除';
-  document.getElementById('rAF').textContent='－'+YEN(r.fee);
-  document.getElementById('rBF').classList.toggle('off',r.fee===0);
-  document.getElementById('rBD').style.display=out?'none':'';document.getElementById('rBF').style.display=out?'none':'';
   var bars=[];
   if(!out){if(r.refund>0)bars.push({k:'tr',n:'払戻',v:r.refund,c:'#c62828'});
     if(r.ded>0)bars.push({k:'td',n:'差引',v:Math.min(r.ded,r.price),c:'var(--td)'});
@@ -368,11 +380,6 @@ function render(){
   bars=bars.filter(function(b){return b.v>0;});
   document.getElementById('rBar').innerHTML=bars.map(function(b){return '<div style="flex:'+b.v+';background:'+b.c+';"></div>';}).join('');
   document.getElementById('rChips').innerHTML=out?'':'発売額 '+YEN(r.price)+' のうち '+bars.map(function(b){return '<span class="gc '+b.k+'">'+b.n+' '+YEN(b.v)+'</span>';}).join('');
-  document.getElementById('rSum').innerHTML=out?'通用期間外のため払戻できません':
-    '<span style="color:var(--tpT)">'+r.price.toLocaleString('ja-JP')+'</span>'
-    +(r.ded>0?' － <span style="color:var(--tdT)">'+r.ded.toLocaleString('ja-JP')+'</span>':'')
-    +(r.fee>0?' － <span style="color:var(--tfT)">'+r.fee.toLocaleString('ja-JP')+'</span>':'')
-    +' ＝ <b>'+YEN(r.refund)+'</b>'+(r.refund===0&&r.price-r.ded-r.fee<0?'（マイナスのため0円）':'');
 }
 render();
 })();}

@@ -169,6 +169,10 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .gkp .ks{display:block;font-size:9.5px;font-weight:600;color:#607d8b;}
 .gkp.off>div{background:#f1f3f4;border-color:#dde3e6;}.gkp.off .kv{color:#546e7a;}
 @media(max-width:520px){.gkp{grid-template-columns:repeat(3,minmax(0,1fr));}}
+/* 数値欄の上下矢印を消す（±ボタンに一本化・2026-11-28） */
+.numrow input::-webkit-outer-spin-button,.numrow input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.numrow input{-moz-appearance:textfield;appearance:textfield;}
+.numrow button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
 </style>
 </head>
 <body>
@@ -459,11 +463,20 @@ seg('kRc',function(v){st.kRc=+v;});
 seg('kTbSeg',function(v){document.getElementById('kTb').value=v;});
 document.getElementById('kOp').addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
   t.classList.toggle('on');st.kOp[t.dataset.v]=t.classList.contains('on')?1:0;render();});
+// ±ボタン：1回押し＝1つ／押し続け＝連続（0.4秒後に開始・2秒以上でさらに速く）
+function stepBtn(b){var el=document.getElementById(b.dataset.t);
+  var v=num(b.dataset.t)+(+b.dataset.d);if(v<0)v=0;
+  if(b.dataset.t==='kTb'&&v>4)v=4;
+  el.value=v;render();}
 document.querySelectorAll('.numrow button').forEach(function(b){
-  b.addEventListener('click',function(){var el=document.getElementById(b.dataset.t);
-    var v=num(b.dataset.t)+(+b.dataset.d);if(v<0)v=0;
-    if(b.dataset.t==='kTb'&&v>4)v=4;
-    el.value=v;render();});});
+  var t1=null,t2=null,t0=0;
+  function stop(){if(t1){clearTimeout(t1);t1=null;}if(t2){clearTimeout(t2);t2=null;}}
+  function rep(){stepBtn(b);t2=setTimeout(rep,(Date.now()-t0>2000)?35:90);}
+  b.addEventListener('pointerdown',function(e){if(e.button!==0)return;e.preventDefault();stop();
+    t0=Date.now();stepBtn(b);t1=setTimeout(rep,400);});
+  ['pointerup','pointerleave','pointercancel','blur'].forEach(function(n){b.addEventListener(n,stop);});
+  b.addEventListener('contextmenu',function(e){e.preventDefault();});
+  b.addEventListener('click',function(e){if(e.detail===0)stepBtn(b);});});
 document.querySelectorAll('.numrow input').forEach(function(i){i.addEventListener('input',render);});
 document.getElementById('tabG').onclick=function(){st.mode='g';sw();};
 document.getElementById('tabK').onclick=function(){st.mode='k';sw();};

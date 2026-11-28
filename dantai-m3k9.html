@@ -229,7 +229,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
   <div class="numrow sub hon"><span class="nm"><i class="tg">本人</i>そのうち 6歳未満の障がい者（本人無賃・介護者は割引あり）</span>
     <button data-t="gHb" data-d="-1">−</button><input id="gHb" type="number" min="0" value="0"><button data-t="gHb" data-d="1">＋</button></div>
   <div style="height:4px"></div>
-  <div class="numrow sub kai"><span class="nm"><i class="tg">介護者</i>そのうち 介護者（大人）※原則ご本人1人につき1人</span>
+  <div class="numrow sub kai"><span class="nm"><i class="tg">介護者</i>そのうち 介護者（大人）※原則ご本人1人につき1人（係員が2人目を認めた場合は手計算）</span>
     <button data-t="gKg" data-d="-1">−</button><input id="gKg" type="number" min="0" value="0"><button data-t="gKg" data-d="1">＋</button></div>
   <div style="height:4px"></div>
   <div class="numrow sub kai"><span class="nm"><i class="tg">介護者</i>そのうち 介護者（小児）※係員が介護能力を認めた場合</span>
@@ -606,7 +606,7 @@ function render(){
     box2.style.display='block';
     var KTL=['','片道','往復','1.5往復','2往復'][st.kKt];
     document.getElementById('kSum').textContent=YEN(r2.sum);
-    document.getElementById('kMsg').textContent=(st.kOp.on&&st.kOp.gd)?'※音響はガイド電車に含まれるため加算していません':'';
+    document.getElementById('kMsg').innerHTML=[(nn>90*st.kRy)?(st.kRy===1?'※1両の最大乗車数は90名＝91名以上は2両連結を案内':'※2両連結でも最大乗車数180名を超えています（運輸課に相談）'):'',(st.kOp.on&&st.kOp.gd)?'※音響はガイド電車に含まれるため加算していません':''].filter(Boolean).join('<br>');
     document.getElementById('kFB').innerHTML='12,500円 × '+st.kRy+'両 × '+r2.trips+'本<br><span class="s">（'+KTL+'＝四条大宮〜嵐山を'+r2.trips+'本）</span>';
     document.getElementById('kAB').textContent=YEN(r2.base);
     document.getElementById('kBK').style.display=r2.kaiso>0?'':'none';

@@ -151,15 +151,22 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .grc .rl small{font-size:10.5px;}
 .gnote{font-size:10.5px;margin-top:3px;line-height:1.45;}
 .msg{font-size:12px;}
+/* ヘッダー1行化（2026-11-28） */
+.wrap{padding-top:6px;}
+.hdr{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.hdr h1{margin:0;font-size:15px;white-space:nowrap;}
+.hdr .tabs{flex:1;margin:0;max-width:none;}
+.hdr .tab{padding:4px 4px;font-size:13px;}
+@media(min-width:1000px){.hdr .tabs{max-width:420px;}}
 </style>
 </head>
 <body>
 <div class="wrap">
-<h1>団体・貸切計算</h1>
+<div class="hdr"><h1>団体・貸切計算</h1>
 <div class="tabs">
   <div class="tab g on" id="tabG">団体乗車券</div>
   <div class="tab k" id="tabK">貸切電車</div>
-</div>
+</div></div>
 
 <!-- ══ 団体 ══ -->
 <div id="pgG">

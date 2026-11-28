@@ -349,7 +349,8 @@ function render(){
       for(var k=1;k<=n;k++){var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000);
         var part=(b0>state.pb); if(part)b0=state.pb;
         segs.push(k+'か月目 '+md(a0)+'〜'+md(b0)+(part?'（途中）':''));}
-      var why=(n===1)?'1か月以内なので1か月分':((n-1)+'か月を'+(segs[n-1].indexOf('途中')>=0?'1日でも超えたので':'使ったので')+n+'か月分');
+      var pt=(segs[n-1].indexOf('途中')>=0);
+      var why=!pt?('ちょうど'+n+'か月使ったので'+n+'か月分'):(n===1?'1か月以内なので1か月分':((n-1)+'か月を1日でも超えたので'+n+'か月分'));
       var nm=(n===1?'1か月運賃 '+YEN(p1):n===2?'1か月運賃 '+YEN(p1)+' × 2':n===3?'3か月運賃 '+YEN(p3):'3か月運賃 '+YEN(p3)+' ＋ 1か月運賃 '+YEN(p1)+(n>4?' × '+(n-3):''));
       fd='<b>'+used+' → '+why+'</b><br><span class="s">'+segs.join('｜')+'</span><br><span class="s">差し引く運賃：'+nm+'</span>';}
   }

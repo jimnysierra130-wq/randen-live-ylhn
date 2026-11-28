@@ -77,7 +77,7 @@ body{font-size:14px;}
 .dbox{padding:4px 8px;border-radius:7px;border-width:1px;}
 .dbox .v{font-size:14px;min-height:18px;}
 .msg{font-size:12px;}
-.tkp{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.6fr;gap:4px;margin-bottom:5px;}
+.tkp{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-bottom:5px;}
 .tkp>div{background:#e3f4ec;border:1px solid #b3d4c9;border-radius:7px;padding:3px 4px;text-align:center;line-height:1.25;}
 .tkp .kl{display:block;font-size:10.5px;font-weight:700;color:#4f7d70;}
 .tkp .kv{display:block;font-size:14px;font-weight:800;color:#0f5249;}
@@ -338,10 +338,12 @@ function render(){
   var KL=(state.kind==='tsukin'?'通勤':'通学')+'・'+(state.age==='adult'?'大人':'小児')+'・'+state.per+'か月';
   var out=(r.hantei.indexOf('通用期間外')===0), pre=(r.hantei.indexOf('使用開始前')===0);
   var hj=r.hantei.replace('（自社都合＝手数料なし）','');
-  var kp=[['判定',hj,state.how==='corp'?'自社都合＝手数料なし':'お客様都合'],
-    ['経過日数',pre||out?'—':r.days+'日',pre?'開始前':(out?'':'開始日＝1日目')],
-    ['使用月数',(pre||out||r.days<=7)?'—':r.months+'か月',(!pre&&!out&&r.days>7)?'1日でも超えたら翌月':((!pre&&!out)?'7日以内は日数で計算':'')],
-    ['通用期間',fmt(state.st).slice(5)+'〜'+fmt(r.end).slice(5),KL]];
+  var md2=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
+  var rest=Math.round((r.end-state.pb)/86400000);
+  var kp=[['① 定期券',KL,'発売額 '+YEN(r.price)],
+    ['② 通用期間',md2(state.st)+'〜'+md2(r.end),out?'期間外':(pre?'まだ使用開始前':'満了まであと'+rest+'日')],
+    ['③ 使った期間',pre?'未使用':(out?'—':r.days+'日（'+(r.days<=7?'7日以内':r.months+'か月目')+'）'),pre||out?'':md2(state.st)+'〜'+md2(state.pb)],
+    ['④ 判定',hj,out?'':(r.fee>0?'手数料500円':'手数料なし（自社都合）')]];
   var kpe=document.getElementById('rKp');kpe.className='tkp'+(out?' ng':'');
   kpe.innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');
   document.getElementById('rRefund').textContent=YEN(r.refund);

@@ -364,10 +364,10 @@ function render(){
     var n=r.months;
     cE.innerHTML='<div class="ct">使用'+n+'か月目に払い戻す場合（'+md(state.st)+'〜'+md(state.pb)+'・'+r.days+'日目）</div>'
       +Y(r.price)+' －（'+cl(n)+(r.fee>0?' ＋ 手数料500円':'')+'）'+tail;
-    var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用した期間</th><th>払い戻し金額</th></tr>';
+    var rows=Math.max(state.per-1,n,1), h='<table class="ttbl"><tr><th>使用月数</th><th>使用開始日からの期間</th><th>払い戻し金額</th></tr>';
     for(var k=1;k<=rows;k++){
       var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000), part=(b0>state.pb);
-      var per=(k<=n)?md(a0)+'〜'+md(part?state.pb:b0)+(part?'（途中）':''):'';
+      var per=(k<=n)?md(state.st)+'〜'+md(part?state.pb:b0)+(part?'<br>（'+k+'か月目の途中）':''):'';
       var hit=(k===n);
       h+='<tr'+(hit?' class="hit"':(k<n?' class="used"':''))+'><td>'+k+'か月'+(hit?' ◀':'')+'</td><td>'+per+'</td><td>定期運賃 －（'+lab(k)+(r.fee>0?'＋手数料500円':'')+'）'
         +(hit?'<br><b>＝'+Y(r.price)+'－'+Y(amt(k)+r.fee)+'＝'+Y(r.refund)+'</b>':'')+'</td></tr>';}

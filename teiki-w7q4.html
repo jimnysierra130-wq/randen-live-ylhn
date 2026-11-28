@@ -153,7 +153,7 @@ body{font-size:14px;}
 <div class="colL">
 <div class="card inp">
   <div class="ihd"><span class="itag">入力</span><span class="segs" id="sDis"><span class="seg on" data-v="0">通常の定期</span><span class="seg" data-v="1">障がい者割引（特割）</span></span></div>
-  <div class="dhint" id="dHint" style="display:none;">対象＝<b>第1種・精神1級</b>のご本人、または<b>12歳未満の第2種・精神2〜3級</b>のご本人と、その介護者。券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div>
+  <div class="dhint" id="dHint" style="display:none;">対象＝<b>第1種・精神1級</b>のご本人、または<b>12歳未満の第2種・精神2〜3級</b>のご本人と、その介護者。券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。<b>第2種・精神2〜3級で12歳以上</b>のご本人は特割なし＝通常の定期で計算。ご本人が6歳未満（定期券なし）・<b>介護者が小児</b>・介護者2人の場合は運輸課へ。</div>
   <div class="lbl">券　種</div>
   <div class="segs" id="sKind">
     <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
@@ -380,11 +380,11 @@ function render(){
   var kp=[['① 定期券',dis?'本人＋介護者 2枚':KL,dis?(state.per+'か月・発売額 計'+YEN(SUM('price'))):'発売額 '+YEN(r.price)],
     ['② 通用期間',md2(state.st)+'〜'+md2(r.end),out?'期間外':(pre?'まだ使用開始前':'満了まであと'+rest+'日')],
     ['③ 使った期間',pre?'未使用':(out?'—':r.days+'日（'+(r.days<=7?'7日以内':r.months+'か月目')+'）'),pre||out?'':md2(state.st)+'〜'+md2(state.pb)],
-    ['④ 判定',hj,out?'':(r.fee>0?'手数料500円':'手数料なし（自社都合）')]];
+    ['④ 判定',hj,out?'':(r.fee>0?'手数料500円'+(dis?'×2枚':''):'手数料なし（自社都合）')]];
   var kpe=document.getElementById('rKp');kpe.className='tkp'+(out?' ng':'');
   kpe.innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');
   document.getElementById('rRefund').textContent=YEN(SUM('refund'))+(dis?'（2枚合計）':'');
-  document.getElementById('rMsg').textContent=r.msg;
+  document.getElementById('rMsg').textContent=dis?'':r.msg;
   var Y=function(n){return n.toLocaleString('ja-JP')+'円';};
   var md=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
   var feeT=(r.fee>0?'手数料500円':''), cE=document.getElementById('rCalc'), tE=document.getElementById('rTbl');
@@ -421,9 +421,9 @@ function render(){
     tE.innerHTML=h;
   }
   if(!out&&!pre&&SUM('refund')===0){
-    var why0=(r.days<=7)?('往復運賃×'+r.days+'日（'+Y(r.ded)+'）'+(r.fee>0?'＋手数料500円':''))
-      :('使用'+r.months+'か月目のため '+cl(r.months)+(r.fee>0?' ＋ 手数料500円':''));
-    document.getElementById('rMsg').innerHTML='<div class="z0">⚠ 払い戻しできる金額はありません（0円）<br><span>'+why0+' が、発売額 '+Y(r.price)+' 以上になるためです'+(dis?'（1枚あたり・2枚とも0円）':'')+'。'
+    var W=function(t){var q=t.r;return (q.days<=7)?('往復運賃 '+Y(t.rt)+'×'+q.days+'日（'+Y(q.ded)+'）'+(q.fee>0?'＋手数料500円':'')):('使用'+q.months+'か月目のため '+CL(q.months,t.f)+(q.fee>0?' ＋ 手数料500円':''));};
+    var why0=T.map(function(t){return (t.nm?t.nm+'：':'')+W(t)+' が、発売額 '+Y(t.r.price)+' 以上';}).join('<br>');
+    document.getElementById('rMsg').innerHTML='<div class="z0">⚠ 払い戻しできる金額はありません（0円）<br><span>'+why0+(dis?'<br>（2枚とも0円）':'になるためです。')
       +((state.per===1&&r.days>7)?'<br>※1か月定期は8日目以降は払い戻しできません。':'')
       +((r.days>7&&r.months>=state.per&&state.per>1)?'<br>※'+state.per+'か月定期は'+state.per+'か月目に入ると払い戻し額がなくなります。':'')+'</span></div>';
   }
@@ -434,7 +434,8 @@ function render(){
     bars.push({k:'tr',n:'払戻',v:bR,c:'#c62828'});bars.push({k:'td',n:'差引',v:bD,c:'var(--td)'});bars.push({k:'tf',n:'手数料',v:bF,c:'var(--tf)'});}
   bars=bars.filter(function(b){return b.v>0;});
   document.getElementById('rBar').innerHTML=bars.map(function(b){return '<div style="flex:'+b.v+';background:'+b.c+';"></div>';}).join('');
-  document.getElementById('rChips').innerHTML=out?'':'発売額 '+YEN(r.price)+' のうち '+bars.map(function(b){return '<span class="gc '+b.k+'">'+b.n+' '+YEN(b.v)+'</span>';}).join('');
+  var capped=T.some(function(t){return t.r.refund===0&&t.r.ded+t.r.fee>t.r.price;});
+  document.getElementById('rChips').innerHTML=out?'':(capped?'<span style="color:#90a4ae">（帯は発売額の範囲で表示＝発売額を超える差引・手数料は含まない）</span><br>':'')+'発売額 '+YEN(r.price)+' のうち '+bars.map(function(b){return '<span class="gc '+b.k+'">'+b.n+' '+YEN(b.v)+'</span>';}).join('');
 }
 render();
 })();}

@@ -219,7 +219,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
     <button data-t="gCh" data-d="-1">−</button><input id="gCh" type="number" min="0" value="0"><button data-t="gCh" data-d="1">＋</button></div>
   <div class="lbl">片道・往復</div>
   <div class="segs" id="gOw"><div class="seg on" data-v="1">片道</div><div class="seg" data-v="2">往復</div></div>
-  <div class="sublbl">そのうち 障がい者のお客様（内訳を記入）※割引は<b>介護者同伴が条件</b>＝同伴ペア分のみ5割引で別計算・単独の方は割引なし（団体側で通常運賃として自動計算）</div>
+  <div class="sublbl">そのうち 障がい者のお客様（内訳を記入）※入力するのは<b>第1種（身体・療育）／精神1級の方だけ</b>（第2種・精神2〜3級は線内割引なし＝入力しない）。割引は<b>介護者同伴が条件</b>＝同伴ペア分のみ5割引で別計算・単独の方は割引なし（団体側で通常運賃として自動計算）</div>
   <div class="numrow sub hon"><span class="nm"><i class="tg">本人</i>そのうち 大人の障がい者</span>
     <button data-t="gHa" data-d="-1">−</button><input id="gHa" type="number" min="0" value="0"><button data-t="gHa" data-d="1">＋</button></div>
   <div style="height:4px"></div>
@@ -271,7 +271,8 @@ h1{font-size:16px;margin:4px 2px 8px;}
 <tr><th>人数</th><th>無賃人員</th></tr>
 <tr><td>25〜49名</td><td>1名</td></tr>
 <tr><td>50〜99名</td><td>2名</td></tr>
-<tr><td>100名以上</td><td>50名毎に+1名</td></tr>
+<tr><td>100〜149名</td><td>3名</td></tr>
+<tr><td>150名以上</td><td>以後50名増すごとに+1名<br><span class="src">150〜199名＝4名／200〜249名＝5名…</span></td></tr>
 </table>
 
 <h3>③ 割引率</h3>
@@ -292,12 +293,12 @@ h1{font-size:16px;margin:4px 2px 8px;}
 <tr><td class="k">ご本人が6歳未満</td><td>ご本人は<span class="y">無賃</span>（団体側の人数からも除外）・介護者は割引あり</td></tr>
 <tr><td class="k">介護者が小児</td><td>小児の特割額（片道60円／往復120円）</td></tr>
 <tr><td class="k">第2種</td><td>嵐電線内の普通券割引<span class="y">なし</span></td></tr>
-<tr><td class="k">精神障がい者保健福祉手帳</td><td>対象</td></tr>
+<tr><td class="k">精神障がい者保健福祉手帳</td><td><span class="y">1級のみ</span>対象（2級・3級は嵐電線内の普通券割引なし）</td></tr>
 <tr><td class="k">ミライロID</td><td>手帳の呈示として可</td></tr>
 </table>
 <ul>
 <li>割引は<b>必ず介護者同伴が条件</b>（嵐電線内は単独割引なし）</li>
-<li>介護者の乗車券は本人と<b>種類</b>が同一であればよい。大人・小児の別は介護者本人の年齢による</li>
+<li>介護者の乗車券は本人と<b>券種・区間・有効期間が同一</b>で、<b>本人と同時購入</b>・<b>同一列車に乗車</b>する場合のみ有効。大人・小児の別は介護者本人の年齢による</li>
 <li>介護能力の有無は係員が判断</li>
 </ul>
 <div class="src">根拠：規程第4・5条／各規程第3条2項／精神障害者旅客運賃割引規程・旅客営業規則第44条／身体障害者旅客運賃割引規程（2025-04-01改定）第8条／駅務マニュアル「普通券（身割・こども）60円 特割」</div>
@@ -526,7 +527,7 @@ function render(){
     var OW=(st.gOw===1?'片道':'往復'), bA=(st.gOw===1?250:500), bC=(st.gOw===1?120:240);
     var KN=(st.gKind==='ippan'?'一般':'学生')+'団体';
     var spN=sp.adD+sp.chD+sp.hbD+sp.pair;
-    var kp=[['種別',KN,''],
+    var kp=[['種別',r.rate>0?KN:'団体扱いなし',r.rate>0?'':'24名以下＝通常運賃'],
       ['割引率',r.rate>0?r.rate+'割引':'なし',(r.tot>299?'300名以上':r.tot>99?'100〜299名':r.tot>24?'25〜99名':'24名以下')+'（'+(st.gKind==='ippan'?'一般':'学生')+'）'],
       ['無賃',r.muchin+'名',r.muchin>0?'大人から充当':''],
       ['計算人数',r.tot+'名'+(r.muchin>0?'<span class="kx">うち無賃'+r.muchin+'名＝運賃は'+(r.adA+r.chA)+'名分</span>':''),'大人'+effAd+'・小児'+effCh+(spN>0?'（総数'+(ad+ch)+'−障がい者別計算'+spN+'）':'')],

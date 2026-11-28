@@ -170,7 +170,7 @@ body{font-size:14px;}
 <h3>② 払戻額の計算（使用開始からの日数で分かれる）</h3>
 <table><tr><th style="width:30%">時期</th><th>払戻額</th></tr>
 <tr><td class="k">使用開始前</td><td>未使用のため<b>手数料500円のみ</b>差引き</td></tr>
-<tr><td class="k">開始後7日以内</td><td>発売額 －（経過乗車日数×往復普通運賃）－ 手数料500円<br>※開始日を1日目と数える</td></tr>
+<tr><td class="k">開始後7日以内</td><td>発売額 －（経過乗車日数×往復普通運賃）－ 手数料500円<br>※開始日・払戻日とも1日として数える</td></tr>
 <tr><td class="k">8日目以降</td><td>発売額 －（使用月数に応じた定期運賃）－ 手数料500円<br>※1か月を1日でも超えれば翌月扱い（月単位の販売契約のため）<br>※<span class="y">1か月定期は8日目以降払戻なし</span></td></tr></table>
 <h3>③ 使用月数に応じた定期運賃（8日目以降の差引額）</h3>
 <table class="c"><tr><th>使用月数</th><th>差し引く定期運賃</th></tr>
@@ -205,7 +205,7 @@ body{font-size:14px;}
     <button id="cClose">✕</button>
   </div>
   <div id="calbody"></div>
-  <div class="legend"><i></i>＝今日<s></s>＝選択中　※◀▶で前後の月へ送れます（4か月×3段＝前後1年分）</div>
+  <div class="legend"><i></i>＝今日<s></s>＝選択中　※◀▶で前後の月へ送れます（表示中の月の前6か月〜後5か月）</div>
 </div>
 
 <script>

@@ -119,6 +119,8 @@ body{font-size:14px;}
 .ttbl tr.hit td{background:#fff1e0;color:#b34700;font-weight:800;border-color:#f5c48f;}
 .ttbl tr.hit b{color:#c62828;}
 .tnote{font-size:10.5px;color:#607d8b;margin-top:3px;}
+.z0{border:1.5px solid #c62828;background:#fdecea;color:#c62828;border-radius:6px;padding:4px 9px;margin-top:4px;font-size:13px;font-weight:800;}
+.z0 span{font-size:12px;font-weight:700;color:#7f1d1d;}
 </style>
 </head>
 <body>
@@ -375,6 +377,13 @@ function render(){
         +(hit?'<br><b>＝'+Y(r.price)+'－'+Y(amt(k)+r.fee)+'＝'+Y(r.refund)+'</b>':'')+'</td></tr>';}
     h+='</table><div class="tnote">定期券は月単位の発売＝使用月数は1日でも1か月に切上げ'+(state.per===1?'／<b>1か月定期は8日目以降払い戻し不可</b>':'')+'</div>';
     tE.innerHTML=h;
+  }
+  if(!out&&!pre&&r.refund===0){
+    var why0=(r.days<=7)?('往復運賃×'+r.days+'日（'+Y(r.ded)+'）'+(r.fee>0?'＋手数料500円':''))
+      :('使用'+r.months+'か月目のため '+cl(r.months)+(r.fee>0?' ＋ 手数料500円':''));
+    document.getElementById('rMsg').innerHTML='<div class="z0">⚠ 払い戻しできる金額はありません（0円）<br><span>'+why0+' が、発売額 '+Y(r.price)+' 以上になるためです。'
+      +((state.per===1&&r.days>7)?'<br>※1か月定期は8日目以降は払い戻しできません。':'')
+      +((r.days>7&&r.months>=state.per&&state.per>1)?'<br>※'+state.per+'か月定期は'+state.per+'か月目に入ると払い戻し額がなくなります。':'')+'</span></div>';
   }
   var bars=[];
   if(!out){if(r.refund>0)bars.push({k:'tr',n:'払戻',v:r.refund,c:'#c62828'});

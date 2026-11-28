@@ -240,7 +240,25 @@ h1{font-size:16px;margin:4px 2px 8px;}
 </table>
 <div class="src">根拠：社内マニュアル1-4</div>
 
-<h3>② 障がい者割引</h3>
+<h3>② 無賃人員（大人から充当）</h3>
+<table class="c">
+<tr><th>人数</th><th>無賃人員</th></tr>
+<tr><td>25〜49名</td><td>1名</td></tr>
+<tr><td>50〜99名</td><td>2名</td></tr>
+<tr><td>100名以上</td><td>50名毎に+1名</td></tr>
+</table>
+
+<h3>③ 割引率</h3>
+<table class="c">
+<tr><th>人数</th><th>一般</th><th>学生</th></tr>
+<tr><td>24名以下</td><td colspan="2">適用なし</td></tr>
+<tr><td>25〜99名</td><td>1割</td><td>2割</td></tr>
+<tr><td>100〜299名</td><td>2割</td><td>3割</td></tr>
+<tr><td>300名以上</td><td>3割</td><td>4割</td></tr>
+</table>
+<ul><li>合計は10円未満切上げ</li><li>1,500名以上は手計算</li></ul>
+
+<h3>④ 障がい者割引</h3>
 <ul><li><b>入力</b>：大人・小児は全員の総数を入力し、障がい者・介護者は「そのうち」の内訳欄に記入＝自動で団体計算から除き5割引で別計算して合算</li></ul>
 <table>
 <tr><td class="k">第1種（身体・療育）ご本人＋介護者（原則1人）</td><td>普通券 <span class="y">各5割引</span>・10円未満切上げ</td></tr>
@@ -257,24 +275,6 @@ h1{font-size:16px;margin:4px 2px 8px;}
 <li>介護能力の有無は係員が判断</li>
 </ul>
 <div class="src">根拠：規程第4・5条／各規程第3条2項／精神障害者旅客運賃割引規程・旅客営業規則第44条／身体障害者旅客運賃割引規程（2025-04-01改定）第8条／駅務マニュアル「普通券（身割・こども）60円 特割」</div>
-
-<h3>③ 無賃人員（大人から充当）</h3>
-<table class="c">
-<tr><th>人数</th><th>無賃人員</th></tr>
-<tr><td>25〜49名</td><td>1名</td></tr>
-<tr><td>50〜99名</td><td>2名</td></tr>
-<tr><td>100名以上</td><td>50名毎に+1名</td></tr>
-</table>
-
-<h3>④ 割引率</h3>
-<table class="c">
-<tr><th>人数</th><th>一般</th><th>学生</th></tr>
-<tr><td>24名以下</td><td colspan="2">適用なし</td></tr>
-<tr><td>25〜99名</td><td>1割</td><td>2割</td></tr>
-<tr><td>100〜299名</td><td>2割</td><td>3割</td></tr>
-<tr><td>300名以上</td><td>3割</td><td>4割</td></tr>
-</table>
-<ul><li>合計は10円未満切上げ</li><li>1,500名以上は手計算</li></ul>
 </div>
 </div>
 
@@ -489,7 +489,7 @@ function render(){
     var KN=(st.gKind==='ippan'?'一般':'学生')+'団体';
     var spN=sp.adD+sp.chD+sp.hbD+sp.pair;
     var kp=[['種別',KN,''],
-      ['割引率',r.rate>0?r.rate+'割引':'なし',r.rate>0?'':'25名未満'],
+      ['割引率',r.rate>0?r.rate+'割引':'なし',(r.tot>299?'300名以上':r.tot>99?'100〜299名':r.tot>24?'25〜99名':'24名以下')+'（'+(st.gKind==='ippan'?'一般':'学生')+'）'],
       ['無賃',r.muchin+'名',r.muchin>0?'大人から充当':''],
       ['計算人数',r.tot+'名','大人'+effAd+'・小児'+effCh+(spN>0?'（総数'+(ad+ch)+'−別計算'+spN+'）':'')],
       ['通常運賃より',r.save>0?'▲'+YEN(r.save):'—',r.save>0?'お得':'']];

@@ -102,6 +102,14 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 .grc .rl small{font-size:11px;font-weight:700;color:#6d5200;margin-left:4px;}
 .grc .rd{font-size:11.5px;color:#b0bec5;font-weight:600;margin-top:2px;}
 .gnote{font-size:11px;color:#607d8b;margin-top:4px;line-height:1.5;}
+#pgK{--kb:#1565c0;--kbBg:#e3f0fc;--kbT:#0d47a1;--kk:#546e7a;--kkBg:#eceff1;--kkT:#37474f;--kf:#2e7d32;--kfBg:#e8f5e9;--kfT:#1b5e20;--kr:#b28704;--krBg:#fff8e1;--krT:#6d5200;--ko:#7b4fc4;--koBg:#f1ebfb;--koT:#4a2a8a;}
+.gblk.kb{background:var(--kbBg);color:var(--kbT);}.gblk.kb .glab{background:var(--kb);font-size:11.5px;}
+.gblk.kk{background:var(--kkBg);color:var(--kkT);}.gblk.kk .glab{background:var(--kk);}
+.gblk.kf{background:var(--kfBg);color:var(--kfT);}.gblk.kf .glab{background:var(--kf);}
+.gblk.kr{background:var(--krBg);color:var(--krT);}.gblk.kr .glab{background:var(--kr);}
+.gblk.ko{background:var(--koBg);color:var(--koT);}.gblk.ko .glab{background:var(--ko);font-size:11.5px;line-height:1.2;}
+#pgK .gblk.off{background:#f5f7f8;color:#b0bec5;}#pgK .gblk.off .glab{background:#cfd8dc;}
+.gc.kb{background:var(--kbBg);color:var(--kbT);}.gc.kk{background:var(--kkBg);color:var(--kkT);}.gc.kf{background:var(--kfBg);color:var(--kfT);}.gc.kr{background:var(--krBg);color:var(--krT);}.gc.ko{background:var(--koBg);color:var(--koT);}
 </style>
 </head>
 <body>
@@ -247,16 +255,16 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
 </div>
 <div class="colR">
 <div class="card res" id="kRes" style="display:none;">
-  <div class="resL">
-  <div class="rrow"><span>貸切基本料金</span><b id="kBase"></b></div>
-  <div class="rrow" id="kKaisoRow"><span>回送料金（片道・1.5往復時）</span><b id="kKaiso"></b></div>
-  <div class="rrow"><span>乗車運賃</span><b id="kFare"></b></div>
-  <div class="rrow"><span>留置料金</span><b id="kRyu"></b></div>
-  <div class="rrow"><span>オプション（ガイド/テーブル/音響/HM/車両指定）</span><b id="kOpt"></b></div>
-  <div class="big"><span class="k">貸切料金 合計</span><span class="v" id="kSum"></span></div>
+  <div class="gtot"><span class="k">貸切料金 合計</span><span class="v" id="kSum"></span></div>
   <div class="msg" id="kMsg"></div>
-  </div>
-  <div class="setsumei"><div class="s1">お客様への説明（内訳）</div><div class="s2" id="kF"></div></div>
+  <div class="gbar" id="kBar"></div>
+  <div class="gchips" id="kChips"></div>
+  <div class="gblk kb"><div class="glab">基本料金</div><div class="gf" id="kFB"></div><div class="gamt" id="kAB"></div></div>
+  <div class="gblk kk" id="kBK"><div class="glab">回送料</div><div class="gf" id="kFK"></div><div class="gamt" id="kAK"></div></div>
+  <div class="gblk kf"><div class="glab">運賃</div><div class="gf" id="kFF"></div><div class="gamt" id="kAF"></div></div>
+  <div class="gblk kr" id="kBR"><div class="glab">留置料</div><div class="gf" id="kFR"></div><div class="gamt" id="kAR"></div></div>
+  <div class="gblk ko" id="kBO"><div class="glab">オプ<br>ション</div><div class="gf" id="kFO"></div><div class="gamt" id="kAO"></div></div>
+  <div class="gsum" id="kSumLine"></div>
 </div>
 </div>
 </div>
@@ -359,7 +367,7 @@ function calcKashi(p){ // {ry, nn, kt:1-4, rc:0|2|3, gd, tb, on, hm, pm}
   if(on)parts.push('音響 '+YEN(on));
   if(hm)parts.push('ヘッドマーク '+YEN(hm));
   if(pm)parts.push('車両指定 '+YEN(pm));
-  return {base:base,kaiso:kaiso,fare:fare,ryu:ryu,opt:gd+tb+on+hm+pm,sum:sum,unit:unit,
+  return {base:base,kaiso:kaiso,fare:fare,ryu:ryu,opt:gd+tb+on+hm+pm,sum:sum,unit:unit,trips:TRIPS,optParts:{gd:gd,tb:tb,on:on,hm:hm,pm:pm},
     f:parts.join(' ＋ ')+' ＝ '+YEN(sum)};
 }
 // ─ 特別割引（第1種＝本人・介護者 各5割引・10円未満切上げ／規程2025-04-01） ─
@@ -500,15 +508,32 @@ function render(){
     if(nn<=0){box2.style.display='none';return;}
     var r2=calcKashi({ry:st.kRy,nn:nn,kt:st.kKt,rc:st.kRc,gd:st.kOp.gd,tb:tb,on:st.kOp.on,hm:st.kOp.hm,pm:st.kOp.pm});
     box2.style.display='block';
-    document.getElementById('kBase').textContent=YEN(r2.base);
-    document.getElementById('kKaisoRow').style.display=(r2.kaiso>0)?'':'none';
-    document.getElementById('kKaiso').textContent=YEN(r2.kaiso);
-    document.getElementById('kFare').textContent=YEN(r2.unit)+'×'+nn+'名＝'+YEN(r2.fare);
-    document.getElementById('kRyu').textContent=YEN(r2.ryu);
-    document.getElementById('kOpt').textContent=YEN(r2.opt);
+    var KTL=['','片道','往復','1.5往復','2往復'][st.kKt];
     document.getElementById('kSum').textContent=YEN(r2.sum);
     document.getElementById('kMsg').textContent=(st.kOp.on&&st.kOp.gd)?'※音響はガイド電車に含まれるため加算していません':'';
-    document.getElementById('kF').textContent=r2.f;
+    document.getElementById('kFB').innerHTML='12,500円 × '+st.kRy+'両 × '+r2.trips+'本<br><span class="s">（'+KTL+'＝四条大宮〜嵐山を'+r2.trips+'本）</span>';
+    document.getElementById('kAB').textContent=YEN(r2.base);
+    document.getElementById('kBK').style.display=r2.kaiso>0?'':'none';
+    document.getElementById('kFK').innerHTML='12,500円 × '+st.kRy+'両<br><span class="s">（'+KTL+'は電車が出発駅へ戻らないため回送分を加算）</span>';
+    document.getElementById('kAK').textContent=YEN(r2.kaiso);
+    document.getElementById('kFF').innerHTML=YEN(r2.unit)+'（'+KTL+'）× '+nn+'名';
+    document.getElementById('kAF').textContent=YEN(r2.fare);
+    document.getElementById('kBR').classList.toggle('off',r2.ryu===0);
+    document.getElementById('kFR').innerHTML=r2.ryu>0?'嵐山で '+(st.kRc===2?'31〜60分':'61〜90分')+' 留置':'なし（30分まで無料）';
+    document.getElementById('kAR').textContent=YEN(r2.ryu);
+    var op=r2.optParts, ol=[];
+    if(op.gd)ol.push('ガイド電車 '+YEN(op.gd)+(st.kOp.on?'<span class="s">（音響込み）</span>':''));
+    if(op.on)ol.push('音響 '+YEN(op.on));
+    if(op.tb)ol.push('テーブル 3,000円 × '+tb+'台');
+    if(op.hm)ol.push('ヘッドマーク '+YEN(op.hm));
+    if(op.pm)ol.push('プレミアム（車両指定） '+YEN(op.pm));
+    document.getElementById('kBO').classList.toggle('off',r2.opt===0);
+    document.getElementById('kFO').innerHTML=ol.length?ol.join('<br>'):'なし';
+    document.getElementById('kAO').textContent=YEN(r2.opt);
+    var kp=[{k:'kb',n:'基本料金',v:r2.base},{k:'kk',n:'回送料',v:r2.kaiso},{k:'kf',n:'運賃',v:r2.fare},{k:'kr',n:'留置料',v:r2.ryu},{k:'ko',n:'オプション',v:r2.opt}].filter(function(c){return c.v>0;});
+    document.getElementById('kBar').innerHTML=kp.map(function(c){return '<div style="flex:'+c.v+';background:var(--'+c.k+');"></div>';}).join('');
+    document.getElementById('kChips').innerHTML=kp.map(function(c){return '<span class="gc '+c.k+'">'+c.n+' '+YEN(c.v)+'</span>';}).join('');
+    document.getElementById('kSumLine').innerHTML=kp.map(function(c){return '<span style="color:var(--'+c.k+'T)">'+c.v.toLocaleString('ja-JP')+'</span>';}).join(' ＋ ')+' ＝ <b>'+YEN(r2.sum)+'</b>';
   }
 }
 render();

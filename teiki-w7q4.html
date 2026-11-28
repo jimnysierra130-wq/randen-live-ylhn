@@ -127,6 +127,15 @@ body{font-size:14px;}
 .pn{display:inline-block;font-size:11px;font-weight:800;color:#fff;border-radius:4px;padding:0 6px;margin-right:4px;}
 .pn.hon{background:#7b4fc4;}.pn.kai{background:#00897b;}
 .tsum{margin-top:3px;border-top:1px solid #a5d6a7;padding-top:2px;}
+.disbox{margin-top:8px;border-top:1px dashed #cfd8dc;padding-top:6px;}
+#sDis .seg{font-size:11.5px;padding:3px 3px;color:#90a4ae;border-color:#dfe4e7;}
+#sDis .seg.on[data-v="0"]{background:#eceff1;border-color:#cfd8dc;color:#546e7a;}
+.dtot{width:100%;border-collapse:collapse;margin-top:5px;font-size:12px;background:#fff;}
+.dtot th{background:#e8f5e9;font-weight:700;padding:2px 5px;border:1px solid #c8e6c9;text-align:right;}
+.dtot td{padding:2px 5px;border:1px solid #dcedc8;text-align:right;}
+.dtot td:first-child,.dtot th:first-child{text-align:left;}
+.dtot tr.tt td{background:#fff5f5;font-weight:800;}
+.dtot tr.tt b{color:#c62828;}
 </style>
 </head>
 <body>
@@ -134,9 +143,6 @@ body{font-size:14px;}
 <div class="cols">
 <div class="colL">
 <div class="card inp">
-  <div class="lbl">障がい者割引（特割）</div>
-  <div class="segs" id="sDis"><div class="seg on" data-v="0">なし（通常）</div><div class="seg" data-v="1">あり（本人＋介護者）</div></div>
-  <div class="dhint" id="dHint" style="display:none;">券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div>
   <div class="lbl">券　種</div>
   <div class="segs" id="sKind">
     <div class="seg on" data-v="tsukin">通勤</div><div class="seg" data-v="tsugaku">通学</div>
@@ -153,6 +159,8 @@ body{font-size:14px;}
   <div class="segs" id="sHow">
     <div class="seg on" data-v="cust">お客様都合</div><div class="seg" data-v="corp">自社都合（発券ミス等）</div>
   </div>
+  <div class="disbox" id="disBox"><div class="segs" id="sDis"><div class="seg on" data-v="0">通常の定期</div><div class="seg" data-v="1">障がい者割引（特割）の定期</div></div>
+  <div class="dhint" id="dHint" style="display:none;">券種・大人小児は<b>ご本人</b>の内容を選ぶ。介護者は<b>通勤定期（大人）</b>で、本人分と<b>同時に</b>払い戻す。ご本人が小児の定期は割引なし（通常額）。ご本人が6歳未満（定期券なし）・介護者2人の場合は運輸課へ。</div></div>
   <div class="lbl">日付（タップでカレンダー）</div>
   <div class="dates">
     <div class="dbox" id="dSt"><div class="t">使用開始日</div><div class="v empty">タップして選択</div></div>
@@ -360,7 +368,7 @@ function render(){
   var hj=r.hantei.replace('（自社都合＝手数料なし）','');
   var md2=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
   var rest=Math.round((r.end-state.pb)/86400000);
-  var kp=[['① 定期券',dis?'本人＋介護者 2枚':KL,dis?(state.per+'か月・発売額 '+T.map(function(t){return YEN(t.r.price);}).join('＋')):'発売額 '+YEN(r.price)],
+  var kp=[['① 定期券',dis?'本人＋介護者 2枚':KL,dis?(state.per+'か月・発売額 計'+YEN(SUM('price'))):'発売額 '+YEN(r.price)],
     ['② 通用期間',md2(state.st)+'〜'+md2(r.end),out?'期間外':(pre?'まだ使用開始前':'満了まであと'+rest+'日')],
     ['③ 使った期間',pre?'未使用':(out?'—':r.days+'日（'+(r.days<=7?'7日以内':r.months+'か月目')+'）'),pre||out?'':md2(state.st)+'〜'+md2(state.pb)],
     ['④ 判定',hj,out?'':(r.fee>0?'手数料500円':'手数料なし（自社都合）')]];
@@ -379,7 +387,10 @@ function render(){
   var AM=function(n,f){return n<=2?n*f[0]:f[1]+(n-3)*f[0];};
   var TL=function(t){var q=t.r;return ' ＝ <b>'+Y(q.refund)+'</b>'+(q.refund===0&&q.price-q.ded-q.fee<0?'（マイナスのため0円）':'');};
   var NM=function(t){return t.nm?'<span class="pn '+(t.nm==='本人'?'hon':'kai')+'">'+t.nm+'</span>'+t.lb+'：':'';};
-  var END=dis?'<div class="tsum">2枚合計 ＝ <b>'+Y(SUM('refund'))+'</b> を払い戻し</div>':'';
+  var END=dis?('<table class="dtot"><tr><th></th><th>発売額</th><th>差引額</th><th>手数料</th><th>払戻額</th></tr>'
+    +T.map(function(t){var q=t.r;return '<tr><td><span class="pn '+(t.nm==='本人'?'hon':'kai')+'">'+t.nm+'</span></td><td>'+Y(q.price)+'</td><td>－'+Y(q.ded)+'</td><td>－'+Y(q.fee)+'</td><td>'+Y(q.refund)+'</td></tr>';}).join('')
+    +'<tr class="tt"><td>合計</td><td>'+Y(SUM('price'))+'</td><td>－'+Y(SUM('ded'))+'</td><td>－'+Y(SUM('fee'))+'</td><td><b>'+Y(SUM('refund'))+'</b></td></tr></table>'
+    +'<div class="tsum">合計 '+Y(SUM('price'))+' －'+Y(SUM('ded'))+' －'+Y(SUM('fee'))+' ＝ <b>'+Y(SUM('refund'))+'</b> を払い戻し'+(T.some(function(t){return t.r.price-t.r.ded-t.r.fee<0;})?'（1枚ごとにマイナスは0円）':'')+'</div>'):'';
   if(out){cE.innerHTML='通用期間（'+fmt(state.st)+'〜'+fmt(r.end)+'）を過ぎているため払い戻しできません';tE.innerHTML='';}
   else if(pre){cE.innerHTML='<div class="ct">使用開始前（未使用）</div>'+T.map(function(t){return '<div>'+NM(t)+Y(t.r.price)+(t.r.fee>0?' － 手数料500円':'（自社都合＝手数料なし）')+TL(t)+(dis?'':' を払い戻し')+'</div>';}).join('')+END;tE.innerHTML='';}
   else if(r.days<=7){

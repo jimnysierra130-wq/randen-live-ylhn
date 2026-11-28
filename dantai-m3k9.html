@@ -152,6 +152,15 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .gnote{font-size:10.5px;margin-top:3px;line-height:1.45;}
 .msg{font-size:12px;}
 .wrap{padding-top:8px;}
+/* 入力欄と説明欄の切り分け（2026-11-28）＝入力は色枠＋「入力」札／説明は灰色系 */
+#pgG .colL .card{border:2px solid var(--grn);}
+#pgK .colL .card{border:2px solid var(--org);}
+.colL .card::before{content:"入力";display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--grn);border-radius:5px;padding:1px 8px;margin-bottom:2px;}
+#pgK .colL .card::before{background:var(--org);}
+.card.notes.nx{background:#f4f6f7;border:1px solid #dde3e6;box-shadow:none;color:#455a64;}
+.card.notes.nx::before{content:"参考（料金・ルール）";display:inline-block;font-size:11px;font-weight:800;color:#546e7a;background:#e3e8eb;border-radius:5px;padding:1px 8px;margin-bottom:6px;}
+.nx h3,#pgK .nx h3{background:#e3e8eb;color:#37474f;border-left:4px solid #90a4ae;border-radius:0 6px 6px 0;}
+.nx table{background:#fff;}
 </style>
 </head>
 <body>

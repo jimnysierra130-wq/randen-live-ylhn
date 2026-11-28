@@ -239,9 +239,10 @@ h1{font-size:19px;margin:8px 2px 12px;color:var(--grnD);}
     <div class="seg" data-v="gd">ガイド電車</div><div class="seg" data-v="on">音響</div>
     <div class="seg" data-v="hm">ヘッドマーク</div><div class="seg" data-v="pm">プレミアム</div>
   </div>
-  <div class="lbl">テーブル貸出（最大4台）</div>
-  <div class="numrow"><span class="nm">台数</span>
-    <button data-t="kTb" data-d="-1">−</button><input id="kTb" type="number" min="0" max="4" value="0"><button data-t="kTb" data-d="1">＋</button></div>
+  <div class="segs" id="kTbSeg" style="margin-top:6px;">
+    <div class="seg on" data-v="0">テーブルなし</div><div class="seg" data-v="1">テーブル1台</div><div class="seg" data-v="2">テーブル2台</div><div class="seg" data-v="3">テーブル3台</div><div class="seg" data-v="4">テーブル4台</div>
+  </div>
+  <input id="kTb" type="hidden" value="0">
 </div>
 </div>
 <div class="colR">
@@ -397,6 +398,7 @@ seg('gOw',function(v){st.gOw=+v;});
 seg('kRy',function(v){st.kRy=+v;});
 seg('kKt',function(v){st.kKt=+v;});
 seg('kRc',function(v){st.kRc=+v;});
+seg('kTbSeg',function(v){document.getElementById('kTb').value=v;});
 document.getElementById('kOp').addEventListener('click',function(e){var t=e.target.closest('.seg');if(!t)return;
   t.classList.toggle('on');st.kOp[t.dataset.v]=t.classList.contains('on')?1:0;render();});
 document.querySelectorAll('.numrow button').forEach(function(b){

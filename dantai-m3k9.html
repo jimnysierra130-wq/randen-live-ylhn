@@ -162,7 +162,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .nx h3,#pgK .nx h3{background:#e3e8eb;color:#37474f;border-left:4px solid #90a4ae;border-radius:0 6px 6px 0;}
 .nx table{background:#fff;}
 /* 団体 割引・無賃の欄をタイル化（2026-11-28） */
-.gkp{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-bottom:5px;}
+.gkp{display:grid;grid-template-columns:1fr 1fr 0.8fr 1.7fr 1.1fr;gap:4px;margin-bottom:5px;}
 .gkp>div{background:#e3f4ec;border:1px solid #b3d4c9;border-radius:7px;padding:3px 4px;text-align:center;line-height:1.25;}
 .gkp .kl{display:block;font-size:10.5px;font-weight:700;color:#4f7d70;}
 .gkp .kv{display:block;font-size:15px;font-weight:800;color:#0f5249;}
@@ -179,6 +179,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .opx ul{margin:2px 0 0;padding-left:1.2em;font-size:11.5px;line-height:1.5;}
 #kOp .seg[data-v="pm"]{flex:1.5;white-space:nowrap;}
 @media(max-width:520px){#kOp .seg[data-v="pm"]{flex:1 1 100%;}}
+.gkp .kx{display:block;font-size:11px;font-weight:800;color:#b34700;}
 </style>
 </head>
 <body>
@@ -513,7 +514,7 @@ function render(){
     var kp=[['種別',KN,''],
       ['割引率',r.rate>0?r.rate+'割引':'なし',(r.tot>299?'300名以上':r.tot>99?'100〜299名':r.tot>24?'25〜99名':'24名以下')+'（'+(st.gKind==='ippan'?'一般':'学生')+'）'],
       ['無賃',r.muchin+'名',r.muchin>0?'大人から充当':''],
-      ['計算人数',r.tot+'名','大人'+effAd+'・小児'+effCh+(spN>0?'（総数'+(ad+ch)+'−別計算'+spN+'）':'')],
+      ['計算人数',r.tot+'名'+(r.muchin>0?'<span class="kx">うち無賃'+r.muchin+'名＝運賃は'+(r.adA+r.chA)+'名分</span>':''),'大人'+effAd+'・小児'+effCh+(spN>0?'（総数'+(ad+ch)+'−障がい者別計算'+spN+'）':'')],
       ['通常運賃より',r.save>0?'▲'+YEN(r.save):'—',r.save>0?'お得':'']];
     document.getElementById('gKp').className='gkp'+(r.rate>0?'':' off');
     document.getElementById('gKp').innerHTML=kp.map(function(x){return '<div><span class="kl">'+x[0]+'</span><span class="kv">'+x[1]+'</span>'+(x[2]?'<span class="ks">'+x[2]+'</span>':'')+'</div>';}).join('');

@@ -340,10 +340,19 @@ function render(){
   document.getElementById('rAP').textContent=YEN(r.price);
   var fd;
   if(out||pre){fd=pre?'未使用のため差引なし':'—';}
-  else if(r.days<=7){fd='往復運賃 '+YEN(rt)+' × '+r.days+'日<br><span class="s">（開始後7日以内＝日数で計算）</span>';}
-  else{var n=r.months;
-    fd=(n===1?'1か月運賃 '+YEN(p1):n===2?'1か月運賃 '+YEN(p1)+' × 2':n===3?'3か月運賃 '+YEN(p3):'3か月運賃 '+YEN(p3)+' ＋ 1か月運賃 '+YEN(p1)+(n>4?' × '+(n-3):''))
-      +'<br><span class="s">（8日目以降＝使用'+n+'か月分の定期運賃）</span>';}
+  else{
+    var MD=function(d){return (d.getMonth()+1)+'月'+d.getDate()+'日';}, md=function(d){return (d.getMonth()+1)+'/'+d.getDate();};
+    var used=MD(state.st)+'〜'+MD(state.pb)+'に使用（'+r.days+'日間）';
+    if(r.days<=7){
+      fd='<b>'+used+' → '+r.days+'日分</b><br><span class="s">往復運賃 '+YEN(rt)+' × '+r.days+'日（開始後7日以内は日数で計算）</span>';
+    }else{var n=r.months, segs=[];
+      for(var k=1;k<=n;k++){var a0=addMonths(state.st,k-1), b0=new Date(addMonths(state.st,k).getTime()-86400000);
+        var part=(b0>state.pb); if(part)b0=state.pb;
+        segs.push(k+'か月目 '+md(a0)+'〜'+md(b0)+(part?'（途中）':''));}
+      var why=(n===1)?'1か月以内なので1か月分':((n-1)+'か月を'+(segs[n-1].indexOf('途中')>=0?'1日でも超えたので':'使ったので')+n+'か月分');
+      var nm=(n===1?'1か月運賃 '+YEN(p1):n===2?'1か月運賃 '+YEN(p1)+' × 2':n===3?'3か月運賃 '+YEN(p3):'3か月運賃 '+YEN(p3)+' ＋ 1か月運賃 '+YEN(p1)+(n>4?' × '+(n-3):''));
+      fd='<b>'+used+' → '+why+'</b><br><span class="s">'+segs.join('｜')+'</span><br><span class="s">差し引く運賃：'+nm+'</span>';}
+  }
   document.getElementById('rFD').innerHTML=fd;
   document.getElementById('rAD').textContent='－'+YEN(r.ded);
   document.getElementById('rBD').classList.toggle('off',r.ded===0);

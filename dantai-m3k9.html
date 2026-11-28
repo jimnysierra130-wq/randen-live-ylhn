@@ -177,6 +177,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 .opx{background:var(--koBg);color:var(--koT);border:1px solid #d6c8f0;border-radius:7px;padding:4px 9px;margin-top:6px;}
 .opx .ot{font-size:12px;font-weight:800;}
 .opx ul{margin:2px 0 0;padding-left:1.2em;font-size:11.5px;line-height:1.5;}
+#kOp .seg[data-v="pm"]{flex:1.5;white-space:nowrap;}
 </style>
 </head>
 <body>
@@ -303,7 +304,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
   <div class="lbl">オプション（タップで切替）</div>
   <div class="segs" id="kOp">
     <div class="seg" data-v="gd">ガイド電車</div><div class="seg" data-v="on">音響</div>
-    <div class="seg" data-v="hm">ヘッドマーク</div><div class="seg" data-v="pm">プレミアム</div>
+    <div class="seg" data-v="hm">ヘッドマーク</div><div class="seg" data-v="pm">プレミアム<span style="font-size:11px;">【車両指定】</span></div>
   </div>
   <div class="segs" id="kTbSeg" style="margin-top:6px;">
     <div class="seg on" data-v="0">テーブルなし</div><div class="seg" data-v="1">テーブル1台</div><div class="seg" data-v="2">テーブル2台</div><div class="seg" data-v="3">テーブル3台</div><div class="seg" data-v="4">テーブル4台</div>
@@ -353,7 +354,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 
 <h3>③ オプション</h3>
 <table>
-<tr><td class="k">ガイド電車</td><td>6,000円<br><span class="src">電車ガイドが沿線の見どころを約24分ご案内・マイクアンプ込・飲食物持込自由・4/11/12月は要相談</span></td></tr>
+<tr><td class="k">ガイド電車</td><td>6,000円<br><span class="src">電車ガイドが沿線の見どころを約24分ご案内・マイクアンプ込・飲食物持込自由</span></td></tr>
 <tr><td class="k">テーブル</td><td>3,000円</td></tr>
 <tr><td class="k">音響</td><td>3,000円（ガイド電車なら不要）</td></tr>
 <tr><td class="k">ヘッドマーク</td><td>25,000円</td></tr>
@@ -388,7 +389,7 @@ h1{font-size:16px;margin:4px 2px 8px;}
 
 <script>
 'use strict';
-var KOPX_GD='<div class="opx"><div class="ot">ガイド電車（6,000円）でできること</div><ul><li>電車ガイドが乗車し、嵐山本線の沿線の見どころを紹介しながら約24分間ご案内</li><li>マイク・アンプ込み（音響の追加は不要）</li><li>飲みもの・食べものの持ち込み自由</li><li>最大着席35席／最大乗車90名（1両）</li><li>4月・11月・12月は要相談</li></ul></div>';
+var KOPX_GD='<div class="opx"><div class="ot">ガイド電車（6,000円）でできること</div><ul><li>電車ガイドが乗車し、嵐山本線の沿線の見どころを紹介しながら約24分間ご案内</li><li>マイク・アンプ込み（音響の追加は不要）</li><li>飲みもの・食べものの持ち込み自由</li><li>最大着席35席／最大乗車90名（1両）</li></ul></div>';
 var KOPX_PM='<div class="opx"><div class="ot">プレミアムトレイン（35,000円）でできること</div><ul><li>車両先頭にオリジナルシート（横600×縦300mm・データはお客様がご用意）。ヘッドマークに変える場合は＋25,000円</li><li>車内の中吊りをオリジナルに（B3サイズ32枚、またはB3ワイド8枚〔両面印刷なら4枚〕＋B3サイズ16枚〔片面印刷〕）</li><li>ポスターは原則お客様の現物納品（当社で印刷も可・印刷費は別途）</li><li>希望により車両指定可（KYOTRAM・301号車は指定不可）</li><li>その他の車内装飾は要相談（追加費用）</li></ul></div>';
 var YEN=function(n){return n.toLocaleString('ja-JP')+'円';};
 // ─ 団体計算（原本「嵐電 団体運賃計算表」と同一ロジック） ─
@@ -599,7 +600,7 @@ function render(){
     if(op.on)ol.push('音響 '+YEN(op.on));
     if(op.tb)ol.push('テーブル 3,000円 × '+tb+'台');
     if(op.hm)ol.push('ヘッドマーク '+YEN(op.hm));
-    if(op.pm)ol.push('プレミアム（車両指定） '+YEN(op.pm));
+    if(op.pm)ol.push('プレミアム【車両指定】 '+YEN(op.pm));
     document.getElementById('kBO').classList.toggle('off',r2.opt===0);
     document.getElementById('kFO').innerHTML=ol.length?ol.join('<br>'):'なし';
     document.getElementById('kAO').textContent=YEN(r2.opt);
